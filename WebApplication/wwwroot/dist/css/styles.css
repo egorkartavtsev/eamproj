@@ -1,0 +1,142 @@
+
+.bigTable {
+    overflow-x: auto;
+}
+
+.info-cell {
+    background-color: #cce5ff;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #b8daff !important;
+    cursor: pointer;
+}
+
+.info-cell:hover {
+    background-color: #cdccff;
+    border-bottom: 1px solid #bbbae6;
+}
+
+.calendBlock {
+    position: absolute;
+    top: 0px;
+    z-index: 99999;
+    transform: translate3d(0px, 48px, 0px);
+    height: fit-content;
+    background-color: #ffffff;
+}
+
+@media (min-width: 576px) {
+    .calendBlock {
+        position: fixed!important;
+        top: 0px;
+        z-index: 99999;
+        transform: translate3d(0px, 48px, 0px);
+        height: fit-content;
+        background-color: #ffffff;
+    }
+}
+
+
+.func-menu a {
+    cursor: pointer;
+}
+
+.func-menu a:hover {
+    background-color: #b3d0e9;
+}
+
+.calendBlock .ngb-dp-months {
+    background-color: #ffffff;
+}
+
+.calendBlock .dpicker-footer {
+    background-color: f8f9fa;
+}
+
+.custom_modal_size {
+    max-width: 1140px !important;
+}
+
+.closeBtn {
+    background-color: #c56a6a;
+    padding: 0px 7px 5px 7px;
+    border-radius: 3px;
+    color: #ffffff;
+}
+
+.table-decada .dec {
+    min-width: 42px;
+}
+
+.table-decada .monthes {
+    cursor: pointer;
+}
+
+.loader {
+    background-image: url(/dist/loader.gif);
+    width: 250px;
+    height: 200px;
+    background-position: 0px;
+    background-size: cover;
+    margin-left: 40%;
+}
+
+.loader-mini {
+    width: 125px!important;
+    height: 50px!important;
+    margin: unset!important;
+}
+
+.daropDownDates {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.groupBtns {
+    /*width: fit-content;*/
+    margin-right: 15px;
+    float: left;
+}
+
+.groupBtns button:first-child {
+    border-radius: 5px 0px 0px 5px;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.groupBtns button{
+    border-radius: 0px 5px 5px 0px;
+    background-color: #1d66d4;
+    border-color: #007bff;
+}
+
+.groupBtns .daropDownDates a {
+    cursor: pointer;
+}
+
+.informRow {
+    cursor: pointer;
+}
+.informRow:hover {
+    background-color: #b8daff;
+}
+/* ======================== styles to scrollbar =========================== */
+::-webkit-scrollbar-track {
+    /*background-color: #ecedee;*/
+    background-color: rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    background-color: #6dc0c8;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #56999f;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}

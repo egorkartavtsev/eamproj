@@ -1,0 +1,37 @@
+﻿<div class="row justify-content-center">
+    <div class="col-12">
+        <p class="display3 text-center"><b>График</b><br> капитальных и продолжительных ремонтов основных металлургических агрегатов ОАО ММК на {{title}}</p>
+    </div>
+    <div class="col-12 bigTable">
+        <table class="table table-bordered table-sm">
+            <thead class="thead-dark text-center">
+                <tr>
+                    <th>Цех</th>
+                    <th>Агрегат</th>
+                    <th *ngFor="let thc of tHeadDays" style="cursor: pointer;" (click)="showPOrders(thc.target, thc.title)" data-toggle="modal" data-target="#exampleModal">{{thc.weekDD}}<br>{{thc.monDD}}</th>
+                    <th>Итого, ч.</th>
+                </tr>
+                <tr></tr>
+            </thead>
+            <tbody>
+                <tr></tr>
+                <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
+                    <tr *ngFor="let row of CurrentData">
+                        <td>{{row.organization_name}}</td>
+                        <td>{{row.instance_description}}</td>
+                        <td *ngFor="let cell of row.days" class="{{cell.class}} align-middle text-center" title="{{cell.title}}" (click)="showPOrders(cell.target, cell.title, row.instance_number)" data-toggle="modal" data-target="#exampleModal">
+                            {{cell.res}}
+                        </td>
+                        <td class="text-center align-middle">{{row.sum}}</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<polist-comp [title]="modalData.title" [poList]="modalData.porders" [emptyModal]="emptyModal" (onSaved)="getData(tmpQuery)"></polist-comp>
+<!-- Loader -->
+<ng-template #loader>
+    <tr><td colspan="4" class="text-center"><div class="loader"></div><br>Подождите, идёт загрузка данных.</td></tr>
+</ng-template>

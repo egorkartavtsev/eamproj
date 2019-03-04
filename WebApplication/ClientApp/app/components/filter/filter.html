@@ -1,0 +1,92 @@
+<div class="row">
+    <!-- for small width devices -->
+    <div class="d-block d-sm-none card w-100">
+        <div class="bg-info text-white text-center collapsed card-header w-100" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            <h5 class="align-middle"><i class="fas fa-align-justify"></i> Фильтры и настройки <i class="fas fa-chevron-down"></i></h5>
+        </div>
+        <div class="collapse" id="collapseFilter">
+            <div class="card-body">
+                <h5>Фильтры</h5>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Цеха</label>
+                    </div>
+                    <select class="custom-select" name="filterTotal.areaFilter" [(ngModel)]="filterTotal.areaFilter" (change)="inp()">
+                        <option selected value="">Вce...</option>
+                        <option *ngFor="let area of areas" value="{{area}}">{{area}}</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Агрегаты</label>
+                    </div>
+                    <select class="custom-select" name="machinesFilter" [(ngModel)]="filterTotal.machinesFilter" (change)="inp()">
+                        <option selected value="">Вce...</option>
+                        <option *ngFor="let mech of machines" value="{{mech}}">{{mech}}</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Вид ремонта</label>
+                    </div>
+                    <select class="custom-select">
+                        <option selected value="">Вce...</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Планировщик</label>
+                    </div>
+                    <select class="custom-select">
+                        <option selected value="">Вce...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- for medium width devices -->
+    <div class="d-none d-sm-block w-100">
+        <div class="row">
+            <div class="col-12"><h5>Фильтры</h5></div>
+            <div class="col-6">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">Цех</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect01" name="areaFilter" [(ngModel)]="filterTotal.areaFilter" (change)="inp()">
+                        <option value="" selected>Все цеха..</option>
+                        <option *ngFor="let area of areas" value="{{area}}">{{area}}</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Агрегаты</label>
+                    </div>
+                    <select class="custom-select" name="machinesFilter" [(ngModel)]="filterTotal.machinesFilter" (change)="inp()">
+                        <option selected value="">Вce...</option>
+                        <option *ngFor="let mech of machines" value="{{mech}}">{{mech}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Вид ремонта</label>
+                    </div>
+                    <select class="custom-select">
+                        <option selected value="">Вce...</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">Планировщик</label>
+                    </div>
+                    <select class="custom-select">
+                        <option selected value="">Вce...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

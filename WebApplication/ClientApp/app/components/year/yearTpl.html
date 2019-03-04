@@ -1,0 +1,39 @@
+<div class="row justify-content-center">
+    <div class="col-12">
+        <p class="text-center">
+            <b>График</b><br> капитальных и продолжительных ремонтов основных металлургических агрегатов ОАО ММК в {{title}} г.
+        </p>
+    </div>
+    <div class="col-12 bigTable">
+        <table class="table-decada table table-bordered table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th rowspan="2">Цех</th>
+                    <th rowspan="2">Агрегат</th>
+                    <th colspan="36" class="text-center">{{title}}</th>
+                    <th rowspan="2">Итого, сут.</th>
+                </tr>
+                <tr class="monthes text-center">
+                    <th *ngFor="let m of monthes" (click)="showPOList(m.mon)" colspan="3" data-toggle="modal" data-target="#exampleModal">{{m.num}}</th>
+                <tr>
+            </thead>
+            <tbody>
+                <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
+                    <tr *ngFor="let row of CurrentData">
+                        <td>{{row.organization_name}}</td>
+                        <td>{{row.instance_description}}</td>
+                        <td *ngFor="let cell of row.decadas" (click)="showPOList(cell.tarM, cell.tarD, row.INSTANCE_NUMBER)" class="{{cell.class}} dec align-middle text-center" data-toggle="modal" data-target="#exampleModal">{{cell.val}}</td>
+                        <td class="align-middle text-center">{{row.sum}}</td>
+                    </tr>
+                </ng-template>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Modal -->
+<polist-comp [title]="modalData.title" [poList]="modalData.porders" [emptyModal]="emptyModal" (onSaved)="getData(title)"></polist-comp>
+<!-- Loader -->
+<ng-template #loader>
+    <tr><td colspan="42" class="text-center"><div class="loader"></div>Подождите, идёт загрузка данных.</td></tr>
+</ng-template>
+

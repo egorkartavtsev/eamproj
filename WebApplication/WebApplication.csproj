@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\dist\styles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\app.component.ts" />
+    <None Remove="ClientApp\app\components\app\app.component.ts" />
+    <None Remove="ClientApp\app\components\createWO\createOrder.component.ts" />
+    <None Remove="ClientApp\app\components\poList\po-list.component.ts" />
+    <None Remove="ClientApp\app\components\month\month.component.ts" />
+    <None Remove="ClientApp\app\components\week\week.component.ts" />
+    <None Remove="ClientApp\app\components\year\loader.gif" />
+    <None Remove="ClientApp\app\components\year\year.component.ts" />
+    <None Remove="ClientApp\app\directives\empty-cell.directive.ts" />
+    <None Remove="ClientApp\main.ts" />
+    <None Remove="ClientApp\polyfills.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.18.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\components\app\app.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\createWO\createOrder.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\poList\po-list.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\month\month.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\week\week.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\year\year.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\directives\empty-cell.directive.ts" />
+    <TypeScriptCompile Include="ClientApp\main.ts" />
+    <TypeScriptCompile Include="ClientApp\polyfills.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\dist\css\styles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\dist\loader.gif">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

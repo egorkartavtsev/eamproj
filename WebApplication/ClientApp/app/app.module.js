@@ -1,0 +1,49 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+// modules
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// components
+import { AppComponent } from './components/app/app.component';
+import { FilterComponent } from './components/filter/filter.component';
+import { WeekComponent } from './components/week/week.component';
+import { YearComponent } from './components/year/year.component';
+import { MonthComponent } from './components/month/month.component';
+import { PoListComponent } from './components/poList/po-list.component';
+import { CreateOrderComponent } from './components/createWO/createOrder.component';
+//services
+import { FilterService } from './services/filter.service';
+import { HttpService } from './services/http.service';
+//derectives
+import { EmptyCellDirective } from './directives/empty-cell.directive';
+// определение маршрутов
+var appRoutes = [
+    { path: '', component: MonthComponent },
+    { path: 'week', component: WeekComponent },
+    { path: 'year', component: YearComponent },
+    { path: 'month', component: MonthComponent },
+    { path: '**', redirectTo: '/' }
+];
+var AppModule = /** @class */ (function () {
+    function AppModule() {
+    }
+    AppModule = __decorate([
+        NgModule({
+            imports: [NgbModule, BrowserModule, HttpClientModule, RouterModule.forRoot(appRoutes), FormsModule],
+            declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent],
+            providers: [FilterService, HttpService],
+            bootstrap: [AppComponent]
+        })
+    ], AppModule);
+    return AppModule;
+}());
+export { AppModule };
+//# sourceMappingURL=app.module.js.map

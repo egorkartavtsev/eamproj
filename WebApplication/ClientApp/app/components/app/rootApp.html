@@ -1,0 +1,112 @@
+<div class="w-100 alert alert-primary">
+    <div class="col-12"><filter-box></filter-box></div>
+    <div class="row justify-content-center">
+        <!----------- small devices---------->
+        <div class="btn-group-vertical w-100 d-block d-sm-none">
+            <div class="groupBtns col-12" role="group">
+                <button class="btn btn-lg col-8 btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.year}}
+                </button>
+                <button class="btn btn-lg col-4 btn-secondary" type="button" (click)="goTo('year')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let year of dateArray.years" (click)="updateDate('year', year)" class="dropdown-item">{{year}}</a>
+                </div>
+            </div>
+            <div class="groupBtns col-12" role="group">
+                <button class="btn btn-lg col-8 btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.month.name}}
+                </button>
+                <button class="btn btn-lg col-4 btn-secondary" type="button" (click)="goTo('month')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let month of dateArray.monthes" (click)="updateDate('month', month.number)" class="dropdown-item">{{month.name}}</a>
+                </div>
+            </div>
+            <div class="groupBtns col-12" role="group">
+                <button class="btn btn-lg col-8 btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.day}}
+                </button>
+                <button class="btn btn-lg col-4 btn-secondary" type="button" (click)="goTo('week')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let day of dateArray.days" (click)="updateDate('day', day)" class="dropdown-item">{{day}}</a>
+                </div>
+            </div>
+            <div class="btn-group">
+                <div class="btn-group text-center">
+                    <button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="far fa-compass"></i> действия
+                    </button>
+                    <div class="dropdown-menu func-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item"><i class="fas fa-calendar-plus"></i> создать ПЗ</a>
+                        <a class="dropdown-item"><i class="fas fa-print"></i> печать</a>
+                        <a class="dropdown-item"><i class="fas fa-comments"></i> согласование</a>
+                        <a class="dropdown-item"><i class="fas fa-envelope"></i> отправить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!----------- other devices---------->
+
+        <div class="col-12 d-none d-sm-block">
+            <div class="groupBtns" role="group">
+                <button class="btn btn-lg btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.year}}
+                </button>
+                <button class="btn btn-lg btn-secondary" type="button" (click)="goTo('year')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let year of dateArray.years" (click)="updateDate('year', year)" class="dropdown-item">{{year}}</a>
+                </div>
+            </div>
+            <div class="groupBtns" role="group">
+                <button class="btn btn-lg btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.month.name}}
+                </button>
+                <button class="btn btn-lg btn-secondary" type="button" (click)="goTo('month')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let month of dateArray.monthes" (click)="updateDate('month', month.number)" class="dropdown-item">{{month.name}}</a>
+                </div>
+            </div>
+            <div class="groupBtns" role="group">
+                <button class="btn btn-lg btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{currentDate.day}}
+                </button>
+                <button class="btn btn-lg btn-secondary" type="button" (click)="goTo('week')">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+                <div class="dropdown-menu daropDownDates" aria-labelledby="dropdownMenuButton">
+                    <a *ngFor="let day of dateArray.days" (click)="updateDate('day', day)" class="dropdown-item">{{day}}</a>
+                </div>
+            </div>
+            <div class="btn-group">
+                <div class="btn-group text-center">
+                    <button class="btn btn-lg btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="far fa-compass"></i> действия
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" data-toggle="modal" data-target="#createModal"><i class="fas fa-calendar-plus"></i> создать ПЗ</a>
+                        <a class="dropdown-item"><i class="fas fa-print"></i> печать</a>
+                        <a class="dropdown-item"><i class="fas fa-comments"></i> согласование</a>
+                        <a class="dropdown-item"><i class="fas fa-envelope"></i> отправить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="mt-3">
+        <router-outlet class="w-100"></router-outlet>
+    </div>
+</div>
+
+<!------------------>
+<createwo-comp></createwo-comp>

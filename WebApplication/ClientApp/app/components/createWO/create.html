@@ -1,0 +1,100 @@
+﻿<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true" #modal>
+    <div class="modal-dialog custom_modal_size" role="document">
+        <div class="modal-content" style="overflow-x: auto;">
+            <div class="modal-header">
+                <h5 class="modal-title text-center w-100" id="createModal">Создание нового ЗВР</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group mb-3">
+                            <label>Цех</label>
+                            <select class="form-control" [(ngModel)]="tmp_org" (change)="setOrg()">
+                                <option selected disabled value="">Выберите цех...</option>
+                                <option *ngFor="let org of organizations" value="{{org.SHOT_NAME}}:{{org.ORGANIZATION_ID}}">{{org.ORGANIZATION_NAME}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Агрегат</label>
+                            <select class="form-control" [(ngModel)]="order.instance_number" (change)="setAgr()">
+                                <option selected disabled>Выберите агрегат...</option>
+                                <option *ngFor="let agr of agregates" value="{{agr.INSTANCE_NUMBER}}">{{agr.INSTANCE_NUMBER}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="chngStart" #target>
+                            <label>Начальная дата</label>
+                            <div class="input-group">
+                                <input type="text" [(ngModel)]="order.start" id="curStart" class="form-control" (click)="toogleCalendar()" on-input="updateComplete()">
+                                <div class="input-group-prepend">
+                                    <button class="input-group-text btn btn-default d-none d-sm-block" (click)="toogleCalendar()"> <i class="fas fa-calendar"> </i></button>
+                                </div>
+                            </div>
+                            <div #startCal class="calendBlock d-none">
+                                <div class="card-body">
+                                    <div class="w-100">
+                                        <button type="button" class="close pull-right mb-3">
+                                            <span class="closeBtn" aria-hidden="true" (click)="toogleCalendar()">&times; </span>
+                                        </button>
+                                    </div>
+                                    <ngb-datepicker #d
+                                                    [footerTemplate]="t"
+                                                    [navigation]="arrows"
+                                                    [(ngModel)]="model"
+                                                    [startDate]="startCalDay"
+                                                    (navigate)="startCalDay = $event.next"></ngb-datepicker>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Продолжительность</label>
+                            <input type="text" [(ngModel)]="order.hours" class="form-control" on-input="updateComplete()">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group mb-3">
+                            <label>Тип работ</label>
+                            <select class="form-control" [(ngModel)]="order.work_type">
+                                <option selected disabled value="">Выберите тип работ...</option>
+                                <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Плановик</label>
+                            <select class="form-control">
+                                <option selected disabled>Выберите плановика...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Дата завершения</label>
+                            <input type="text" [(ngModel)]="order.complete" class="form-control" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 justify-content-center">
+                        <button class="btn btn-success" (click)="createWO()"><i class="fas fa-floppy-o"></i> создать</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <div #miniLoader class="loader loader-mini d-none"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #t>
+    <div class="w-100 px-5 dpicker-footer"><ngb-timepicker [(ngModel)]="tmpDT" [minuteStep]="10"></ngb-timepicker></div>
+    <div class="w-100 text-center mb-3 dpicker-footer">
+        <div class="btn-group">
+            <button (click)="setDate()" type="button" class="btn btn-success" title="Сохранить" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                <i class="fas fa-calendar-check"></i>
+                <span class="d-none d-sm-inline"> Ok</span>
+            </button>
+            <button (click)="cancelDate()" type="button" class="btn btn-secondary" title="Отмена" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                <i class="fas fa-thumbs-down"></i>
+                <span class="d-none d-sm-inline"> Отмена</span>
+            </button>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,38 @@
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class=""><p class="text-center">График ремонтов основных металлургмических агрегатов на неделю с {{title}} по {{titleFor}}</p></div>
+    </div>
+    <div class="w-100">
+        <div class="row" style="overflow-x: auto;">
+            <table class="table table-stripped table-bordered">
+                <thead class="thead-dark text-center">
+                    <tr>
+                        <th>Цех</th>
+                        <th>Агрегат</th>
+                        <th colspan="2">Время ремонта / продолжительность, ч.</th>
+                        <th>Примечание</th>
+                    </tr>
+                    <tr></tr>
+                </thead>
+                <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
+                    <tbody *ngFor="let day of data">
+                        <tr class="table-secondary"><td colspan="5">{{day.dname}}</td></tr>
+                        <tr *ngFor="let po of day.porders" class="informRow" (click)="showPOrders(po.targetdate, day.dname, po.instance_number)" data-toggle="modal" data-target="#exampleModal">
+                            <td>{{po.organization_name}}</td>
+                            <td>{{po.instance_description}}</td>
+                            <td>c {{po.start}} по {{po.complete}}</td>
+                            <td>{{po.hours}}</td>
+                            <td>{{po.note}}</td>
+                        </tr>
+                    </tbody>
+                </ng-template>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<polist-comp [title]="modalData.title" [poList]="modalData.porders" [emptyModal]="emptyModal" (onSaved)="getData(title, titleFor)"></polist-comp>
+<!-- Loader -->
+<ng-template #loader>
+    <tr><td colspan="42" class="text-center"><div class="loader"></div>Подождите, идёт загрузка данных.</td></tr>
+</ng-template>
