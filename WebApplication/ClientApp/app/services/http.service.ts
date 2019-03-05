@@ -82,6 +82,33 @@ export class HttpService{
         return this.http.get("api/getDatas", { params: body });
     }
 
+    getIdleCats(org_id: string) {
+        let body = {
+            query: "307",
+            "cond[organiozation_id]": org_id
+        };
+        return this.http.get("api/getDatas", { params: body });
+    }
+
+    getIdleTypes(org_id: string, idle_cat: string) {
+        let body = {
+            query: "308",
+            "cond[organiozation_id]": org_id,
+            "cond[idle_cat]": idle_cat
+        };
+        return this.http.get("api/getDatas", { params: body });
+    }
+
+    getIdleCodes(org_id: string, idle_cat: string, idle_type: string) {
+        let body = {
+            query: "309",
+            "cond[organiozation_id]": org_id,
+            "cond[idle_categ]": idle_cat,
+            "cond[idle_type]": idle_type
+        };
+        return this.http.get("api/getDatas", { params: body })
+    };
+
     geTK(instance_number: string) {
         let body = {
             query: "306",

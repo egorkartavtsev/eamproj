@@ -1,7 +1,8 @@
 ﻿<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true" #modal>
     <div class="modal-dialog custom_modal_size" role="document">
         <div class="modal-content" style="overflow-x: auto;">
-            <div class="modal-header">
+            <div class="modal-header justify-content-center">
+                <div #miniLoader class="loader loader-mini d-none"></div>
                 <h5 class="modal-title text-center w-100" id="createModal">Создание нового ЗВР</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -22,6 +23,13 @@
                             <select class="form-control" [(ngModel)]="order.instance_number" (change)="setAgr()">
                                 <option selected disabled>Выберите агрегат...</option>
                                 <option *ngFor="let agr of agregates" value="{{agr.INSTANCE_NUMBER}}">{{agr.INSTANCE_NUMBER}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Тип работ</label>
+                            <select class="form-control" [(ngModel)]="order.work_type">
+                                <option selected disabled value="">Выберите тип работ...</option>
+                                <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
                             </select>
                         </div>
                         <div class="form-group" id="chngStart" #target>
@@ -55,16 +63,30 @@
                     </div>
                     <div class="col-6">
                         <div class="form-group mb-3">
-                            <label>Тип работ</label>
-                            <select class="form-control" [(ngModel)]="order.work_type">
-                                <option selected disabled value="">Выберите тип работ...</option>
-                                <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
-                            </select>
-                        </div>
-                        <div class="form-group mb-3">
                             <label>Плановик</label>
                             <select class="form-control">
                                 <option selected disabled>Выберите плановика...</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Категория простоя</label>
+                            <select class="form-control" [(ngModel)]="order.idle_categ" (change)="setIdleCat()">
+                                <option selected disabled value="">Выберите категорию простоя...</option>
+                                <option *ngFor="let ic of idle_categs" value="{{ic.IDLE_CATEG_CODE}}">{{ic.IDLE_CATEG_NAME}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Тип простоя</label>
+                            <select class="form-control" [(ngModel)]="order.idle_type" (change)="setIdleType()">
+                                <option selected disabled value="">Выберите тип простоя...</option>
+                                <option *ngFor="let it of idle_types" value="{{it.IDLE_TYPE_CODE}}">{{it.IDLE_TYPE_NAME}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Код простоя</label>
+                            <select class="form-control" [(ngModel)]="order.idle_code">
+                                <option selected disabled value="">Выберите код простоя...</option>
+                                <option *ngFor="let ic of idle_codes" value="{{ic.IDLE_CODE}}">{{ic.IDLE_NAME}}</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -78,7 +100,6 @@
                 </div>
             </div>
             <div class="modal-footer justify-content-center">
-                <div #miniLoader class="loader loader-mini d-none"></div>
             </div>
         </div>
     </div>

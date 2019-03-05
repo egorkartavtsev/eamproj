@@ -16,6 +16,9 @@ export class CreateOrderComponent {
 
     private organizations: any[] = [];
     private agregates: any[] = [];
+    private idle_types: any[] = [];
+    private idle_codes: any[] = [];
+    private idle_categs: any[] = [];
     private routing_sequences: any[] = [];
     private tmp_org: string;
 
@@ -38,6 +41,7 @@ export class CreateOrderComponent {
                 this.organizations = Object.keys(data).map(i => data[i]);
             }
         );
+
     }
 
     private setOrg() {
@@ -46,15 +50,46 @@ export class CreateOrderComponent {
         this.routing_sequences = [];
         let sup = this.tmp_org.split(":");
         this.order.org_id = sup[1];
-        this.order.entity_name = sup[0] + '-АГР-' + (new Date()).getMilliseconds().toString();
+        this.order.entity_name = sup[0] + '-INTTEST-' + Math.ceil((Math.random() * (10000 - 1000) + 1000)).toString();
         this.http.getAgrs(this.order.org_id.toString()).subscribe(
             (data: any[]) => {
                 this.agregates = Object.keys(data).map(i => data[i]);
+            }
+        );
+
+        this.http.getIdleCats(this.order.org_id).subscribe(
+            (data: any[]) => {
+                this.idle_categs = Object.keys(data).map(i => data[i]);
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
         console.log(this.order);
     }
+
+    private setIdleCat() {
+        this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
+        this.idle_types = [];
+
+        this.http.getIdleTypes(this.order.org_id, this.order.idle_categ).subscribe(
+            (data: any[]) => {
+                this.idle_types = Object.keys(data).map(i => data[i]);
+                this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
+            }
+        );
+    }
+
+    private setIdleType() {
+        this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
+        this.idle_codes = [];
+
+        this.http.getIdleCodes(this.order.org_id, this.order.idle_categ, this.order.idle_type).subscribe(
+            (data: any[]) => {
+                this.idle_codes = Object.keys(data).map(i => data[i]);
+                this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
+            }
+        );
+    }
+
 
     private setAgr() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');

@@ -7,5 +7,8 @@ export class NewOrder{
     instance_number:    string;
     start:              string;
     complete:           string;
-    hours:              string;
+    hours: string;
+    idle_categ: string;
+    idle_type: string;
+    idle_code: string;
 }

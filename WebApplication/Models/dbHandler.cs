@@ -206,7 +206,9 @@ namespace EAMlvl1System.Models
                             //pmsg_code.ParameterName = "msg_code";
                             //set_parameter(pmsg_code, "Varchar2", "30", "Output");
                             //cm.Parameters.Add(pmsg_code);
+
                             cm.ExecuteNonQuery();
+
                             //message = pmsg_code.Value.ToString();
 
                             cm.Dispose();

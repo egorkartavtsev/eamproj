@@ -78,6 +78,31 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("api/getDatas", { params: body });
     };
+    HttpService.prototype.getIdleCats = function (org_id) {
+        var body = {
+            query: "307",
+            "cond[organiozation_id]": org_id
+        };
+        return this.http.get("api/getDatas", { params: body });
+    };
+    HttpService.prototype.getIdleTypes = function (org_id, idle_cat) {
+        var body = {
+            query: "308",
+            "cond[organiozation_id]": org_id,
+            "cond[idle_cat]": idle_cat
+        };
+        return this.http.get("api/getDatas", { params: body });
+    };
+    HttpService.prototype.getIdleCodes = function (org_id, idle_cat, idle_type) {
+        var body = {
+            query: "309",
+            "cond[organiozation_id]": org_id,
+            "cond[idle_categ]": idle_cat,
+            "cond[idle_type]": idle_type
+        };
+        return this.http.get("api/getDatas", { params: body });
+    };
+    ;
     HttpService.prototype.geTK = function (instance_number) {
         var body = {
             query: "306",

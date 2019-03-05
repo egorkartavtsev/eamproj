@@ -18,6 +18,9 @@ var CreateOrderComponent = /** @class */ (function () {
         this.tmpDT = {};
         this.organizations = [];
         this.agregates = [];
+        this.idle_types = [];
+        this.idle_codes = [];
+        this.idle_categs = [];
         this.routing_sequences = [];
         var sup = new Date();
         this.order = new NewOrder;
@@ -39,12 +42,33 @@ var CreateOrderComponent = /** @class */ (function () {
         this.routing_sequences = [];
         var sup = this.tmp_org.split(":");
         this.order.org_id = sup[1];
-        this.order.entity_name = sup[0] + '-АГР-' + (new Date()).getMilliseconds().toString();
+        this.order.entity_name = sup[0] + '-INTTEST-' + Math.ceil((Math.random() * (10000 - 1000) + 1000)).toString();
         this.http.getAgrs(this.order.org_id.toString()).subscribe(function (data) {
             _this.agregates = Object.keys(data).map(function (i) { return data[i]; });
+        });
+        this.http.getIdleCats(this.order.org_id).subscribe(function (data) {
+            _this.idle_categs = Object.keys(data).map(function (i) { return data[i]; });
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
         });
         console.log(this.order);
+    };
+    CreateOrderComponent.prototype.setIdleCat = function () {
+        var _this = this;
+        this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
+        this.idle_types = [];
+        this.http.getIdleTypes(this.order.org_id, this.order.idle_categ).subscribe(function (data) {
+            _this.idle_types = Object.keys(data).map(function (i) { return data[i]; });
+            _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+        });
+    };
+    CreateOrderComponent.prototype.setIdleType = function () {
+        var _this = this;
+        this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
+        this.idle_codes = [];
+        this.http.getIdleCodes(this.order.org_id, this.order.idle_categ, this.order.idle_type).subscribe(function (data) {
+            _this.idle_codes = Object.keys(data).map(function (i) { return data[i]; });
+            _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+        });
     };
     CreateOrderComponent.prototype.setAgr = function () {
         var _this = this;
