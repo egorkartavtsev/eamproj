@@ -11,4 +11,5 @@ export class NewOrder{
     idle_categ: string;
     idle_type: string;
     idle_code: string;
+    planner_type: string; 
 }

@@ -64,8 +64,10 @@
                     <div class="col-6">
                         <div class="form-group mb-3">
                             <label>Плановик</label>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="order.planner_type">
                                 <option selected disabled>Выберите плановика...</option>
+                                <option value="40">Агрегатный график ОМА</option>
+                                <option value="70">Агрегатный график ОЭО</option>
                             </select>
                         </div>
                         <div class="form-group mb-3">
@@ -86,7 +88,7 @@
                             <label>Код простоя</label>
                             <select class="form-control" [(ngModel)]="order.idle_code">
                                 <option selected disabled value="">Выберите код простоя...</option>
-                                <option *ngFor="let ic of idle_codes" value="{{ic.IDLE_CODE}}">{{ic.IDLE_NAME}}</option>
+                                <option *ngFor="let ic of idle_codes" value="{{ic.IDLE_NAME}}">{{ic.IDLE_NAME}}</option>
                             </select>
                         </div>
                         <div class="form-group">

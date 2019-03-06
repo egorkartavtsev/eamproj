@@ -116,7 +116,11 @@ export class CreateOrderComponent {
             this.order.complete,
             this.order.hours,
             this.order.work_type,
-            this.order.entity_name
+            this.order.entity_name,
+            this.order.idle_categ,
+            this.order.idle_type,
+            this.order.idle_code,
+            this.order.planner_type
         ).subscribe(
             (data: any) => {
                 console.log(data);
@@ -124,6 +128,7 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             },
             error => {
+                alert("Ошибка!!!");
                 console.log(error);
                 //let alert = this.renderer.createElement('div');
                 //const text = this.renderer.createText('Произошла ошибка на сервере.');

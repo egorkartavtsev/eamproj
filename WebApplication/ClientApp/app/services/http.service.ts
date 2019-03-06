@@ -117,7 +117,7 @@ export class HttpService{
         return this.http.get("api/getDatas", { params: body });
     }
 
-    createWO(org_id: string, instance_number: string, start: string, complete: string, duration: string, work_type: string, entity_name: string) {
+    createWO(org_id: string, instance_number: string, start: string, complete: string, duration: string, work_type: string, entity_name: string, idle_categ: string, idle_type: string, idle_code: string, planner_type: string) {
         let body = {
             query: "301",
             "cond[wip_entity_name]": entity_name,
@@ -127,7 +127,11 @@ export class HttpService{
             "cond[scheduled_completion_date]": complete,
             "cond[operation]": work_type,
             "cond[class_code]": "«¿Ã≈Õ»“‹",
-            "cond[duration]": duration
+            "cond[duration]": duration,
+            "cond[idle_categ]": idle_categ,
+            "cond[idle_type]": idle_type,
+            "cond[idle_code]": idle_code,
+            "cond[planner_type]": planner_type
         };
         return this.http.get("api/updatesWO/", { params: body });
     }

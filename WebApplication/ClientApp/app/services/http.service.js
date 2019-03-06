@@ -110,7 +110,7 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("api/getDatas", { params: body });
     };
-    HttpService.prototype.createWO = function (org_id, instance_number, start, complete, duration, work_type, entity_name) {
+    HttpService.prototype.createWO = function (org_id, instance_number, start, complete, duration, work_type, entity_name, idle_categ, idle_type, idle_code, planner_type) {
         var body = {
             query: "301",
             "cond[wip_entity_name]": entity_name,
@@ -120,7 +120,11 @@ var HttpService = /** @class */ (function () {
             "cond[scheduled_completion_date]": complete,
             "cond[operation]": work_type,
             "cond[class_code]": "��������",
-            "cond[duration]": duration
+            "cond[duration]": duration,
+            "cond[idle_categ]": idle_categ,
+            "cond[idle_type]": idle_type,
+            "cond[idle_code]": idle_code,
+            "cond[planner_type]": planner_type
         };
         return this.http.get("api/updatesWO/", { params: body });
     };
