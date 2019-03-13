@@ -43,6 +43,7 @@ var YearComponent = /** @class */ (function () {
             { "mon": "11", "num": "Ноябрь" },
             { "mon": "12", "num": "Декабрь" }
         ];
+        this.emptyData = true;
         this.querySubscription = route.queryParams.subscribe(function (queryParam) {
             if (queryParam['query'] !== undefined) {
                 _this.title = queryParam['query'];
@@ -53,7 +54,22 @@ var YearComponent = /** @class */ (function () {
             _this.getData(_this.title);
         });
     }
-    YearComponent.prototype.ngOnInit = function () { };
+    YearComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.filterService.filter.subscribe(function (filt) {
+            _this.filter = filt;
+            _this.CurrentData = [];
+            _this.emptyData = true;
+            for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
+                var order = _a[_i];
+                if (_this.filterService.applyFilter(filt, order)) {
+                    _this.CurrentData.push(order);
+                }
+            }
+            _this.emptyData = false;
+            console.log(_this.CurrentData);
+        });
+    };
     YearComponent.prototype.getData = function (query) {
         var _this = this;
         console.log("Данные пусты");

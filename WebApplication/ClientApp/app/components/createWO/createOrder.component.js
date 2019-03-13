@@ -16,25 +16,36 @@ var CreateOrderComponent = /** @class */ (function () {
         this.http = http;
         this.renderer = renderer;
         this.tmpDT = {};
+        this.order = new NewOrder;
         this.organizations = [];
         this.agregates = [];
         this.idle_types = [];
         this.idle_codes = [];
         this.idle_categs = [];
         this.routing_sequences = [];
-        var sup = new Date();
-        this.order = new NewOrder;
-        this.order.entity_name = "";
-        this.tmpDT = { hour: sup.getHours(), minute: 0 };
-        this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
-        this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
-        this.order.start = this.makeTrueDate(sup.getDate().toString() + '.' + (+sup.getMonth() + 1).toString() + '.' + sup.getFullYear().toString() + ' ' + sup.getHours().toString() + ':00:00');
-        this.order.hours = '0';
-        this.updateComplete();
         this.http.getOrganizations().subscribe(function (data) {
             _this.organizations = Object.keys(data).map(function (i) { return data[i]; });
         });
     }
+    CreateOrderComponent.prototype.ngOnInit = function () {
+        var sup = new Date();
+        this.order = new NewOrder;
+        this.order.entity_name = "";
+        this.order.start = this.makeTrueDate(sup.getDate().toString() + '.' + (+sup.getMonth() + 1).toString() + '.' + sup.getFullYear().toString() + ' ' + sup.getHours().toString() + ':00:00');
+        this.order.hours = '0';
+        this.order.idle_categ = '';
+        this.order.idle_type = '';
+        this.order.idle_code = '';
+        this.order.instance_number = '';
+        this.order.org_id = '';
+        this.order.planner_type = '';
+        this.order.work_type = '';
+        this.tmpDT = { hour: sup.getHours(), minute: 0 };
+        this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
+        this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
+        this.updateComplete();
+        console.log(this.order);
+    };
     CreateOrderComponent.prototype.setOrg = function () {
         var _this = this;
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
@@ -42,7 +53,7 @@ var CreateOrderComponent = /** @class */ (function () {
         this.routing_sequences = [];
         var sup = this.tmp_org.split(":");
         this.order.org_id = sup[1];
-        this.order.entity_name = sup[0] + '-INTTEST-' + Math.ceil((Math.random() * (10000 - 1000) + 1000)).toString();
+        this.order.entity_name = sup[0];
         this.http.getAgrs(this.order.org_id.toString()).subscribe(function (data) {
             _this.agregates = Object.keys(data).map(function (i) { return data[i]; });
         });
@@ -69,6 +80,7 @@ var CreateOrderComponent = /** @class */ (function () {
             _this.idle_codes = Object.keys(data).map(function (i) { return data[i]; });
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
         });
+        this.activateBtn();
     };
     CreateOrderComponent.prototype.setAgr = function () {
         var _this = this;
@@ -83,6 +95,7 @@ var CreateOrderComponent = /** @class */ (function () {
             }
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
         });
+        this.activateBtn();
     };
     CreateOrderComponent.prototype.createWO = function () {
         var _this = this;
@@ -90,8 +103,9 @@ var CreateOrderComponent = /** @class */ (function () {
         console.log(this.order);
         this.http.createWO(this.order.org_id, this.order.instance_number, this.order.start, this.order.complete, this.order.hours, this.order.work_type, this.order.entity_name, this.order.idle_categ, this.order.idle_type, this.order.idle_code, this.order.planner_type).subscribe(function (data) {
             console.log(data);
-            alert("Сохранено!!!");
+            //alert("Сохранено!!!");
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+            window.location.reload();
         }, function (error) {
             alert("Ошибка!!!");
             console.log(error);
@@ -108,11 +122,16 @@ var CreateOrderComponent = /** @class */ (function () {
             //this.renderer.addClass(alert, 'alert-danger');
             //this.renderer.setStyle(alert, 'color', '#9f5f5f');
             //this.renderer.appendChild(this.targetRow.nativeElement, alert);
-            //setTimeout(() => {
-            //    this.renderer.setStyle(alert, 'display', 'none');
-            //    console.log(alert);
-            //}, 3000);
         });
+    };
+    CreateOrderComponent.prototype.activateBtn = function () {
+        console.log(this.order);
+        if (this.order.hours !== '0' && this.order.idle_categ !== '' && this.order.idle_code !== '' && this.order.idle_type !== '' && this.order.instance_number !== '' && this.order.planner_type !== '' && this.order.org_name !== '' && this.order.org_id !== '' && this.order.work_type !== '') {
+            this.renderer.removeAttribute(this.saveBtn.nativeElement, 'disabled');
+        }
+        else {
+            this.renderer.setAttribute(this.saveBtn.nativeElement, 'disabled', 'disabled');
+        }
     };
     /* DATES & CALENDAR*/
     CreateOrderComponent.prototype.toogleCalendar = function () {
@@ -126,6 +145,7 @@ var CreateOrderComponent = /** @class */ (function () {
     CreateOrderComponent.prototype.setDate = function () {
         this.order.start = this.makeTrueDate(this.model.day + "." + this.model.month + "." + this.model.year + " " + this.tmpDT['hour'] + ":" + this.tmpDT['minute'] + ":00");
         this.updateComplete();
+        this.activateBtn();
         this.toogleCalendar();
     };
     CreateOrderComponent.prototype.cancelDate = function () {
@@ -189,6 +209,10 @@ var CreateOrderComponent = /** @class */ (function () {
         ViewChild('modal'),
         __metadata("design:type", Object)
     ], CreateOrderComponent.prototype, "mWin", void 0);
+    __decorate([
+        ViewChild('saveBtn'),
+        __metadata("design:type", Object)
+    ], CreateOrderComponent.prototype, "saveBtn", void 0);
     CreateOrderComponent = __decorate([
         Component({
             selector: 'createwo-comp',

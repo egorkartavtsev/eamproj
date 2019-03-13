@@ -92,10 +92,12 @@
                         <i class="far fa-compass"></i> действия
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <li class="dropdown-item" data-toggle="modal" data-target="#createModal"><i class="fas fa-calendar-plus"></i> создать ПЗ</li>
-                        <li class="dropdown-item"><i class="fas fa-print"></i> печать</li>
-                        <li class="dropdown-item"><i class="fas fa-comments"></i> согласование</li>
-                        <li class="dropdown-item"><i class="fas fa-envelope"></i> отправить</li>
+                        <ul class="func-menu">
+                            <li class="dropdown-item" (click)="clearOrder()" data-toggle="modal" data-target="#createModal"><i class="fas fa-calendar-plus"></i> создать ПЗ</li>
+                            <li class="dropdown-item" disabled><i class="fas fa-print"></i> печать</li>
+                            <li class="dropdown-item" disabled><i class="fas fa-comments"></i> согласование</li>
+                            <li class="dropdown-item" disabled><i class="fas fa-envelope"></i> отправить</li>
+                        </ul>
                     </div>
                 </div>
             </div>

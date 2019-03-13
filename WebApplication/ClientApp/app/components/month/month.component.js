@@ -47,6 +47,22 @@ var MonthComponent = /** @class */ (function () {
         this.modalData['title'] = "";
         this.modalData['porders'] = [];
     }
+    MonthComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.filterService.filter.subscribe(function (filt) {
+            _this.filter = filt;
+            _this.CurrentData = [];
+            _this.emptyData = true;
+            for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
+                var order = _a[_i];
+                if (_this.filterService.applyFilter(filt, order)) {
+                    _this.CurrentData.push(order);
+                }
+            }
+            _this.emptyData = false;
+            console.log(_this.CurrentData);
+        });
+    };
     MonthComponent.prototype.getData = function (query) {
         var _this = this;
         this.emptyData = true;

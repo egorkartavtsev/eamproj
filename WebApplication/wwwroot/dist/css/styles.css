@@ -37,11 +37,11 @@
 }
 
 
-.func-menu a {
+.func-menu li {
     cursor: pointer;
 }
 
-.func-menu a:hover {
+.func-menu li:hover {
     background-color: #b3d0e9;
 }
 

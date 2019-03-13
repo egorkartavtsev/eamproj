@@ -1,4 +1,4 @@
-﻿import { Input, Component, Output, EventEmitter, ViewChild, Renderer, Renderer2, ElementRef } from '@angular/core';
+﻿import { Input, Component, Output, EventEmitter, ViewChild, Renderer, Renderer2, ElementRef, OnInit } from '@angular/core';
 import { NewOrder } from '../../library/new-order.lib';
 import { HttpService } from '../../services/http.service';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
@@ -12,7 +12,7 @@ export class CreateOrderComponent {
     private tmpDT: object = {};
     model: NgbDateStruct;
     startCalDay: NgbDateStruct;
-    private order: NewOrder;
+    private order: NewOrder = new NewOrder;
 
     private organizations: any[] = [];
     private agregates: any[] = [];
@@ -25,17 +25,9 @@ export class CreateOrderComponent {
     @ViewChild('startCal') calendar: any;
     @ViewChild('miniLoader') minLoad: any;
     @ViewChild('modal') mWin: any;
+    @ViewChild('saveBtn') saveBtn: any;
 
     constructor(private http: HttpService, private renderer: Renderer2) {
-        let sup = new Date();
-        this.order = new NewOrder;
-        this.order.entity_name = "";
-        this.tmpDT = { hour: sup.getHours(), minute: 0 };
-        this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
-        this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
-        this.order.start = this.makeTrueDate(sup.getDate().toString() + '.' + (+sup.getMonth() + 1).toString() + '.' + sup.getFullYear().toString() + ' ' + sup.getHours().toString() + ':00:00');
-        this.order.hours = '0';
-        this.updateComplete();
         this.http.getOrganizations().subscribe(
             (data: any[]) => {
                 this.organizations = Object.keys(data).map(i => data[i]);
@@ -44,13 +36,33 @@ export class CreateOrderComponent {
 
     }
 
+    ngOnInit() {
+        let sup = new Date();
+        this.order = new NewOrder;
+        this.order.entity_name = "";
+        this.order.start = this.makeTrueDate(sup.getDate().toString() + '.' + (+sup.getMonth() + 1).toString() + '.' + sup.getFullYear().toString() + ' ' + sup.getHours().toString() + ':00:00');
+        this.order.hours = '0';
+        this.order.idle_categ = '';
+        this.order.idle_type = '';
+        this.order.idle_code = '';
+        this.order.instance_number = '';
+        this.order.org_id = '';
+        this.order.planner_type = '';
+        this.order.work_type = '';
+        this.tmpDT = { hour: sup.getHours(), minute: 0 };
+        this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
+        this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
+        this.updateComplete();
+        console.log(this.order);
+    }
+
     private setOrg() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.agregates = [];
         this.routing_sequences = [];
         let sup = this.tmp_org.split(":");
         this.order.org_id = sup[1];
-        this.order.entity_name = sup[0] + '-INTTEST-' + Math.ceil((Math.random() * (10000 - 1000) + 1000)).toString();
+        this.order.entity_name = sup[0];
         this.http.getAgrs(this.order.org_id.toString()).subscribe(
             (data: any[]) => {
                 this.agregates = Object.keys(data).map(i => data[i]);
@@ -88,6 +100,7 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
+        this.activateBtn();
     }
 
 
@@ -104,6 +117,7 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
+        this.activateBtn();
     }
 
     private createWO() {
@@ -124,8 +138,9 @@ export class CreateOrderComponent {
         ).subscribe(
             (data: any) => {
                 console.log(data);
-                alert("Сохранено!!!");
+                //alert("Сохранено!!!");
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
+                window.location.reload();
             },
             error => {
                 alert("Ошибка!!!");
@@ -143,12 +158,17 @@ export class CreateOrderComponent {
                 //this.renderer.addClass(alert, 'alert-danger');
                 //this.renderer.setStyle(alert, 'color', '#9f5f5f');
                 //this.renderer.appendChild(this.targetRow.nativeElement, alert);
-                //setTimeout(() => {
-                //    this.renderer.setStyle(alert, 'display', 'none');
-                //    console.log(alert);
-                //}, 3000);
             }
         );
+    }
+
+    private activateBtn() {
+        console.log(this.order);
+        if (this.order.hours  !== '0' && this.order.idle_categ  !== '' && this.order.idle_code  !== '' && this.order.idle_type  !== '' && this.order.instance_number  !== '' && this.order.planner_type  !== '' && this.order.org_name  !== '' && this.order.org_id  !== '' && this.order.work_type  !== '') {
+            this.renderer.removeAttribute(this.saveBtn.nativeElement, 'disabled');
+        } else {
+            this.renderer.setAttribute(this.saveBtn.nativeElement, 'disabled', 'disabled');
+        }
     }
 
     /* DATES & CALENDAR*/
@@ -163,6 +183,7 @@ export class CreateOrderComponent {
     private setDate() {
         this.order.start = this.makeTrueDate(this.model.day + "." + this.model.month + "." + this.model.year + " " + this.tmpDT['hour'] + ":" + this.tmpDT['minute'] + ":00");
         this.updateComplete();
+        this.activateBtn();
         this.toogleCalendar();
     }
 

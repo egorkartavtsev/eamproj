@@ -37,10 +37,14 @@ namespace EAMlvl1System.Controllers
                       curDec["MMDD"].ToString(), new Dictionary<string, object> {
                           { "dname", curDec["DDMONDAY"].ToString() },
                           { "porders", new Dictionary<string, object> {
-                              { curDec["INSTANCE_NUMBER"].ToString(), new Dictionary<string, object> {
+                              { curDec["WIP_ENTITY_ID"].ToString(), new Dictionary<string, object> {
                                     { "organization_name", curDec["ORGANIZATION_NAME"].ToString() },
                                     { "note", curDec["NOTE"].ToString() },
                                     { "instance_number", curDec["INSTANCE_NUMBER"].ToString() },
+                                    { "organization_id", curDec["ORGANIZATION_ID"].ToString() },
+                                    { "planner_maintenance", curDec["PLANNER_MAINTENANCE"].ToString() },
+                                    { "status_type", curDec["STATUS_TYPE"].ToString() },
+                                    { "work_type", curDec["WORK_TYPE"].ToString() },
                                     { "instance_description", curDec["INSTANCE_DESCRIPTION"].ToString() },
                                     { "start", start },
                                     { "complete", complete },
@@ -57,11 +61,15 @@ namespace EAMlvl1System.Controllers
                 {
                     Dictionary<string, object> sup = (Dictionary<string, object>)tmpRow[curDec["MMDD"].ToString()];
                     Dictionary<string, object> tmp = (Dictionary<string, object>)sup["porders"];
-                    if (tmp.TryAdd(curDec["INSTANCE_NUMBER"].ToString(), new Dictionary<string, object> {
+                    if (tmp.TryAdd(curDec["WIP_ENTITY_ID"].ToString(), new Dictionary<string, object> {
                                     { "organization_name", curDec["ORGANIZATION_NAME"].ToString() },
                                     { "gen_object_id", curDec["GEN_OBJECT_ID"].ToString() },
                                     { "note", curDec["NOTE"].ToString() },
                                     { "instance_number", curDec["INSTANCE_NUMBER"].ToString() },
+                                    { "organization_id", curDec["ORGANIZATION_ID"].ToString() },
+                                    { "planner_maintenance", curDec["PLANNER_MAINTENANCE"].ToString() },
+                                    { "status_type", curDec["STATUS_TYPE"].ToString() },
+                                    { "work_type", curDec["WORK_TYPE"].ToString() },
                                     { "instance_description", curDec["INSTANCE_DESCRIPTION"].ToString() },
                                     { "start", start },
                                     { "complete", complete },

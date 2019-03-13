@@ -10,28 +10,58 @@ import { FilterModel }          from '../../library/filter-model';
 export class FilterComponent implements OnInit {
     
     public filterTotal: FilterModel;
-    public areas: string[];
-    public machines: string[];
 
-    constructor (private filterService: FilterService){
+    private organizations: any[] = [];
+    private agregates: any[] = [];
+    private routing_sequences: any[] = [];
+
+    constructor(private http: HttpService, private filterService: FilterService){
         this.filterService.filter.subscribe(filt => {
             this.filterTotal = filt;
-            console.log('Это сабж в лямбде-ФИЛЬТРА: '+filt.areaFilter+' '+filt.machinesFilter+' '+filt.dateFilter+' ');
         });
 
-        console.log('Filter start');
+        this.http.getOrganizations().subscribe(
+            (data: any[]) => {
+                this.organizations = Object.keys(data).map(i => data[i]);
+            }
+        );
     }
 
     ngOnInit(){
-        this.areas = ['цех1', 'цех2', 'цех3', 'цех4', 'цех5'];
-        this.machines = ['agr1', 'agr2', 'agr3', 'agr4', 'agr5'];
-        console.log('Filter complete');
     }
 
-    inp(val:string){
+    inp(source?: string) {
+        switch (source) {
+            case 'area':
+                this.filterTotal.agr_filter = '';
+                this.filterTotal.wt_filter = '';
+                this.agregates = [];
+                this.routing_sequences = [];
+                if (this.filterTotal.org_filter !== '') {
+                    this.http.getAgrs(this.filterTotal.org_filter.toString()).subscribe(
+                        (data: any[]) => {
+                            this.agregates = Object.keys(data).map(i => data[i]);
+                        }
+                    );
+                }
+                break;
+            case 'agr':
+                this.filterTotal.wt_filter = '';
+                this.routing_sequences = [];
+                if (this.filterTotal.agr_filter !== '') {
+                    this.http.geTK(this.filterTotal.agr_filter).subscribe(
+                        (data: any[]) => {
+                            let tmp = Object.keys(data).map(i => data[i]);
+                            for (let row of tmp) {
+                                let sup = row.ROUTING_COMMENT.split(":");
+                                this.routing_sequences.push(sup[0]);
+                            }
+                        }
+                    );
+                }
+                break;
+        }
         this.filterService.filter.next(this.filterTotal);
-        //this.filter = this.filterService.updateFilter(key, val);
-        console.log('Это фильтр: '+this.filterTotal.areaFilter);
     }
     
 }

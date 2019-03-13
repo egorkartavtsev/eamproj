@@ -35,31 +35,29 @@ var WeekComponent = /** @class */ (function () {
         });
     }
     WeekComponent.prototype.ngOnInit = function () {
-        //this.filterService.filter.subscribe(filt => {
-        //    this.filter = filt;
-        //    let allow = true;
-        //    this.data = [];
-        //    this.totalData.forEach(element => {
-        //        allow = true;
-        //        if(filt.areaFilter.length>0 && filt.areaFilter!==element.area){
-        //            allow = false;
-        //        }
-        //        if(filt.machinesFilter.length>0 && filt.machinesFilter!==element.operation){
-        //            allow = false;
-        //        }
-        //        if(filt.dateFilter!==undefined){
-        //            let tmpFiltDate = new Date(this.filter.dateFilter).valueOf();
-        //            let tmpStartDate = new Date(element.dateStart).valueOf();
-        //            let tmpEndDate = new Date(element.dateEnd).valueOf();
-        //            if(tmpFiltDate<tmpStartDate || tmpFiltDate>tmpEndDate){
-        //                allow = false;
-        //            }
-        //        }
-        //        if(allow){
-        //            this.data.push(element);
-        //        }
-        //    });
-        //});
+        var _this = this;
+        console.log(this.data);
+        this.filterService.filter.subscribe(function (filt) {
+            _this.filter = filt;
+            _this.data = [];
+            _this.emptyData = true;
+            var i = 0;
+            for (var _i = 0, _a = _this.totalData; _i < _a.length; _i++) {
+                var day = _a[_i];
+                var day_data = [];
+                _this.data[i] = {};
+                for (var _b = 0, _c = day.porders; _b < _c.length; _b++) {
+                    var order = _c[_b];
+                    if (_this.filterService.applyFilter(filt, order)) {
+                        day_data.push(order);
+                    }
+                }
+                _this.data[i].porders = day_data;
+                _this.data[i].dname = day.dname;
+                ++i;
+            }
+            _this.emptyData = false;
+        });
     };
     WeekComponent.prototype.getData = function (start, end) {
         var _this = this;
@@ -67,9 +65,7 @@ var WeekComponent = /** @class */ (function () {
         this.http.getWeekData(start, end).subscribe(function (data) {
             var rows = Object.keys(data).map(function (i) { return data[i]; });
             var ind = 0;
-            var year = new Date(_this.title).getFullYear().toString();
             var _loop_1 = function (row) {
-                //row["dname"] += " " + year;
                 var tmp = Object.keys(row["porders"]).map(function (i) { return row["porders"][i]; });
                 rows[ind]['porders'] = tmp;
                 ++ind;

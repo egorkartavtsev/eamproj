@@ -54,7 +54,7 @@ export class YearComponent implements OnInit {
         private http: HttpService,
         private route: ActivatedRoute
     ) {
-
+        this.emptyData = true;
         this.querySubscription = route.queryParams.subscribe(
             (queryParam: any) => {
                 if (queryParam['query'] !== undefined) {
@@ -67,7 +67,22 @@ export class YearComponent implements OnInit {
         );
     }
 
-    ngOnInit() { }
+    ngOnInit() {
+        this.filterService.filter.subscribe(filt => {
+            this.filter = filt;
+            this.CurrentData = [];
+            this.emptyData = true;
+
+            for (let order of this.TotalData) {
+                if (this.filterService.applyFilter(filt, order)) {
+                    this.CurrentData.push(order);
+                }
+            }
+            this.emptyData = false;
+            console.log(this.CurrentData);
+        });
+
+    }
 
     private getData(query: string) {
         console.log("Данные пусты");

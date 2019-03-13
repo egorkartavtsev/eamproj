@@ -22,6 +22,7 @@ export class MonthComponent {
 
     private TotalData: any[] = [];
     private CurrentData: any[] = [];
+
     private emptyData: boolean = true;
     private emptyModal: boolean = true;
     private modalData: any[] = [];
@@ -53,6 +54,24 @@ export class MonthComponent {
         );
         this.modalData['title'] = "";
         this.modalData['porders'] = [];
+
+    }
+
+    ngOnInit() {
+        this.filterService.filter.subscribe(filt => {
+            this.filter = filt;
+            this.CurrentData = [];
+            this.emptyData = true;
+            
+            for (let order of this.TotalData) {
+                if (this.filterService.applyFilter(filt, order)) {
+                    this.CurrentData.push(order);
+                }
+            }
+            this.emptyData = false;
+            console.log(this.CurrentData);
+        });
+
     }
 
     private getData(query: string) {

@@ -1,11 +1,13 @@
 export class FilterModel{
-    public areaFilter: string;
-    public machinesFilter: string;
-    public dateFilter: Date;
+    public org_filter: string;
+    public agr_filter: string;
+    public wt_filter: string;
+    public planner_filter: string;
 
     constructor(){
-        this.areaFilter = '';
-        this.machinesFilter = '';
-        //this.dateFilter = new Date();
+        this.org_filter = '';
+        this.agr_filter = '';
+        this.wt_filter = '';
+        this.planner_filter = '';
     }
 }

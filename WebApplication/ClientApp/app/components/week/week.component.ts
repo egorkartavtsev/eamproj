@@ -43,36 +43,26 @@ export class WeekComponent implements OnInit {
     }
 
     ngOnInit() {
-        //this.filterService.filter.subscribe(filt => {
-
-        //    this.filter = filt;
-        //    let allow = true;
-
-        //    this.data = [];
-
-        //    this.totalData.forEach(element => {
-        //        allow = true;
-        //        if(filt.areaFilter.length>0 && filt.areaFilter!==element.area){
-        //            allow = false;
-        //        }
-        //        if(filt.machinesFilter.length>0 && filt.machinesFilter!==element.operation){
-        //            allow = false;
-        //        }
-        //        if(filt.dateFilter!==undefined){
-        //            let tmpFiltDate = new Date(this.filter.dateFilter).valueOf();
-        //            let tmpStartDate = new Date(element.dateStart).valueOf();
-        //            let tmpEndDate = new Date(element.dateEnd).valueOf();
-        //            if(tmpFiltDate<tmpStartDate || tmpFiltDate>tmpEndDate){
-        //                allow = false;
-        //            }
-        //        }
-
-        //        if(allow){
-        //            this.data.push(element);
-        //        }
-
-        //    });
-        //});
+        console.log(this.data);
+        this.filterService.filter.subscribe(filt => {
+            this.filter = filt;
+            this.data = [];
+            this.emptyData = true;
+            let i = 0;
+            for (let day of this.totalData) {
+                let day_data: any[] = [];
+                this.data[i] = {};
+                for (let order of day.porders) {
+                    if (this.filterService.applyFilter(filt, order)) {
+                        day_data.push(order);
+                    }
+                }
+                this.data[i].porders = day_data;
+                this.data[i].dname = day.dname;
+                ++i;
+            }
+            this.emptyData = false;
+        });
 
     }
 
@@ -82,9 +72,7 @@ export class WeekComponent implements OnInit {
             (data: any[]) => {
                 let rows = Object.keys(data).map(i => data[i]);
                 let ind = 0;
-                let year = new Date(this.title).getFullYear().toString();
                 for (let row of rows) {
-                    //row["dname"] += " " + year;
                     let tmp = Object.keys(row["porders"]).map(i => row["porders"][i]);
                     rows[ind]['porders'] = tmp;
                     ++ind;

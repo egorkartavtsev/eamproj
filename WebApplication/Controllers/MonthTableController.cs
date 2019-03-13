@@ -30,8 +30,12 @@ namespace EAMlvl1System.Controllers
                     tmpRow.Add(
                       curDec["INSTANCE_NUMBER"].ToString(), new Dictionary<string, object> {
                             { "organization_name", curDec["ORGANIZATION_NAME"].ToString() },
+                            { "organization_id", curDec["ORGANIZATION_ID"].ToString() },
+                            { "status_type", curDec["STATUS_TYPE"].ToString() },
+                            { "work_type", curDec["WORK_TYPE"].ToString() },
                             { "gen_object_id", curDec["GEN_OBJECT_ID"].ToString() },
                             { "instance_number", curDec["INSTANCE_NUMBER"].ToString() },
+                            { "planner_maintenance", curDec["PLANNER_MAINTENANCE"].ToString() },
                             { "instance_description", curDec["INSTANCE_DESCRIPTION"].ToString() },
                             { "days", new Dictionary<string, Dictionary<string, string>> {
                                     {

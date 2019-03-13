@@ -9,32 +9,61 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Component } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
+import { HttpService } from '../../services/http.service';
 var FilterComponent = /** @class */ (function () {
-    function FilterComponent(filterService) {
+    function FilterComponent(http, filterService) {
         var _this = this;
+        this.http = http;
         this.filterService = filterService;
+        this.organizations = [];
+        this.agregates = [];
+        this.routing_sequences = [];
         this.filterService.filter.subscribe(function (filt) {
             _this.filterTotal = filt;
-            console.log('Это сабж в лямбде-ФИЛЬТРА: ' + filt.areaFilter + ' ' + filt.machinesFilter + ' ' + filt.dateFilter + ' ');
         });
-        console.log('Filter start');
+        this.http.getOrganizations().subscribe(function (data) {
+            _this.organizations = Object.keys(data).map(function (i) { return data[i]; });
+        });
     }
     FilterComponent.prototype.ngOnInit = function () {
-        this.areas = ['цех1', 'цех2', 'цех3', 'цех4', 'цех5'];
-        this.machines = ['agr1', 'agr2', 'agr3', 'agr4', 'agr5'];
-        console.log('Filter complete');
     };
-    FilterComponent.prototype.inp = function (val) {
+    FilterComponent.prototype.inp = function (source) {
+        var _this = this;
+        switch (source) {
+            case 'area':
+                this.filterTotal.agr_filter = '';
+                this.filterTotal.wt_filter = '';
+                this.agregates = [];
+                this.routing_sequences = [];
+                if (this.filterTotal.org_filter !== '') {
+                    this.http.getAgrs(this.filterTotal.org_filter.toString()).subscribe(function (data) {
+                        _this.agregates = Object.keys(data).map(function (i) { return data[i]; });
+                    });
+                }
+                break;
+            case 'agr':
+                this.filterTotal.wt_filter = '';
+                this.routing_sequences = [];
+                if (this.filterTotal.agr_filter !== '') {
+                    this.http.geTK(this.filterTotal.agr_filter).subscribe(function (data) {
+                        var tmp = Object.keys(data).map(function (i) { return data[i]; });
+                        for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
+                            var row = tmp_1[_i];
+                            var sup = row.ROUTING_COMMENT.split(":");
+                            _this.routing_sequences.push(sup[0]);
+                        }
+                    });
+                }
+                break;
+        }
         this.filterService.filter.next(this.filterTotal);
-        //this.filter = this.filterService.updateFilter(key, val);
-        console.log('Это фильтр: ' + this.filterTotal.areaFilter);
     };
     FilterComponent = __decorate([
         Component({
             selector: 'filter-box',
             templateUrl: './filter.html'
         }),
-        __metadata("design:paramtypes", [FilterService])
+        __metadata("design:paramtypes", [HttpService, FilterService])
     ], FilterComponent);
     return FilterComponent;
 }());

@@ -1,8 +1,9 @@
 var FilterModel = /** @class */ (function () {
     function FilterModel() {
-        this.areaFilter = '';
-        this.machinesFilter = '';
-        //this.dateFilter = new Date();
+        this.org_filter = '';
+        this.agr_filter = '';
+        this.wt_filter = '';
+        this.planner_filter = '';
     }
     return FilterModel;
 }());
