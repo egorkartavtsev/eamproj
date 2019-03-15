@@ -56,12 +56,13 @@ var HttpService = /** @class */ (function () {
         }
         return this.http.get("api/porderLists/", { params: body });
     };
-    HttpService.prototype.updateWODates = function (entity, start, duration) {
+    HttpService.prototype.updateWODates = function (entity, start, duration, status) {
         var body = {
             query: "300",
             "cond[date_start]": start,
             "cond[entity_id]": entity,
-            "cond[duration]": duration
+            "cond[duration]": duration,
+            "cond[status_type]": status
         };
         return this.http.get("api/updatesWO/", { params: body });
     };

@@ -62,6 +62,9 @@ var WeekComponent = /** @class */ (function () {
     WeekComponent.prototype.getData = function (start, end) {
         var _this = this;
         this.emptyData = true;
+        if (typeof (this.modalData['title']) !== "undefined") {
+            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        }
         this.http.getWeekData(start, end).subscribe(function (data) {
             var rows = Object.keys(data).map(function (i) { return data[i]; });
             var ind = 0;
@@ -83,6 +86,7 @@ var WeekComponent = /** @class */ (function () {
         var _this = this;
         this.emptyModal = true;
         this.modalData['title'] = title;
+        this.modalData['target'] = target;
         var cond = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {

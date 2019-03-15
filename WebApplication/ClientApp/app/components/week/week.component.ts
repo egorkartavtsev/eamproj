@@ -68,6 +68,9 @@ export class WeekComponent implements OnInit {
 
     private getData(start: string, end: string) {
         this.emptyData = true;
+        if (typeof (this.modalData['title']) !== "undefined") {
+            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        }
         this.http.getWeekData(start, end).subscribe(
             (data: any[]) => {
                 let rows = Object.keys(data).map(i => data[i]);
@@ -87,6 +90,7 @@ export class WeekComponent implements OnInit {
     private showPOrders(target: string, title: string, instance?: string) {
         this.emptyModal = true;
         this.modalData['title'] = title;
+        this.modalData['target'] = target;
         let cond: any[] = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {

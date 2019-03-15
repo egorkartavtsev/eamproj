@@ -21,9 +21,9 @@ namespace EAMlvl1System.Models
         *   2 - psi
         */
         private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
-      //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
+        //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
 
-//=========================================PUBLIC FUNCTIONAL=====================================================
+        //=========================================PUBLIC FUNCTIONAL=====================================================
         public List<Dictionary<string, object>> GetDataFromDB(string query, Dictionary<string, string> cond) {
             return this.Make_valid_struct((DataSet)this.GetData(this.GetQueryById(query, cond)));
         }

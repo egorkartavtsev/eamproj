@@ -57,12 +57,13 @@ export class HttpService{
         return this.http.get("api/porderLists/", { params: body });
     }
 
-    updateWODates(entity: string, start: string, duration: string) {
+    updateWODates(entity: string, start: string, duration: string, status: string) {
         let body = {
             query: "300",
             "cond[date_start]": start,
             "cond[entity_id]": entity,
-            "cond[duration]": duration
+            "cond[duration]": duration,
+            "cond[status_type]": status
         };
         return this.http.get("api/updatesWO/", { params: body });
     }

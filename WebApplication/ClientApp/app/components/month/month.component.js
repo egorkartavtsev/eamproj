@@ -52,20 +52,20 @@ var MonthComponent = /** @class */ (function () {
         this.filterService.filter.subscribe(function (filt) {
             _this.filter = filt;
             _this.CurrentData = [];
-            _this.emptyData = true;
             for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
                 var order = _a[_i];
                 if (_this.filterService.applyFilter(filt, order)) {
                     _this.CurrentData.push(order);
                 }
             }
-            _this.emptyData = false;
-            console.log(_this.CurrentData);
         });
     };
     MonthComponent.prototype.getData = function (query) {
         var _this = this;
         this.emptyData = true;
+        if (typeof (this.modalData['title']) !== "undefined") {
+            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        }
         this.TotalData = [];
         this.tHeadDays = [];
         this.CurrentData = [];
@@ -109,10 +109,12 @@ var MonthComponent = /** @class */ (function () {
         var _this = this;
         this.emptyModal = true;
         this.modalData['title'] = title;
+        this.modalData['target'] = target;
         var cond = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
             cond['instance'] = instance;
+            this.modalData['instance'] = instance;
             this.modalData['title'] += " для агрегата № " + instance;
         }
         else {

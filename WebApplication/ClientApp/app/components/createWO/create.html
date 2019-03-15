@@ -27,7 +27,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label>Тип работ</label>
-                            <select class="form-control" [(ngModel)]="order.work_type" #work_type>
+                            <select class="form-control" [(ngModel)]="order.work_type" (change)="validateForm()">
                                 <option selected disabled value="">Выберите тип работ...</option>
                                 <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
                             </select>
@@ -64,7 +64,7 @@
                     <div class="col-6">
                         <div class="form-group mb-3">
                             <label>Плановик</label>
-                            <select class="form-control" [(ngModel)]="order.planner_type" (change)="activateBtn()">
+                            <select class="form-control" [(ngModel)]="order.planner_type" (change)="validateForm()">
                                 <option selected disabled>Выберите плановика...</option>
                                 <option value="40">Агрегатный график ОМА</option>
                                 <option value="70">Агрегатный график ОЭО</option>
@@ -86,7 +86,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label>Код простоя</label>
-                            <select class="form-control" [(ngModel)]="order.idle_code" (change)="activateBtn()">
+                            <select class="form-control" [(ngModel)]="order.idle_code" (change)="validateForm()">
                                 <option selected disabled value="">Выберите код простоя...</option>
                                 <option *ngFor="let ic of idle_codes" value="{{ic.IDLE_NAME}}">{{ic.IDLE_NAME}}</option>
                             </select>
@@ -97,8 +97,11 @@
                         </div>
                     </div>
                     <div class="col-12 justify-content-center">
-                        <button class="btn btn-success" disabled (click)="createWO()" #saveBtn>
-                            <i class="fas fa-floppy-o"></i> создать
+                        <button class="btn btn-warning" disabled *ngIf="!allow">
+                            <i class="fas fa-exclamation-circle"></i> заполните все поля
+                        </button>
+                        <button class="btn btn-success" (click)="createWO()" *ngIf="allow">
+                            <i class="fas fa-save"></i> создать
                         </button>
                     </div>
                 </div>

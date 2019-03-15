@@ -61,21 +61,22 @@ export class MonthComponent {
         this.filterService.filter.subscribe(filt => {
             this.filter = filt;
             this.CurrentData = [];
-            this.emptyData = true;
             
             for (let order of this.TotalData) {
                 if (this.filterService.applyFilter(filt, order)) {
                     this.CurrentData.push(order);
                 }
             }
-            this.emptyData = false;
-            console.log(this.CurrentData);
         });
 
     }
 
     private getData(query: string) {
         this.emptyData = true;
+        
+        if (typeof (this.modalData['title']) !== "undefined") {
+            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        }
         this.TotalData = [];
         this.tHeadDays = [];
         this.CurrentData = [];
@@ -107,6 +108,7 @@ export class MonthComponent {
                     this.TotalData[i]['sum'] = sum;
                     ++i;
                 }
+                
                 this.CurrentData = this.TotalData;
                 this.emptyData = false;
             }
@@ -116,10 +118,12 @@ export class MonthComponent {
     private showPOrders(target: string, title: string, instance?: string) {
         this.emptyModal = true;
         this.modalData['title'] = title;
+        this.modalData['target'] = target;
         let cond: any[] = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
             cond['instance'] = instance;
+            this.modalData['instance'] = instance;
             this.modalData['title'] += " для агрегата № " + instance;
         } else {
             cond['instance'] = "";

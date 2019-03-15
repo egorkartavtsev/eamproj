@@ -17,23 +17,20 @@
                     <th *ngFor="let m of monthes" (click)="showPOList(m.mon)" colspan="3" data-toggle="modal" data-target="#exampleModal">{{m.num}}</th>
                 <tr>
             </thead>
-            <tbody>
-                <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
+            <tbody *ngIf="!emptyData">
                     <tr *ngFor="let row of CurrentData">
                         <td>{{row.organization_name}}</td>
                         <td>{{row.instance_description}}</td>
-                        <td *ngFor="let cell of row.decadas" (click)="showPOList(cell.tarM, cell.tarD, row.INSTANCE_NUMBER)" class="{{cell.class}} dec align-middle text-center" data-toggle="modal" data-target="#exampleModal">{{cell.val}}</td>
+                        <td *ngFor="let cell of row.decadas" (click)="showPOList(cell.tarM, cell.tarD, row.instance_number)" class="{{cell.class}} dec align-middle text-center" data-toggle="modal" data-target="#exampleModal">{{cell.val}}</td>
                         <td class="align-middle text-center">{{row.sum}}</td>
                     </tr>
-                </ng-template>
+            </tbody>
+            <tbody *ngIf="emptyData">
+                <tr><td colspan="42" class="text-center"><div class="loader"></div>Подождите, идёт загрузка данных.</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 <!-- Modal -->
 <polist-comp [title]="modalData.title" [poList]="modalData.porders" [emptyModal]="emptyModal" (onSaved)="getData(title)"></polist-comp>
-<!-- Loader -->
-<ng-template #loader>
-    <tr><td colspan="42" class="text-center"><div class="loader"></div>Подождите, идёт загрузка данных.</td></tr>
-</ng-template>
 

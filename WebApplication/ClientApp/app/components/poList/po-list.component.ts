@@ -23,6 +23,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
                                 <th>№ ПЗ</th>
                                 <th>Цех</th>
                                 <th>Агрегат</th>
+                                <th>Статус</th>
                                 <th>Начало</th>
                                 <th>Завершение</th>
                                 <th>Продолж., ч.</th>
@@ -36,6 +37,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
                                         <td class="align-middle">{{po.entity_name}}</td>
                                         <td class="align-middle">{{po.org_name}}</td>
                                         <td class="align-middle">{{po.inst_desc}}</td>
+                                        <td class="align-middle">{{po.work_order_type}}</td>
                                         <td class="align-middle">{{po.start}}</td>
                                         <td class="align-middle">{{po.complete}}</td>
                                         <td class="align-middle">{{po.hours}}</td>
@@ -55,6 +57,17 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
         <td> {{ currentPO.entity_name}}</td>
         <td> {{ currentPO.org_name }}</td>
         <td> {{ currentPO.inst_desc }}</td>
+        <td><select class="form-control" [(ngModel)]="currentPO.status_type">
+                <option value="17">проект</option>
+                <option value="1">не выпущено</option>
+                <option value="3">выпущено</option>
+                <option value="4">завершено</option>
+                <option value="5">завершено без расхода</option>
+                <option value="6">заблокировано</option>
+                <option value="7">отменено</option>
+                <option value="12">закрыто</option>
+                <option value="15">сбой при закрытии</option>
+            </select></td>
         <td>
             <div class="form-group" id="chngStart" #target>
                 <div class="input-group">
@@ -123,7 +136,6 @@ export class PoListComponent {
     @Input()
     set poList(list: ProdOrder[]) {
         this._plist = list;
-        console.log(this._plist);
     }
     get poList() { return this._plist; }
 
@@ -138,10 +150,11 @@ export class PoListComponent {
 
     private save() {
         console.log(this.currentPO);
-        this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours).subscribe(
+        this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(
             (data: any) => {
                 console.log(data);
                 this.onSaved.emit(true);
+
                 this.cancel();
             },
             error => {

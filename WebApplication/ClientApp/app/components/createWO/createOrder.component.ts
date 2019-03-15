@@ -22,6 +22,8 @@ export class CreateOrderComponent {
     private routing_sequences: any[] = [];
     private tmp_org: string;
 
+    private allow: boolean = false;
+
     @ViewChild('startCal') calendar: any;
     @ViewChild('miniLoader') minLoad: any;
     @ViewChild('modal') mWin: any;
@@ -42,12 +44,12 @@ export class CreateOrderComponent {
         this.order.entity_name = "";
         this.order.start = this.makeTrueDate(sup.getDate().toString() + '.' + (+sup.getMonth() + 1).toString() + '.' + sup.getFullYear().toString() + ' ' + sup.getHours().toString() + ':00:00');
         this.order.hours = '0';
-        this.order.idle_categ = '';
-        this.order.idle_type = '';
-        this.order.idle_code = '';
         this.order.instance_number = '';
         this.order.org_id = '';
         this.order.planner_type = '';
+        this.order.idle_categ = '';
+        this.order.idle_type = '';
+        this.order.idle_code = '';
         this.order.work_type = '';
         this.tmpDT = { hour: sup.getHours(), minute: 0 };
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
@@ -60,6 +62,14 @@ export class CreateOrderComponent {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.agregates = [];
         this.routing_sequences = [];
+
+        this.order.instance_number = '';
+        this.order.work_type = '';
+        this.order.idle_type = '';
+        this.order.idle_code = '';
+        this.order.idle_categ = '';
+
+
         let sup = this.tmp_org.split(":");
         this.order.org_id = sup[1];
         this.order.entity_name = sup[0];
@@ -75,12 +85,14 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
-        console.log(this.order);
+        this.validateForm();
     }
 
     private setIdleCat() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.idle_types = [];
+        this.order.idle_type = '';
+        this.order.idle_code = '';
 
         this.http.getIdleTypes(this.order.org_id, this.order.idle_categ).subscribe(
             (data: any[]) => {
@@ -88,11 +100,13 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
+        this.validateForm();
     }
 
     private setIdleType() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.idle_codes = [];
+        this.order.idle_code = '';
 
         this.http.getIdleCodes(this.order.org_id, this.order.idle_categ, this.order.idle_type).subscribe(
             (data: any[]) => {
@@ -100,13 +114,15 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
-        this.activateBtn();
+        this.validateForm();
     }
 
 
     private setAgr() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.routing_sequences = [];
+        this.order.work_type = '';
+
         this.http.geTK(this.order.instance_number).subscribe(
             (data: any[]) => {
                 let tmp = Object.keys(data).map(i => data[i]);
@@ -117,7 +133,7 @@ export class CreateOrderComponent {
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
-        this.activateBtn();
+        this.validateForm();
     }
 
     private createWO() {
@@ -162,12 +178,62 @@ export class CreateOrderComponent {
         );
     }
 
-    private activateBtn() {
+    private validateForm() {
         console.log(this.order);
-        if (this.order.hours  !== '0' && this.order.idle_categ  !== '' && this.order.idle_code  !== '' && this.order.idle_type  !== '' && this.order.instance_number  !== '' && this.order.planner_type  !== '' && this.order.org_name  !== '' && this.order.org_id  !== '' && this.order.work_type  !== '') {
-            this.renderer.removeAttribute(this.saveBtn.nativeElement, 'disabled');
+        this.allow = true;
+
+        if (this.allow && this.order.hours !== '0') {
+            this.allow = true;
         } else {
-            this.renderer.setAttribute(this.saveBtn.nativeElement, 'disabled', 'disabled');
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.idle_categ !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.idle_code !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.org_id !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.org_name !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.planner_type !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.instance_number !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.idle_type !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
+        }
+
+        if (this.allow && this.order.work_type !== '') {
+            this.allow = true;
+        } else {
+            this.allow = false;
         }
     }
 
@@ -183,7 +249,7 @@ export class CreateOrderComponent {
     private setDate() {
         this.order.start = this.makeTrueDate(this.model.day + "." + this.model.month + "." + this.model.year + " " + this.tmpDT['hour'] + ":" + this.tmpDT['minute'] + ":00");
         this.updateComplete();
-        this.activateBtn();
+        this.validateForm();
         this.toogleCalendar();
     }
 
@@ -203,6 +269,7 @@ export class CreateOrderComponent {
         sup.setDate(sup.getDate() + tmp.days);
         sup.setHours(sup.getHours() + tmp.hours);
         this.order.complete = this.makeTrueDate(sup.getDate() + "." + (+sup.getMonth() + 1) + "." + sup.getFullYear() + " " + sup.getHours() + ":" + sup.getMinutes() + ":00");
+        this.validateForm();
     }
 
     private makeTrueDate(date: string) {

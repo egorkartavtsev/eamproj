@@ -30,6 +30,8 @@ namespace EAMlvl1System.Controllers
                         tmpRow.TryAdd(row["WIP_ENTITY_ID"].ToString(), new Dictionary<string, string> {
                             { "entity_id", row["WIP_ENTITY_ID"].ToString() },
                             { "entity_name", row["WIP_ENTITY_NAME"].ToString() },
+                            { "work_order_type", row["WORK_ORDER_STATUS"].ToString() },
+                            { "status_type", row["STATUS_TYPE"].ToString() },
                             { "org_id", row["ORGANIZATION_ID"].ToString() },
                             { "org_name", row["ORGANIZATION_NAME"].ToString() },
                             { "instance_number", row["INSTANCE_NUMBER"].ToString() },
@@ -43,6 +45,8 @@ namespace EAMlvl1System.Controllers
                     tmpRow.TryAdd(row["WIP_ENTITY_ID"].ToString(), new Dictionary<string, string> {
                         { "entity_id", row["WIP_ENTITY_ID"].ToString() },
                         { "entity_name", row["WIP_ENTITY_NAME"].ToString() },
+                        { "work_order_type", row["WORK_ORDER_STATUS"].ToString() },
+                        { "status_type", row["STATUS_TYPE"].ToString() },
                         { "org_id", row["ORGANIZATION_ID"].ToString() },
                         { "org_name", row["ORGANIZATION_NAME"].ToString() },
                         { "instance_number", row["INSTANCE_NUMBER"].ToString() },

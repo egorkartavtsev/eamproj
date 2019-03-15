@@ -6,5 +6,7 @@ export class ProdOrder{
     instance_number:    string;
     start:              string;
     complete:           string;
-    hours:              string;
+    hours: string;
+    work_order_type: string;
+    status_type: string;
 }

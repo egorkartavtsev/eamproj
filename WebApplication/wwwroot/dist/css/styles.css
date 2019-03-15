@@ -36,6 +36,9 @@
     }
 }
 
+.func-menu {
+    padding-right: 0px!important;
+}
 
 .func-menu li {
     cursor: pointer;

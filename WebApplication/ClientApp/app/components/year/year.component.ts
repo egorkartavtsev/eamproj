@@ -68,30 +68,27 @@ export class YearComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.emptyData = true;
         this.filterService.filter.subscribe(filt => {
             this.filter = filt;
             this.CurrentData = [];
-            this.emptyData = true;
 
             for (let order of this.TotalData) {
                 if (this.filterService.applyFilter(filt, order)) {
                     this.CurrentData.push(order);
                 }
             }
-            this.emptyData = false;
-            console.log(this.CurrentData);
         });
 
     }
 
     private getData(query: string) {
-        console.log("Данные пусты");
         this.emptyData = true;
+        if (typeof (this.modalData['mon']) !== "undefined") {
+            this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
+        }
         this.http.getYearData(query).subscribe(
             (data: any[]) => {
-                console.log("===========clear data from db=============");
-                console.log(data);
-                console.log("***********clear data from db*************");
                 let tmp = Object.keys(data).map(i => data[i]);
                 this.TotalData = [];
                 let i = 0;
@@ -119,8 +116,10 @@ export class YearComponent implements OnInit {
                     this.TotalData[i]['sum'] = ((sum * 100) % 100) ? sum.toFixed(2) : sum;
                     ++i;
                 }
-                console.log("Заполнено");
                 this.CurrentData = this.TotalData;
+                console.log('*/*/*/**/*/inGetData*/*/*/*/*/*/');
+                console.log(this.CurrentData);
+                console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
                 this.emptyData = false;
             },
             error => { console.log(error) }
@@ -158,6 +157,8 @@ export class YearComponent implements OnInit {
                 break;
         }
         this.modalData['title'] = "ПЗ с " + range['start'] + " по " + range['end'];
+        this.modalData['mon'] = mon;
+        this.modalData['dec'] = dec;
         let cond: any[] = [];
         cond['weekend'] = range['end'];
         cond['weekstart'] = range['start'];
@@ -165,6 +166,7 @@ export class YearComponent implements OnInit {
         if (typeof (instance) !== "undefined") {
             cond['instance'] = instance;
             this.modalData['title'] += " для агрегата №" + instance;
+            this.modalData['instance'] = instance;
         } else {
             cond['instance'] = "";
         }
@@ -175,6 +177,9 @@ export class YearComponent implements OnInit {
                 this.emptyModal = false;
             }
         );
+        console.log(this.modalData);
+        console.log(instance);
+        console.log(cond);
     }
 
     onSaved() {

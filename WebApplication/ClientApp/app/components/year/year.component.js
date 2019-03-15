@@ -56,28 +56,25 @@ var YearComponent = /** @class */ (function () {
     }
     YearComponent.prototype.ngOnInit = function () {
         var _this = this;
+        this.emptyData = true;
         this.filterService.filter.subscribe(function (filt) {
             _this.filter = filt;
             _this.CurrentData = [];
-            _this.emptyData = true;
             for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
                 var order = _a[_i];
                 if (_this.filterService.applyFilter(filt, order)) {
                     _this.CurrentData.push(order);
                 }
             }
-            _this.emptyData = false;
-            console.log(_this.CurrentData);
         });
     };
     YearComponent.prototype.getData = function (query) {
         var _this = this;
-        console.log("Данные пусты");
         this.emptyData = true;
+        if (typeof (this.modalData['mon']) !== "undefined") {
+            this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
+        }
         this.http.getYearData(query).subscribe(function (data) {
-            console.log("===========clear data from db=============");
-            console.log(data);
-            console.log("***********clear data from db*************");
             var tmp = Object.keys(data).map(function (i) { return data[i]; });
             _this.TotalData = [];
             var i = 0;
@@ -109,8 +106,10 @@ var YearComponent = /** @class */ (function () {
                 var row = tmp_1[_i];
                 _loop_1(row);
             }
-            console.log("Заполнено");
             _this.CurrentData = _this.TotalData;
+            console.log('*/*/*/**/*/inGetData*/*/*/*/*/*/');
+            console.log(_this.CurrentData);
+            console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
             _this.emptyData = false;
         }, function (error) { console.log(error); });
     };
@@ -146,12 +145,15 @@ var YearComponent = /** @class */ (function () {
                 break;
         }
         this.modalData['title'] = "ПЗ с " + range['start'] + " по " + range['end'];
+        this.modalData['mon'] = mon;
+        this.modalData['dec'] = dec;
         var cond = [];
         cond['weekend'] = range['end'];
         cond['weekstart'] = range['start'];
         if (typeof (instance) !== "undefined") {
             cond['instance'] = instance;
             this.modalData['title'] += " для агрегата №" + instance;
+            this.modalData['instance'] = instance;
         }
         else {
             cond['instance'] = "";
@@ -160,6 +162,9 @@ var YearComponent = /** @class */ (function () {
             _this.modalData['porders'] = Object.keys(data).map(function (i) { return data[i]; });
             _this.emptyModal = false;
         });
+        console.log(this.modalData);
+        console.log(instance);
+        console.log(cond);
     };
     YearComponent.prototype.onSaved = function () {
         this.getData(this.title);
