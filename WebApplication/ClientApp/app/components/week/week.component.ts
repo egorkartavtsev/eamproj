@@ -47,7 +47,6 @@ export class WeekComponent implements OnInit {
         this.filterService.filter.subscribe(filt => {
             this.filter = filt;
             this.data = [];
-            this.emptyData = true;
             let i = 0;
             for (let day of this.totalData) {
                 let day_data: any[] = [];
@@ -61,7 +60,6 @@ export class WeekComponent implements OnInit {
                 this.data[i].dname = day.dname;
                 ++i;
             }
-            this.emptyData = false;
         });
 
     }

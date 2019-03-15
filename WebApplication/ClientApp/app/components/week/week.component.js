@@ -40,7 +40,6 @@ var WeekComponent = /** @class */ (function () {
         this.filterService.filter.subscribe(function (filt) {
             _this.filter = filt;
             _this.data = [];
-            _this.emptyData = true;
             var i = 0;
             for (var _i = 0, _a = _this.totalData; _i < _a.length; _i++) {
                 var day = _a[_i];
@@ -56,7 +55,6 @@ var WeekComponent = /** @class */ (function () {
                 _this.data[i].dname = day.dname;
                 ++i;
             }
-            _this.emptyData = false;
         });
     };
     WeekComponent.prototype.getData = function (start, end) {
