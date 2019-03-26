@@ -9,11 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-// import {ActivatedRoute} from '@angular/router';
-// import {Subscription} from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { ActivatedRoute } from '@angular/router';
 var AppComponent = /** @class */ (function () {
-    function AppComponent(router) {
+    function AppComponent(router, user, route) {
         this.router = router;
+        this.user = user;
+        this.route = route;
+        this.logged = true;
         this.currentDate = {
             year: "",
             month: {
@@ -40,6 +43,17 @@ var AppComponent = /** @class */ (function () {
             ],
             days: []
         };
+        //console.log('step 2');
+        //let token;
+        //if (!this.logged) {
+        //    this.querySubscription = this.route.queryParams.subscribe(
+        //        (queryParam: any) => {
+        //            token = queryParam['secret'];
+        //            console.log('step 3: token = '+token);
+        //            this.logged = this.user.isLogged(token);
+        //        }
+        //    );
+        //}
         var date = new Date();
         this.year = date.getFullYear().toString();
         this.month = (+date.getMonth().toString() + 1).toString();
@@ -63,6 +77,7 @@ var AppComponent = /** @class */ (function () {
         for (var i = 1; i <= (32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate()); i++) {
             this.dateArray.days.push((i.toString().length < 2) ? "0" + i : i.toString());
         }
+        console.log('step last');
     }
     AppComponent.prototype.updateDate = function (target, value) {
         var dCount;
@@ -125,7 +140,9 @@ var AppComponent = /** @class */ (function () {
             templateUrl: './rootApp.html',
             styleUrls: ['../assets.css']
         }),
-        __metadata("design:paramtypes", [Router])
+        __metadata("design:paramtypes", [Router,
+            UserService,
+            ActivatedRoute])
     ], AppComponent);
     return AppComponent;
 }());

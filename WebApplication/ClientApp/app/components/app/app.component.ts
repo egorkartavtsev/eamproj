@@ -2,8 +2,9 @@
 import { Router } from '@angular/router';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { forEach } from '@angular/router/src/utils/collection';
-// import {ActivatedRoute} from '@angular/router';
-// import {Subscription} from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'root-app',
@@ -14,6 +15,8 @@ export class AppComponent {
     private year: string;
     private month: string;
     private date: string;
+    private logged: boolean = true;
+    private querySubscription: Subscription;
     private currentDate = {
         year: "",
         month: {
@@ -43,7 +46,22 @@ export class AppComponent {
         days: []
     };
 
-    constructor(private router: Router) {
+    constructor(
+        private router: Router,
+        private user: UserService,
+        private route: ActivatedRoute
+    ) {
+        //console.log('step 2');
+        //let token;
+        //if (!this.logged) {
+        //    this.querySubscription = this.route.queryParams.subscribe(
+        //        (queryParam: any) => {
+        //            token = queryParam['secret'];
+        //            console.log('step 3: token = '+token);
+        //            this.logged = this.user.isLogged(token);
+        //        }
+        //    );
+        //}
         let date = new Date();
         this.year = date.getFullYear().toString();
         this.month = (+date.getMonth().toString() + 1).toString();
@@ -66,6 +84,9 @@ export class AppComponent {
         for (let i = 1; i <= (32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate()); i++) {
             this.dateArray.days.push((i.toString().length < 2) ? "0" + i : i.toString());
         }
+
+        
+        console.log('step last');
     }
 
     updateDate(target: string, value: string) {

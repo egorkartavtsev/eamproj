@@ -55,7 +55,6 @@ export class CreateOrderComponent {
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.updateComplete();
-        console.log(this.order);
     }
 
     private setOrg() {

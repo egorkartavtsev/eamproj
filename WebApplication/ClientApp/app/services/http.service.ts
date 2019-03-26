@@ -10,6 +10,15 @@ import { url } from 'inspector';
 export class HttpService{
     constructor(private http: HttpClient) { }
 
+    getFormURL(org_id: string, entity_id: string) {
+        const body = {
+            query: "312",
+            "cond[org_id]": org_id,
+            "cond[entity_id]": entity_id
+        };
+        return this.http.get("/api/getDatas/", { params: body });
+    }
+
     getYearData(year: string) {
         const body = {
             query: "300",

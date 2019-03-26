@@ -11,7 +11,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
         <div class="modal-dialog custom_modal_size" role="document">
             <div class="modal-content" style="overflow-x: auto;">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center w-100" id="exampleModalLabel">{{title}}</h5>
+                    <h5 class="modal-title text-center w-100" id="exampleModalLabel">{{title}} <button class="btn btn-info" (click)="openForm()">Формы</button></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -41,7 +41,10 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
                                         <td class="align-middle">{{po.start}}</td>
                                         <td class="align-middle">{{po.complete}}</td>
                                         <td class="align-middle">{{po.hours}}</td>
-                                        <td class="align-middle"><button class="btn btn-primary" (click)="editPO(po)"><i class="fas fa-pen"></i></button></td>
+                                        <td class="align-middle">
+                                            <button class="btn btn-primary" (click)="editPO(po)"><i class="fas fa-pen"></i></button>
+                                            <button class="btn btn-info" (click)="openForm(po.org_id, po.entity_id)"><i class="fas fa-table"></i></button>
+                                        </td>
                                     </ng-template>
                                 </tr>
                             </ng-template>
@@ -175,6 +178,17 @@ export class PoListComponent {
                 //    this.renderer.setStyle(alert, 'display', 'none');
                 //    console.log(alert);
                 //}, 3000);
+            }
+        );
+    }
+
+    openForm(org_id: string, entity_id: string) {
+        let url = "";
+        this.http.getFormURL(org_id, entity_id).subscribe(
+            (data: any) => {
+                console.log(data[0].URL);
+                console.log(this._plist);
+                window.open(data[0].URL.toString(), "hello");
             }
         );
     }

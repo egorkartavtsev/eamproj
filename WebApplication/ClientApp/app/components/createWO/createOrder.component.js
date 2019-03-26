@@ -45,7 +45,6 @@ var CreateOrderComponent = /** @class */ (function () {
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.updateComplete();
-        console.log(this.order);
     };
     CreateOrderComponent.prototype.setOrg = function () {
         var _this = this;

@@ -13,6 +13,14 @@ var HttpService = /** @class */ (function () {
     function HttpService(http) {
         this.http = http;
     }
+    HttpService.prototype.getFormURL = function (org_id, entity_id) {
+        var body = {
+            query: "312",
+            "cond[org_id]": org_id,
+            "cond[entity_id]": entity_id
+        };
+        return this.http.get("/api/getDatas/", { params: body });
+    };
     HttpService.prototype.getYearData = function (year) {
         var body = {
             query: "300",

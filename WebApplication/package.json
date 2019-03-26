@@ -15,6 +15,7 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
+    "angular2-cookie": "^1.2.6",
     "core-js": "^2.6.0",
     "img-loader": "^3.0.1",
     "ng-pick-datetime": "^7.0.0",
