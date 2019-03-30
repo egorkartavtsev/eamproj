@@ -7,16 +7,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component } from '@angular/core';
+import { Component, ViewChild, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { HttpService } from '../../services/http.service';
 import { ActivatedRoute } from '@angular/router';
+import { CookieService } from "angular2-cookie/core";
+import { setTimeout } from 'timers';
 var AppComponent = /** @class */ (function () {
-    function AppComponent(router, user, route) {
+    function AppComponent(router, route, renderer, cookie, http) {
+        var _this = this;
         this.router = router;
-        this.user = user;
         this.route = route;
-        this.logged = true;
+        this.renderer = renderer;
+        this.cookie = cookie;
+        this.http = http;
+        this.logged = false;
         this.currentDate = {
             year: "",
             month: {
@@ -43,17 +48,36 @@ var AppComponent = /** @class */ (function () {
             ],
             days: []
         };
-        //console.log('step 2');
-        //let token;
-        //if (!this.logged) {
-        //    this.querySubscription = this.route.queryParams.subscribe(
-        //        (queryParam: any) => {
-        //            token = queryParam['secret'];
-        //            console.log('step 3: token = '+token);
-        //            this.logged = this.user.isLogged(token);
-        //        }
-        //    );
-        //}
+        var token;
+        var flag = false;
+        if (!this.logged) {
+            var cookt_1 = this.cookie.get('eam_kp_t');
+            this.querySubscription = this.route.queryParams.subscribe(function (queryParam) {
+                token = queryParam['secret'];
+                if (token !== undefined) {
+                    _this.cookie.put('eam_kp_t', token);
+                    flag = true;
+                }
+                else {
+                    if (!_this.logged && cookt_1 !== undefined) {
+                        _this.http.trySession(cookt_1).subscribe(function (data) {
+                            console.log(data);
+                            if (data["result"] !== null) {
+                                flag = true;
+                            }
+                            else {
+                                flag = false;
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        setTimeout(function () {
+            _this.logged = flag;
+        }, 3000);
+    }
+    AppComponent.prototype.ngOnInit = function () {
         var date = new Date();
         this.year = date.getFullYear().toString();
         this.month = (+date.getMonth().toString() + 1).toString();
@@ -77,8 +101,35 @@ var AppComponent = /** @class */ (function () {
         for (var i = 1; i <= (32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate()); i++) {
             this.dateArray.days.push((i.toString().length < 2) ? "0" + i : i.toString());
         }
-        console.log('step last');
-    }
+    };
+    AppComponent.prototype.signIn = function () {
+        var _this = this;
+        var flag;
+        var valid;
+        this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
+        //res = this.user.userSignIn(this.login, this.password);
+        this.http.singInUser(this.login, this.password).subscribe(function (data) {
+            if (data["result"] === "Y") {
+                _this.cookie.put('eam_kp_t', data["token"]);
+                flag = true;
+                valid = true;
+                _this.renderer.addClass(_this.mimiLoader.nativeElement, 'btn-success');
+                _this.renderer.removeClass(_this.mimiLoader.nativeElement, 'btn-danger');
+            }
+            else {
+                flag = false;
+                valid = false;
+                _this.renderer.addClass(_this.mimiLoader.nativeElement, 'btn-danger');
+                _this.renderer.removeClass(_this.mimiLoader.nativeElement, 'btn-success');
+            }
+        });
+        setTimeout(function () {
+            _this.logged = flag;
+        }, 5000);
+        if (this.logged) {
+            this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
+        }
+    };
     AppComponent.prototype.updateDate = function (target, value) {
         var dCount;
         switch (target) {
@@ -134,6 +185,14 @@ var AppComponent = /** @class */ (function () {
             queryParams: queryparam
         });
     };
+    __decorate([
+        ViewChild('mimiLoader'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "mimiLoader", void 0);
+    __decorate([
+        ViewChild('btnSingIn'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "btnSingIn", void 0);
     AppComponent = __decorate([
         Component({
             selector: 'root-app',
@@ -141,8 +200,10 @@ var AppComponent = /** @class */ (function () {
             styleUrls: ['../assets.css']
         }),
         __metadata("design:paramtypes", [Router,
-            UserService,
-            ActivatedRoute])
+            ActivatedRoute,
+            Renderer2,
+            CookieService,
+            HttpService])
     ], AppComponent);
     return AppComponent;
 }());

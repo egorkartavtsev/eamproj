@@ -10,6 +10,21 @@ import { url } from 'inspector';
 export class HttpService{
     constructor(private http: HttpClient) { }
 
+    singInUser(login: string, password: string) {
+        const body = {
+            "cond[user]": login,
+            "cond[pass]": password
+        };
+        return this.http.get("/api/login/", { params: body });
+    }
+
+    trySession(token: string) {
+        const body = {
+            "cond[token]": token
+        };
+        return this.http.get("/api/login/", { params: body });
+    }
+
     getFormURL(org_id: string, entity_id: string) {
         const body = {
             query: "312",

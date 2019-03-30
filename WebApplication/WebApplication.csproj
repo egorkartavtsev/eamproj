@@ -20,7 +20,6 @@
     <None Remove="ClientApp\app\components\year\loader.gif" />
     <None Remove="ClientApp\app\components\year\year.component.ts" />
     <None Remove="ClientApp\app\directives\empty-cell.directive.ts" />
-    <None Remove="ClientApp\app\services\user.service.ts" />
     <None Remove="ClientApp\main.ts" />
     <None Remove="ClientApp\polyfills.ts" />
   </ItemGroup>
@@ -41,7 +40,6 @@
     <TypeScriptCompile Include="ClientApp\app\components\week\week.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\year\year.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\directives\empty-cell.directive.ts" />
-    <TypeScriptCompile Include="ClientApp\app\services\user.service.ts" />
     <TypeScriptCompile Include="ClientApp\main.ts" />
     <TypeScriptCompile Include="ClientApp\polyfills.ts" />
   </ItemGroup>

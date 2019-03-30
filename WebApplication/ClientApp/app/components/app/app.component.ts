@@ -1,22 +1,31 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, ViewChild, Renderer2, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpService } from '../../services/http.service';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { forEach } from '@angular/router/src/utils/collection';
-import { UserService } from '../../services/user.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { CookieService } from "angular2-cookie/core";
+import { setTimeout } from 'timers';
 
 @Component({
     selector: 'root-app',
     templateUrl: './rootApp.html',
     styleUrls: ['../assets.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     private year: string;
     private month: string;
     private date: string;
-    private logged: boolean = true;
+    private logged: boolean = false;
     private querySubscription: Subscription;
+
+    private password: string;
+    private login: string;
+
+    @ViewChild('mimiLoader') mimiLoader: any;
+    @ViewChild('btnSingIn') btnSingIn: any;
+
     private currentDate = {
         year: "",
         month: {
@@ -48,20 +57,45 @@ export class AppComponent {
 
     constructor(
         private router: Router,
-        private user: UserService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private renderer: Renderer2,
+        private cookie: CookieService,
+        private http: HttpService
     ) {
-        //console.log('step 2');
-        //let token;
-        //if (!this.logged) {
-        //    this.querySubscription = this.route.queryParams.subscribe(
-        //        (queryParam: any) => {
-        //            token = queryParam['secret'];
-        //            console.log('step 3: token = '+token);
-        //            this.logged = this.user.isLogged(token);
-        //        }
-        //    );
-        //}
+        let token;
+        let flag: boolean = false;
+        if (!this.logged) {
+            let cookt:string = this.cookie.get('eam_kp_t');
+            this.querySubscription = this.route.queryParams.subscribe(
+                (queryParam: any) => {
+                    token = queryParam['secret'];
+                    if (token !== undefined) {
+                        this.cookie.put('eam_kp_t', token);
+                        flag = true;
+                    } else {
+                        if (!this.logged && cookt !== undefined) {
+                            this.http.trySession(cookt).subscribe(
+                                (data: any[]) => {
+                                    console.log(data);
+                                    if (data["result"] !== null) {
+                                        flag = true;
+                                    } else {
+                                        flag = false;
+                                    }
+                                }
+                            );
+                        }
+                    }
+                    
+                }
+            );
+        }
+        setTimeout(() => {
+            this.logged = flag;
+        }, 3000);
+    }
+
+    ngOnInit() {
         let date = new Date();
         this.year = date.getFullYear().toString();
         this.month = (+date.getMonth().toString() + 1).toString();
@@ -84,9 +118,36 @@ export class AppComponent {
         for (let i = 1; i <= (32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate()); i++) {
             this.dateArray.days.push((i.toString().length < 2) ? "0" + i : i.toString());
         }
+    }
 
-        
-        console.log('step last');
+
+    signIn() {
+        let flag: boolean;
+        let valid: boolean;
+        this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
+        //res = this.user.userSignIn(this.login, this.password);
+        this.http.singInUser(this.login, this.password).subscribe(
+            (data: any[]) => {
+                if (data["result"] === "Y") {
+                    this.cookie.put('eam_kp_t', data["token"]);
+                    flag = true;
+                    valid = true;
+                    this.renderer.addClass(this.btnSingIn.nativeElement, 'btn-success');
+                    this.renderer.removeClass(this.btnSingIn.nativeElement, 'btn-danger');
+                } else {
+                    flag = false;
+                    valid = false;
+                    this.renderer.addClass(this.btnSingIn.nativeElement, 'btn-danger');
+                    this.renderer.removeClass(this.btnSingIn.nativeElement, 'btn-success');
+                }
+            }
+        );
+        setTimeout(() => {
+            this.logged = flag;
+        }, 5000);
+        if (this.logged) {
+            this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
+        }
     }
 
     updateDate(target: string, value: string) {

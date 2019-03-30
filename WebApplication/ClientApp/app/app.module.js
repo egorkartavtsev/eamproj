@@ -24,7 +24,6 @@ import { CreateOrderComponent } from './components/createWO/createOrder.componen
 //services
 import { FilterService } from './services/filter.service';
 import { HttpService } from './services/http.service';
-import { UserService } from './services/user.service';
 //derectives
 import { EmptyCellDirective } from './directives/empty-cell.directive';
 // определение маршрутов
@@ -43,7 +42,7 @@ var AppModule = /** @class */ (function () {
         NgModule({
             imports: [NgbModule, BrowserModule, HttpClientModule, RouterModule.forRoot(appRoutes), FormsModule],
             declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent, TestComponent],
-            providers: [FilterService, HttpService, CookieService, UserService],
+            providers: [FilterService, HttpService, CookieService],
             bootstrap: [AppComponent]
         })
     ], AppModule);

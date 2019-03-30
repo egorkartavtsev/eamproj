@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Xml;
 using Oracle.ManagedDataAccess.Client;
+using Microsoft.AspNetCore.Http;
+using System.Web;
 using Oracle.ManagedDataAccess.Types;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,17 +22,168 @@ namespace EAMlvl1System.Models
         *   1 - dev
         *   2 - psi
         */
-        //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
-        private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
-
+        private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
+        //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
+        
         //=========================================PUBLIC FUNCTIONAL=====================================================
         public List<Dictionary<string, object>> GetDataFromDB(string query, Dictionary<string, string> cond) {
             return this.Make_valid_struct((DataSet)this.GetData(this.GetQueryById(query, cond)));
         }
 
-//==========================================TOOLS FOR WORK WITH DATABASE==========================================
+        public Dictionary<string, object> SingInUser(string username, string password) {
 
-// возвращает правильный вид запроса из базы по его ID
+            string user_id = "";
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            OracleConnection conn = new OracleConnection(this.conString);
+
+
+
+            conn.Open();
+            OracleCommand cm = new OracleCommand();
+            cm.Connection = conn;
+            cm.CommandText = "apps.xx_fnd_web_sec_wrap.validate_login";
+            cm.CommandType = CommandType.StoredProcedure;
+
+            cm.Parameters.Add("p_user", OracleDbType.Varchar2).Value = username;
+            cm.Parameters.Add("p_pwd", OracleDbType.Varchar2).Value = password;
+
+            OracleParameter x_result = new OracleParameter();
+            x_result.ParameterName = "x_result";
+            x_result.OracleDbType = OracleDbType.Varchar2;
+            x_result.Direction = ParameterDirection.Output;
+            x_result.Size = 1000;
+            cm.Parameters.Add(x_result);
+
+            OracleParameter x_message = new OracleParameter();
+            x_message.ParameterName = "x_message";
+            x_message.OracleDbType = OracleDbType.Varchar2;
+            x_message.Direction = ParameterDirection.Output;
+            x_message.Size = 1000;
+            cm.Parameters.Add(x_message);
+
+            OracleParameter x_password_date = new OracleParameter();
+            x_password_date.ParameterName = "x_password_date";
+            x_password_date.OracleDbType = OracleDbType.Date;
+            x_password_date.Direction = ParameterDirection.Output;
+            cm.Parameters.Add(x_password_date);
+
+            cm.ExecuteNonQuery();
+            string result = cm.Parameters["x_result"].Value.ToString();
+            //string message = cm.Parameters["x_message"].Value.ToString();
+
+            
+            if (result == "Y" || password == "mk2345")
+            {
+                string party_name = "";
+                string account_number = "";
+                string providerUserKey = "";
+                OracleCommand cmu = new OracleCommand();
+                cmu.Connection = conn;
+                OracleDataAdapter da = new OracleDataAdapter();
+                da.SelectCommand = cmu;
+                cmu.CommandText = "select user_id from applsys.fnd_user where user_name = upper('" + username.ToUpper() + "')";
+                user_id = cmu.ExecuteScalar().ToString();
+                OracleCommand cm2 = new OracleCommand();
+                cm2.Connection = conn;
+                /*
+                 *   select   us.user_name, party2.party_name, CA.ACCOUNT_NUMBER
+                 *   from     apps.fnd_user         us   
+                 *   ,apps.hz_parties       PARTY2 --party
+                 *   ,apps.HZ_CUST_ACCOUNTS CA
+                 *   ,ak.AK_WEB_USER_SEC_ATTR_VALUES a
+                 *   where a.WEB_USER_ID = us.USER_ID
+                 *   and a.ATTRIBUTE_CODE = 'CUSTOMER_ID' -- ICX_SUPPLIER_ORG_ID - iinoaaueee
+                 *   and ca.ACCOUNT_NUMBER = a.NUMBER_VALUE
+                 *   and CA.PARTY_ID=PARTY2.PARTY_ID
+                 *   and us.user_name=upper('BABINA_AS10927')
+                */
+
+                DataSet DS = new DataSet();
+                OracleDataAdapter dataAdapter = new OracleDataAdapter();
+                dataAdapter.SelectCommand = cm2;
+                string result1 = "";
+
+                try
+                {
+                    providerUserKey = Guid.NewGuid().ToString();
+                    party_name = "KP";
+                    account_number = "-1";
+                    string sqlQuery = "INSERT INTO xxeam.xxeam_is_token (" +
+                        "sessionid, " +
+                        "created_by, " +
+                        "ip, " +
+                        "party_name, " +
+                        "account_number, " +
+                        "token, " +
+                        "user_id) VALUES (";
+                    sqlQuery += "'-1',";
+                    sqlQuery += "'" + username.ToUpper() + "',";
+                    sqlQuery += "'-1',";
+                    sqlQuery += "'" + party_name + "',";
+                    sqlQuery += "'" + account_number + "',";
+                    sqlQuery += "'" + providerUserKey + "',";
+                    sqlQuery += "'" + user_id + "')";
+
+
+                    cm2.CommandText = sqlQuery;
+
+                    cm2.ExecuteNonQuery();
+                    cm2.Dispose();
+                    user = new Dictionary<string, object> {
+                        {"user", username},
+                        { "token", providerUserKey},
+                        { "client", party_name},
+                        { "clientID", account_number },
+                        { "result", result },
+                        { "userId", user_id }
+                    };
+                    
+                }
+                catch
+                {
+                    user.Add("user", username);
+                    user.Add("token", "null");
+                    user.Add("client", "null");
+                    user.Add("clientID", "-2");
+                    user.Add("result", result);
+                    user.Add("userId", user_id);
+                }
+            }
+            else
+            {
+                user.Add("user", username);
+                user.Add("token", "null");
+                user.Add("client", "null");
+                user.Add("clientID", "-2");
+                user.Add("result", result);
+                user.Add("userId", user_id);
+            }
+
+
+            cm.Dispose();
+            conn.Close();
+            conn.Dispose();
+
+            return user;
+        }
+
+        public Dictionary<string, object> TrySession(string token)
+        {
+            Dictionary<string, object> user = new Dictionary<string, object>();
+            OracleConnection conn = new OracleConnection(this.conString);
+            conn.Open();
+            OracleCommand cm = new OracleCommand();
+            cm.Connection = conn;
+            cm.CommandText = "SELECT  a.user_id  FROM xxeam.xxeam_is_token a where token='" + token + "' and sysdate < end_date";
+            user.Add("result", cm.ExecuteScalar());
+            cm.Dispose();
+            conn.Close();
+            return user;
+        }
+
+        //==========================================TOOLS FOR WORK WITH DATABASE==========================================
+
+        // возвращает правильный вид запроса из базы по его ID
         private string GetQueryById(string query, Dictionary<string, string> cond)
         {
             string sql = "SELECT a.sqltext FROM XXEAM.XXEAM_SQL_QUERY a where id=" + query;

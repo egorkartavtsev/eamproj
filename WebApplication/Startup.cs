@@ -26,6 +26,7 @@ namespace EAMlvl1System
             }
 
             //app.UseDefaultFiles(); - этот метод теперь не нужен
+            
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

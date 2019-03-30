@@ -119,14 +119,17 @@
                        <h4>Авторизация</h4>
                        <div class="form-group">
                            <label>Пользователь</label>
-                           <input type="text" class="form-control">
+                           <input type="text" [(ngModel)]="login" class="form-control">
                        </div>
                        <div class="form-group">
                             <label>Пароль</label>
-                            <input type="password" class="form-control">
+                            <input type="password" [(ngModel)]="password" class="form-control">
                        </div>
                        <div class="row justify-content-center">
-                           <button class="btn btn-success">Войти</button>
+                           <button class="btn btn-success" (click)="signIn()" #btnSingIn>Войти</button>
+                           <div class="clearfix"></div>
+                           <div class="clearfix"></div>
+                           <div class="loader loader-mini d-none" #mimiLoader></div>
                        </div>
                    </div>
                </div>

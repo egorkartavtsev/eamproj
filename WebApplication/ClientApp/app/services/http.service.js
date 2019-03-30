@@ -13,6 +13,19 @@ var HttpService = /** @class */ (function () {
     function HttpService(http) {
         this.http = http;
     }
+    HttpService.prototype.singInUser = function (login, password) {
+        var body = {
+            "cond[user]": login,
+            "cond[pass]": password
+        };
+        return this.http.get("/api/login/", { params: body });
+    };
+    HttpService.prototype.trySession = function (token) {
+        var body = {
+            "cond[token]": token
+        };
+        return this.http.get("/api/login/", { params: body });
+    };
     HttpService.prototype.getFormURL = function (org_id, entity_id) {
         var body = {
             query: "312",
