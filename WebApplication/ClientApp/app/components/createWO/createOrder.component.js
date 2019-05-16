@@ -110,32 +110,14 @@ var CreateOrderComponent = /** @class */ (function () {
     CreateOrderComponent.prototype.createWO = function () {
         var _this = this;
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
-        console.log(this.order);
         this.http.createWO(this.order.org_id, this.order.instance_number, this.order.start, this.order.complete, this.order.hours, this.order.work_type, this.order.entity_name, this.order.idle_categ, this.order.idle_type, this.order.idle_code, this.order.planner_type).subscribe(function (data) {
-            console.log(data);
-            //alert("Сохранено!!!");
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
             window.location.reload();
         }, function (error) {
             alert("Ошибка!!!");
-            console.log(error);
-            //let alert = this.renderer.createElement('div');
-            //const text = this.renderer.createText('Произошла ошибка на сервере.');
-            //let icon = this.renderer.createElement('i');
-            //this.renderer.addClass(icon, 'fas');
-            //this.renderer.addClass(icon, 'fa-exclamation-triangle');
-            //this.renderer.appendChild(alert, icon);
-            //this.renderer.appendChild(alert, text);
-            //this.renderer.addClass(alert, 'mt-3');
-            //this.renderer.addClass(alert, 'mb-0');
-            //this.renderer.addClass(alert, 'alert');
-            //this.renderer.addClass(alert, 'alert-danger');
-            //this.renderer.setStyle(alert, 'color', '#9f5f5f');
-            //this.renderer.appendChild(this.targetRow.nativeElement, alert);
         });
     };
     CreateOrderComponent.prototype.validateForm = function () {
-        console.log(this.order);
         this.allow = true;
         if (this.allow && this.order.hours !== '0') {
             this.allow = true;

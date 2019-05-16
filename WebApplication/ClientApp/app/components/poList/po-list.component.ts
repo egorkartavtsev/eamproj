@@ -11,7 +11,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
         <div class="modal-dialog custom_modal_size" role="document">
             <div class="modal-content" style="overflow-x: auto;">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center w-100" id="exampleModalLabel">{{title}} <button class="btn btn-info" (click)="openForm()">Формы</button></h5>
+                    <h5 class="modal-title text-center w-100" id="exampleModalLabel">{{title}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -31,7 +31,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
                             </tr>
                         </thead>
                         <tbody>
-.                           <ng-template [ngIf]="!emptyModal" [ngIfElse]="modalloader">
+                            <ng-template [ngIf]="!emptyModal" [ngIfElse]="modalloader">
                                 <tr *ngFor="let po of _plist">
                                     <ng-template [ngIf]="currentPO?.entity_id != po.entity_id" [ngIfElse]="edit">
                                         <td class="align-middle">{{po.entity_name}}</td>
@@ -73,12 +73,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
             </select></td>
         <td>
             <div class="form-group" id="chngStart" #target>
-                <div class="input-group">
-                    <input type="text" style="min-width: 180px;" [(ngModel)]="currentPO.start" on-input="updateComplete($event)" id="curStart" class="form-control" (click)="toogleCalendar()">
-                    <div class="input-group-prepend">
-                        <button class="input-group-text btn btn-default d-none d-sm-block" (click)="toogleCalendar()"> <i class="fas fa-calendar"> </i></button>
-                    </div>
-                </div>
+                <input type="text" style="min-width: 180px;" [(ngModel)]="currentPO.start" on-input="updateComplete($event)" id="curStart" class="form-control" (click)="toogleCalendar()">
                 <div #startCal class="calendBlock d-none">
                         <div class="card-body">
                             <div class="w-100">
@@ -148,21 +143,17 @@ export class PoListComponent {
 
     constructor(private http: HttpService, private updater: Renderer, private renderer: Renderer2) {
         this.currentPO = new ProdOrder();
-        console.log(this.poList);
     }
 
     private save() {
-        console.log(this.currentPO);
         this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(
             (data: any) => {
-                console.log(data);
                 this.onSaved.emit(true);
-
                 this.cancel();
             },
             error => {
                 let alert = this.renderer.createElement('div');
-                const text = this.renderer.createText('Произошла ошибка на сервере.');
+                const text = this.renderer.createText(error.error.text);
                 let icon = this.renderer.createElement('i');
                 this.renderer.addClass(icon, 'fas');
                 this.renderer.addClass(icon, 'fa-exclamation-triangle');
@@ -174,10 +165,6 @@ export class PoListComponent {
                 this.renderer.addClass(alert, 'alert-danger');
                 this.renderer.setStyle(alert, 'color', '#9f5f5f');
                 this.renderer.appendChild(this.targetRow.nativeElement, alert);
-                //setTimeout(() => {
-                //    this.renderer.setStyle(alert, 'display', 'none');
-                //    console.log(alert);
-                //}, 3000);
             }
         );
     }
@@ -186,8 +173,6 @@ export class PoListComponent {
         let url = "";
         this.http.getFormURL(org_id, entity_id).subscribe(
             (data: any) => {
-                console.log(data[0].URL);
-                console.log(this._plist);
                 window.open(data[0].URL.toString(), "hello");
             }
         );
@@ -195,7 +180,7 @@ export class PoListComponent {
 
     private editPO(po: any) {
         this.currentPO = po;
-        var sup = new Date(po.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.makeTrueDate(po.start));
         this.tmpDT = { hour: sup.getHours(), minute: sup.getMinutes() };
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.startCalDay = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
@@ -214,14 +199,15 @@ export class PoListComponent {
     }
 
     private cancelDate() {
-        var sup = new Date(this.currentPO.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.makeTrueDate(this.currentPO.start));
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.tmpDT = { hour: sup.getHours(), minute: sup.getMinutes() };
         this.toogleCalendar();
     }
 
     private updateComplete(e?: object) {
-        var sup = new Date(this.currentPO.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.makeTrueDate(this.currentPO.start));
+        //var sup1 = new Date(this.currentPO.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$1/$2/$3 $4:$5:$6'));
         let tmp = {
             "days": Math.floor(+this.currentPO.hours / 24),
             "hours": +this.currentPO.hours % 24

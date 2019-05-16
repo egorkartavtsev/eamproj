@@ -13,6 +13,17 @@ var HttpService = /** @class */ (function () {
     function HttpService(http) {
         this.http = http;
     }
+    HttpService.prototype.getTotalData = function (query, cond, target) {
+        var body = { "query": query };
+        for (var _i = 0, cond_1 = cond; _i < cond_1.length; _i++) {
+            var it = cond_1[_i];
+            body["cond[" + it.key + "]"] = it.value;
+        }
+        if (typeof (target) !== 'undefined') {
+            body["target"] = target;
+        }
+        return this.http.get("/api/getData/", { params: body });
+    };
     HttpService.prototype.singInUser = function (login, password) {
         var body = {
             "cond[user]": login,
@@ -34,17 +45,23 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("/api/getDatas/", { params: body });
     };
-    HttpService.prototype.getYearData = function (year) {
+    HttpService.prototype.getYearData = function (year, page, count, current) {
         var body = {
             query: "300",
-            "cond[year]": year
+            "cond[year]": year,
+            "cond[count]": count,
+            "cond[current]": current,
+            "cond[page]": page
         };
         return this.http.get("/api/yearTable/", { params: body });
     };
-    HttpService.prototype.getMonthData = function (cond) {
+    HttpService.prototype.getMonthData = function (cond, page, count, current) {
         var body = {
             query: "301",
-            "cond[month]": cond
+            "cond[month]": cond,
+            "cond[count]": count,
+            "cond[current]": current,
+            "cond[page]": page
         };
         return this.http.get("/api/monthTable/", { params: body });
     };
@@ -149,6 +166,14 @@ var HttpService = /** @class */ (function () {
             "cond[planner_type]": planner_type
         };
         return this.http.get("api/updatesWO/", { params: body });
+    };
+    HttpService.prototype.getCountOfRows = function (per, mon) {
+        var body = {
+            query: "315",
+            "cond[mon]": mon,
+            "cond[per]": per
+        };
+        return this.http.get("api/getDatas", { params: body });
     };
     HttpService = __decorate([
         Injectable(),

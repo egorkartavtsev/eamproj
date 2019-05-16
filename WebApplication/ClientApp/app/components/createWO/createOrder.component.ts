@@ -137,7 +137,6 @@ export class CreateOrderComponent {
 
     private createWO() {
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
-        console.log(this.order);
         this.http.createWO(
             this.order.org_id,
             this.order.instance_number,
@@ -152,33 +151,16 @@ export class CreateOrderComponent {
             this.order.planner_type
         ).subscribe(
             (data: any) => {
-                console.log(data);
-                //alert("Сохранено!!!");
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
                 window.location.reload();
             },
             error => {
                 alert("Ошибка!!!");
-                console.log(error);
-                //let alert = this.renderer.createElement('div');
-                //const text = this.renderer.createText('Произошла ошибка на сервере.');
-                //let icon = this.renderer.createElement('i');
-                //this.renderer.addClass(icon, 'fas');
-                //this.renderer.addClass(icon, 'fa-exclamation-triangle');
-                //this.renderer.appendChild(alert, icon);
-                //this.renderer.appendChild(alert, text);
-                //this.renderer.addClass(alert, 'mt-3');
-                //this.renderer.addClass(alert, 'mb-0');
-                //this.renderer.addClass(alert, 'alert');
-                //this.renderer.addClass(alert, 'alert-danger');
-                //this.renderer.setStyle(alert, 'color', '#9f5f5f');
-                //this.renderer.appendChild(this.targetRow.nativeElement, alert);
             }
         );
     }
 
     private validateForm() {
-        console.log(this.order);
         this.allow = true;
 
         if (this.allow && this.order.hours !== '0') {

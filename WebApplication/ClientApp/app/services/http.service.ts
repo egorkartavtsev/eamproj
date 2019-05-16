@@ -10,6 +10,17 @@ import { url } from 'inspector';
 export class HttpService{
     constructor(private http: HttpClient) { }
 
+    getTotalData(query: string, cond: any, target?: string) {
+        let body = { "query": query };
+        for (let it of cond) {
+            body["cond[" + it.key + "]"] = it.value;
+        }
+        if (typeof (target) !== 'undefined') {
+            body["target"] = target;
+        }
+        return this.http.get("/api/getData/", { params: body });
+    }
+
     singInUser(login: string, password: string) {
         const body = {
             "cond[user]": login,
@@ -34,18 +45,24 @@ export class HttpService{
         return this.http.get("/api/getDatas/", { params: body });
     }
 
-    getYearData(year: string) {
+    getYearData(year: string, page: string, count: string, current: string) {
         const body = {
             query: "300",
-            "cond[year]": year
+            "cond[year]": year,
+            "cond[count]": count,
+            "cond[current]": current,
+            "cond[page]": page
         };
         return this.http.get("/api/yearTable/", { params: body });
     }
 
-    getMonthData(cond: string) {
+    getMonthData(cond: string, page: string, count: string, current: string) {
         const body = {
             query: "301",
-            "cond[month]": cond
+            "cond[month]": cond,
+            "cond[count]": count,
+            "cond[current]": current,
+            "cond[page]": page
         };
         return this.http.get("/api/monthTable/", { params: body });
     }
@@ -159,5 +176,14 @@ export class HttpService{
             "cond[planner_type]": planner_type
         };
         return this.http.get("api/updatesWO/", { params: body });
+    }
+
+    getCountOfRows(per: string, mon: string) {
+        let body = {
+            query: "315",
+            "cond[mon]": mon,
+            "cond[per]": per
+        };
+        return this.http.get("api/getDatas", { params: body });
     }
 }

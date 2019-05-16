@@ -76,7 +76,6 @@ export class AppComponent implements OnInit {
                         if (!this.logged && cookt !== undefined) {
                             this.http.trySession(cookt).subscribe(
                                 (data: any[]) => {
-                                    console.log(data);
                                     if (data["result"] !== null) {
                                         flag = true;
                                     } else {
@@ -181,8 +180,6 @@ export class AppComponent implements OnInit {
     }
 
     goTo(report: string) {
-        console.log(this.currentDate);
-        console.log(report);
 
         let queryparam = {};
 

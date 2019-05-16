@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Renderer2, ViewChild, Component, OnInit } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { FilterModel } from '../../library/filter-model';
 import { ProdOrder } from '../../library/prod-order.lib';
@@ -26,6 +26,7 @@ export class YearComponent implements OnInit {
     private currentPO: ProdOrder = new ProdOrder;
     private emptyData: boolean = true;
     private emptyModal: boolean = true;
+    private warn: boolean = false;
     private tmpDT: object = {};
     private targetChanged: object = {
         "hours": false,
@@ -33,6 +34,19 @@ export class YearComponent implements OnInit {
     };
     model: NgbDateStruct;
     startCalDay: NgbDateStruct;
+
+    private curPage: number = 0;
+    @ViewChild('fetchBtn') fetchBtn: any;
+    @ViewChild('mimiLoader') mimiLoader: any;
+
+    /********************************************************/
+
+    private currentCount: number = 0;
+    private totalCount: string;
+    private needCount: string = '15';
+
+    /********************************************************/
+
 
     private monthes: any[] = [
         { "mon": "01", "num": "Январь" },
@@ -50,6 +64,7 @@ export class YearComponent implements OnInit {
     ];
 
     constructor(
+        private renderer: Renderer2, 
         private filterService: FilterService,
         private http: HttpService,
         private route: ActivatedRoute
@@ -62,7 +77,12 @@ export class YearComponent implements OnInit {
                 } else {
                     this.title = new Date().getFullYear().toString();
                 }
-                this.getData(this.title);
+                this.getData();
+                this.http.getCountOfRows(this.title+'-01', '12').subscribe(
+                    (data: string) => {
+                        this.totalCount = data[0]['CNT'];
+                    }
+                );
             }
         );
     }
@@ -78,51 +98,60 @@ export class YearComponent implements OnInit {
                     this.CurrentData.push(order);
                 }
             }
+
+            if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
+                this.warn = false;
+            } else {
+                this.warn = true;
+            }
         });
 
     }
 
-    private getData(query: string) {
+    private getData() {
         this.emptyData = true;
         if (typeof (this.modalData['mon']) !== "undefined") {
             this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
         }
-        this.http.getYearData(query).subscribe(
+        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
-                let tmp = Object.keys(data).map(i => data[i]);
-                this.TotalData = [];
-                let i = 0;
-                for (let row of tmp) {
-                    let j = 0;
-                    let sup = [];
-                    let sum = 0;
-                    this.TotalData.push(row);
+                let tmp = this.getRows(data);
 
-                    let cells = Object.keys(row['decadas']).map(i => row['decadas'][i]);
-                    this.TotalData[i]['decadas'] = cells;
-
-                    for (let cell of cells) {
-                        if (cell['val'] == "") {
-                            this.TotalData[i]['decadas'][j] = cell;
-                        } else {
-                            this.TotalData[i]['decadas'][j]['val'] = (cell['val'] % 24) ? (cell['val'] / 24).toFixed(2) : (cell['val'] / 24);
-                            this.TotalData[i]['decadas'][j]['class'] = cell['class'];
-                            this.TotalData[i]['decadas'][j]['tarM'] = cell['tarM'];
-                            this.TotalData[i]['decadas'][j]['tarD'] = cell['tarD'];
-                            sum += +cell['val'];
-                        }
-                        ++j;
+                this.TotalData = tmp;
+                for (let order of tmp) {
+                    if (this.filterService.applyFilter(this.filter, order)) {
+                        this.CurrentData.push(order);
                     }
-                    this.TotalData[i]['sum'] = ((sum * 100) % 100) ? sum.toFixed(2) : sum;
-                    ++i;
                 }
-                this.CurrentData = this.TotalData;
-                console.log('*/*/*/**/*/inGetData*/*/*/*/*/*/');
-                console.log(this.CurrentData);
-                console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
+
                 this.emptyData = false;
+                this.tryBtn(tmp.length);
+                this.currentCount = this.TotalData.length;
+                this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
+                this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
             },
             error => { console.log(error) }
+        );
+    }
+
+    private fetchData() {
+        this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
+        this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
+        ++this.curPage;
+        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
+            (data: any[]) => {
+                let tmp = this.getRows(data);
+
+                Array.prototype.push.apply(this.TotalData, tmp);
+                for (let order of tmp) {
+                    if (this.filterService.applyFilter(this.filter, order)) {
+                        this.CurrentData.push(order);
+                    }
+                }
+                this.currentCount = this.TotalData.length;
+                this.tryBtn(tmp.length);
+                this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
+            }
         );
     }
 
@@ -177,12 +206,52 @@ export class YearComponent implements OnInit {
                 this.emptyModal = false;
             }
         );
-        console.log(this.modalData);
-        console.log(instance);
-        console.log(cond);
     }
 
     onSaved() {
-        this.getData(this.title);
+        this.getData();
     }
+
+
+
+    private getRows(data: any[]) {
+        let totalRows: any[] = [];
+
+        let tmp = Object.keys(data).map(i => data[i]);
+        let i = 0;
+        for (let row of tmp) {
+            let j = 0;
+            let sum = 0;
+            totalRows.push(row);
+
+            let cells = Object.keys(row['decadas']).map(i => row['decadas'][i]);
+            totalRows[i]['decadas'] = cells;
+
+            for (let cell of cells) {
+                if (cell['val'] == "") {
+                    totalRows[i]['decadas'][j] = cell;
+                } else {
+                    totalRows[i]['decadas'][j]['val'] = (cell['val'] % 24) ? (cell['val'] / 24).toFixed(2) : (cell['val'] / 24);
+                    totalRows[i]['decadas'][j]['class'] = cell['class'];
+                    totalRows[i]['decadas'][j]['tarM'] = cell['tarM'];
+                    totalRows[i]['decadas'][j]['tarD'] = cell['tarD'];
+                    sum += +cell['val'];
+                }
+                ++j;
+            }
+            totalRows[i]['sum'] = ((sum * 100) % 100) ? sum.toFixed(2) : sum;
+            ++i;
+        }
+        return totalRows;
+    }
+
+    private tryBtn(length: number) {
+        if (length >= +this.needCount) {
+            this.renderer.removeAttribute(this.fetchBtn.nativeElement, 'disabled');
+            this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+        } else {
+            this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
+        }
+    }
+
 }

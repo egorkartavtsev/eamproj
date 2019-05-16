@@ -61,7 +61,6 @@ var AppComponent = /** @class */ (function () {
                 else {
                     if (!_this.logged && cookt_1 !== undefined) {
                         _this.http.trySession(cookt_1).subscribe(function (data) {
-                            console.log(data);
                             if (data["result"] !== null) {
                                 flag = true;
                             }
@@ -113,14 +112,14 @@ var AppComponent = /** @class */ (function () {
                 _this.cookie.put('eam_kp_t', data["token"]);
                 flag = true;
                 valid = true;
-                _this.renderer.addClass(_this.mimiLoader.nativeElement, 'btn-success');
-                _this.renderer.removeClass(_this.mimiLoader.nativeElement, 'btn-danger');
+                _this.renderer.addClass(_this.btnSingIn.nativeElement, 'btn-success');
+                _this.renderer.removeClass(_this.btnSingIn.nativeElement, 'btn-danger');
             }
             else {
                 flag = false;
                 valid = false;
-                _this.renderer.addClass(_this.mimiLoader.nativeElement, 'btn-danger');
-                _this.renderer.removeClass(_this.mimiLoader.nativeElement, 'btn-success');
+                _this.renderer.addClass(_this.btnSingIn.nativeElement, 'btn-danger');
+                _this.renderer.removeClass(_this.btnSingIn.nativeElement, 'btn-success');
             }
         });
         setTimeout(function () {
@@ -161,8 +160,6 @@ var AppComponent = /** @class */ (function () {
         }
     };
     AppComponent.prototype.goTo = function (report) {
-        console.log(this.currentDate);
-        console.log(report);
         var queryparam = {};
         switch (report) {
             case 'year':

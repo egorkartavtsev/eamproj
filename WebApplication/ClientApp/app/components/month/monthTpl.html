@@ -28,6 +28,25 @@
             </tbody>
         </table>
     </div>
+    <div class="w-100 row justify-content-center">
+        <div class="col-12">Получено {{currentCount}} строк из {{totalCount}}</div>
+        <button class="btn btn-sm btn-info mb-3 mt-3 col-2" #fetchBtn (click)="fetchData()"><i class="fab fa-rev"></i> загрузить ещё</button>
+        <div class="form-group col-2">
+            <label>Количество строк</label>
+            <select class="form-control" [(ngModel)]="needCount">
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="{{totalCount - currentCount}}">Все</option>
+            </select>
+        </div>
+        <div class="loader loader-mini d-none" #mimiLoader></div>
+        <ng-template [ngIf]="warn"><div class="col-12 text-center"><span class="badge badge-warning">Активирован фильтр. Данные могут быть выведены не в полном объёме</span></div></ng-template>
+    </div>
 </div>
 <!-- Modal -->
 <polist-comp [title]="modalData.title" [poList]="modalData.porders" [emptyModal]="emptyModal" (onSaved)="getData(tmpQuery)"></polist-comp>
