@@ -149,6 +149,12 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("api/getDatas", { params: body });
     };
+    HttpService.prototype.getStats = function () {
+        var body = {
+            query: "317"
+        };
+        return this.http.get("api/getDatas", { params: body });
+    };
     HttpService.prototype.createWO = function (org_id, instance_number, start, complete, duration, work_type, entity_name, idle_categ, idle_type, idle_code, planner_type) {
         var body = {
             query: "301",
@@ -167,12 +173,12 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("api/updatesWO/", { params: body });
     };
-    HttpService.prototype.getCountOfRows = function (per, mon) {
-        var body = {
-            query: "315",
-            "cond[mon]": mon,
-            "cond[per]": per
-        };
+    HttpService.prototype.getCountOfRows = function (filt) {
+        var body = { query: "315" };
+        for (var _i = 0, _a = Object.keys(filt); _i < _a.length; _i++) {
+            var i = _a[_i];
+            body["cond[" + i + "]"] = filt[i];
+        }
         return this.http.get("api/getDatas", { params: body });
     };
     HttpService = __decorate([

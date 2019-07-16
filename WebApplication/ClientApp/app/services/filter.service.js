@@ -11,6 +11,76 @@ var FilterService = /** @class */ (function () {
     function FilterService() {
         this.filter = new BehaviorSubject(new FilterModel);
     }
+    FilterService.prototype.makeSQLFilter = function (filt) {
+        var SQLFilt = {};
+        var date = new Date(parseInt(filt.period.year), (parseInt(filt.period.month) - 1), parseInt(filt.period.day));
+        var tmpD = new Date;
+        var monS = '';
+        var monE = '';
+        var dayS = '';
+        var dayE = '';
+        var sup = '';
+        //dates
+        switch (filt.form) {
+            case 'year':
+                tmpD.setFullYear(date.getFullYear() + 1);
+                monS = monE = '01';
+                dayS = dayE = '01';
+                break;
+            case 'mon':
+                tmpD.setMonth(date.getMonth() + 1);
+                monS = filt.period.month;
+                monE = ((tmpD.getMonth() + 1).toString().length > 1) ? (tmpD.getMonth() + 1).toString() : '0' + (tmpD.getMonth() + 1).toString();
+                dayE = dayS = '01';
+                break;
+            case 'week':
+                tmpD.setDate(date.getDate() + 7);
+                monS = filt.period.month;
+                monE = ((tmpD.getMonth() + 1).toString().length > 1) ? (tmpD.getMonth() + 1).toString() : '0' + (tmpD.getMonth() + 1).toString();
+                dayS = filt.period.day;
+                dayE = (tmpD.getDate().toString().length > 1) ? tmpD.getDate().toString() : '0' + tmpD.getDate().toString();
+                break;
+        }
+        SQLFilt['perStart'] = filt.period.year + '-' + monS + '-' + dayS;
+        SQLFilt['perEnd'] = tmpD.getFullYear().toString() + '-' + monE + '-' + dayE;
+        //Multiselect
+        if (filt.org.length === 0 || filt.org === '%') {
+            SQLFilt['org'] = "LIKE '%'";
+        }
+        else {
+            sup = filt.org.map(function (a) { return a.ORGANIZATION_ID; }).join(', ');
+            SQLFilt['orgs'] = "IN (" + sup + ")";
+        }
+        if (filt.agr.length === 0 || filt.agr === '%') {
+            SQLFilt['agr'] = "LIKE '%'";
+        }
+        else {
+            sup = filt.agr.map(function (a) { return a.INSTANCE_NUMBER; }).join("', '");
+            SQLFilt['agr'] = "IN ('" + sup + "')";
+        }
+        if (filt.wtype.length === 0 || filt.wtype === '%') {
+            SQLFilt['wtype'] = "LIKE '%'";
+        }
+        else {
+            sup = filt.wtype.map(function (a) { return a.ROUTING_COMMENT; }).join("', '");
+            SQLFilt['wtype'] = "IN ('" + sup + "')";
+        }
+        if (filt.status.length === 0 || filt.status === '%') {
+            SQLFilt['status'] = "LIKE '%'";
+        }
+        else {
+            sup = filt.status.map(function (a) { return a.LOOKUP_CODE; }).join("', '");
+            SQLFilt['status'] = "IN ('" + sup + "')";
+        }
+        //other
+        if (filt.planner === '%') {
+            SQLFilt['planner'] = "LIKE '%'";
+        }
+        else {
+            SQLFilt['planner'] = '= ' + filt.planner;
+        }
+        return SQLFilt;
+    };
     FilterService.prototype.applyFilter = function (filt, order) {
         var allow = true;
         if (filt.planner_filter != '') {

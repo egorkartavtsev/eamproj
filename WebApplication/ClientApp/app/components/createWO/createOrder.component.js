@@ -61,6 +61,8 @@ var CreateOrderComponent = /** @class */ (function () {
         this.order.entity_name = sup[0];
         this.http.getAgrs(this.order.org_id.toString()).subscribe(function (data) {
             _this.agregates = Object.keys(data).map(function (i) { return data[i]; });
+            console.log(_this.agregates);
+            _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
         });
         this.http.getIdleCats(this.order.org_id).subscribe(function (data) {
             _this.idle_categs = Object.keys(data).map(function (i) { return data[i]; });
@@ -114,7 +116,8 @@ var CreateOrderComponent = /** @class */ (function () {
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
             window.location.reload();
         }, function (error) {
-            alert("Ошибка!!!");
+            console.log(error);
+            alert(error.error.text);
         });
     };
     CreateOrderComponent.prototype.validateForm = function () {

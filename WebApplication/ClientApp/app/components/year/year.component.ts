@@ -78,11 +78,11 @@ export class YearComponent implements OnInit {
                     this.title = new Date().getFullYear().toString();
                 }
                 this.getData();
-                this.http.getCountOfRows(this.title+'-01', '12').subscribe(
-                    (data: string) => {
-                        this.totalCount = data[0]['CNT'];
-                    }
-                );
+                //this.http.getCountOfRows(this.title+'-01', '12').subscribe(
+                //    (data: string) => {
+                //        this.totalCount = data[0]['CNT'];
+                //    }
+                //);
             }
         );
     }
@@ -99,11 +99,11 @@ export class YearComponent implements OnInit {
                 }
             }
 
-            if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-                this.warn = false;
-            } else {
-                this.warn = true;
-            }
+            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
+            //    this.warn = false;
+            //} else {
+            //    this.warn = true;
+            //}
         });
 
     }
@@ -151,6 +151,9 @@ export class YearComponent implements OnInit {
                 this.currentCount = this.TotalData.length;
                 this.tryBtn(tmp.length);
                 this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
+                console.log(this.totalCount);
+                console.log(this.needCount);
+                console.log(this.currentCount);
             }
         );
     }

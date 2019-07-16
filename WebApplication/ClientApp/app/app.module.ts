@@ -2,9 +2,10 @@
 import { NgModule }             from '@angular/core';
 import { BrowserModule }        from '@angular/platform-browser';
 import { HttpClientModule }     from '@angular/common/http';
-import { FormsModule }          from '@angular/forms';
+import { FormsModule, ReactiveFormsModule }          from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { NgbModule }            from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { SelectDropDownModule } from 'ngx-select-dropdown'
 import { CookieService }        from 'angular2-cookie/services/cookies.service';
 
 // components
@@ -26,17 +27,17 @@ import { HttpService }      from './services/http.service';
 import { EmptyCellDirective } from './directives/empty-cell.directive';
 
 // определение маршрутов
-const appRoutes: Routes =[
-    { path: '', component: MonthComponent},
-    { path: 'week', component: WeekComponent},
-    { path: 'test', component: TestComponent },
-    { path: 'year', component: YearComponent},
-    { path: 'month', component: MonthComponent},
-    { path: '**', redirectTo: '/' }
-];
+//const appRoutes: Routes =[
+//    { path: '', component: MonthComponent},
+//    { path: 'week', component: WeekComponent},
+//    { path: 'test', component: TestComponent },
+//    { path: 'year', component: YearComponent},
+//    { path: 'month', component: MonthComponent},
+//    { path: '**', redirectTo: '/' }
+//];
 
 @NgModule({
-    imports:        [ NgbModule, BrowserModule, HttpClientModule, RouterModule.forRoot(appRoutes), FormsModule ],
+    imports: [NgbModule, SelectDropDownModule, BrowserModule, HttpClientModule, FormsModule, ReactiveFormsModule ],
     declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent, TestComponent],
     providers: [FilterService, HttpService, CookieService ],
     bootstrap:      [ AppComponent ]

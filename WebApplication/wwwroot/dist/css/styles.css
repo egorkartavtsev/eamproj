@@ -1,3 +1,13 @@
+.filter-box {
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid transparent;
+    color: #004085;
+    background-color: #d1e3ff;
+    border-color: #8a7cff;
+}
+
 
 .bigTable {
     overflow-x: auto;

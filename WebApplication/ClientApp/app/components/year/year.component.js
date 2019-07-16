@@ -59,9 +59,11 @@ var YearComponent = /** @class */ (function () {
                 _this.title = new Date().getFullYear().toString();
             }
             _this.getData();
-            _this.http.getCountOfRows(_this.title + '-01', '12').subscribe(function (data) {
-                _this.totalCount = data[0]['CNT'];
-            });
+            //this.http.getCountOfRows(this.title+'-01', '12').subscribe(
+            //    (data: string) => {
+            //        this.totalCount = data[0]['CNT'];
+            //    }
+            //);
         });
     }
     YearComponent.prototype.ngOnInit = function () {
@@ -76,12 +78,11 @@ var YearComponent = /** @class */ (function () {
                     _this.CurrentData.push(order);
                 }
             }
-            if (_this.filter.agr_filter == '' && _this.filter.org_filter == '' && _this.filter.planner_filter == '' && _this.filter.wt_filter == '') {
-                _this.warn = false;
-            }
-            else {
-                _this.warn = true;
-            }
+            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
+            //    this.warn = false;
+            //} else {
+            //    this.warn = true;
+            //}
         });
     };
     YearComponent.prototype.getData = function () {
@@ -123,6 +124,9 @@ var YearComponent = /** @class */ (function () {
             _this.currentCount = _this.TotalData.length;
             _this.tryBtn(tmp.length);
             _this.renderer.addClass(_this.mimiLoader.nativeElement, 'd-none');
+            console.log(_this.totalCount);
+            console.log(_this.needCount);
+            console.log(_this.currentCount);
         });
     };
     YearComponent.prototype.showPOList = function (mon, dec, instance) {

@@ -66,11 +66,11 @@ export class MonthComponent {
                 sup = sup + " " + new Date(this.tmpQuery + "-01").getFullYear().toString();
                 this.title = sup[0].toUpperCase() + sup.substring(1);
                 this.getData();
-                this.http.getCountOfRows(this.tmpQuery, '1').subscribe(
-                    (data: string) => {
-                        this.totalCount = data[0]['CNT'];
-                    }
-                );
+                //this.http.getCountOfRows(this.tmpQuery, '1').subscribe(
+                //    data => {
+                //        this.totalCount = data[0]['CNT'];
+                //    }
+                //);
             }
         );
         this.modalData['title'] = "";
@@ -88,18 +88,17 @@ export class MonthComponent {
                 }
             }
 
-            if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-                this.warn = false;
-            } else {
-                this.warn = true;
-            }
+            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
+            //    this.warn = false;
+            //} else {
+            //    this.warn = true;
+            //}
         });
 
     }
 
     private getData() {
         this.emptyData = true;
-        this.modalData = [];
         let query = this.tmpQuery;
         if (typeof (this.modalData['title']) !== "undefined") {
             this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
@@ -107,6 +106,7 @@ export class MonthComponent {
         this.TotalData = [];
         this.tHeadDays = [];
         this.CurrentData = [];
+        this.currentCount = 0;
         this.http.getMonthData(query, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
                 let tmp = this.getRows(data);
@@ -148,7 +148,6 @@ export class MonthComponent {
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
         ++this.curPage;
-        this.modalData = [];
         this.http.getMonthData(this.tmpQuery, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
                 let tmp = this.getRows(data);

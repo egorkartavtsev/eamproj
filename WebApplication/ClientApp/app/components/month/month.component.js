@@ -50,9 +50,11 @@ var MonthComponent = /** @class */ (function () {
             sup = sup + " " + new Date(_this.tmpQuery + "-01").getFullYear().toString();
             _this.title = sup[0].toUpperCase() + sup.substring(1);
             _this.getData();
-            _this.http.getCountOfRows(_this.tmpQuery, '1').subscribe(function (data) {
-                _this.totalCount = data[0]['CNT'];
-            });
+            //this.http.getCountOfRows(this.tmpQuery, '1').subscribe(
+            //    data => {
+            //        this.totalCount = data[0]['CNT'];
+            //    }
+            //);
         });
         this.modalData['title'] = "";
         this.modalData['porders'] = [];
@@ -68,18 +70,16 @@ var MonthComponent = /** @class */ (function () {
                     _this.CurrentData.push(order);
                 }
             }
-            if (_this.filter.agr_filter == '' && _this.filter.org_filter == '' && _this.filter.planner_filter == '' && _this.filter.wt_filter == '') {
-                _this.warn = false;
-            }
-            else {
-                _this.warn = true;
-            }
+            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
+            //    this.warn = false;
+            //} else {
+            //    this.warn = true;
+            //}
         });
     };
     MonthComponent.prototype.getData = function () {
         var _this = this;
         this.emptyData = true;
-        this.modalData = [];
         var query = this.tmpQuery;
         if (typeof (this.modalData['title']) !== "undefined") {
             this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
@@ -87,6 +87,7 @@ var MonthComponent = /** @class */ (function () {
         this.TotalData = [];
         this.tHeadDays = [];
         this.CurrentData = [];
+        this.currentCount = 0;
         this.http.getMonthData(query, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
             var tmp = _this.getRows(data);
             _this.TotalData = tmp;
@@ -126,7 +127,6 @@ var MonthComponent = /** @class */ (function () {
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
         ++this.curPage;
-        this.modalData = [];
         this.http.getMonthData(this.tmpQuery, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
             var tmp = _this.getRows(data);
             Array.prototype.push.apply(_this.TotalData, tmp);

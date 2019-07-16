@@ -31,6 +31,7 @@ var PoListComponent = /** @class */ (function () {
     });
     PoListComponent.prototype.save = function () {
         var _this = this;
+        //console.log(this.currentPO);
         this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(function (data) {
             _this.onSaved.emit(true);
             _this.cancel();

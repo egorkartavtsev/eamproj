@@ -1,94 +1,75 @@
 <div class="row">
-    <!-- for small width devices -->
-    <div class="d-block d-sm-none card w-100">
-        <div class="bg-info text-white text-center collapsed card-header w-100" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
-            <h5 class="align-middle"><i class="fas fa-align-justify"></i> Фильтры и настройки <i class="fas fa-chevron-down"></i></h5>
-        </div>
-        <div class="collapse" id="collapseFilter">
-            <div class="card-body">
-                <h5>Фильтры</h5>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Цеха</label>
-                    </div>
-                    <select class="custom-select" name="filterTotal.org_filter" [(ngModel)]="filterTotal.org_filter" (change)="inp('area')">
-                        <option selected value="">Вce...</option>
-                        <option *ngFor="let area of organizations" value="{{area.ORGANIZATION_ID}}">{{area.ORGANIZATION_NAME}}</option>
-                    </select>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Агрегаты</label>
-                    </div>
-                    <select class="custom-select" name="agr_filter" [(ngModel)]="filterTotal.agr_filter" (change)="inp('agr')">
-                        <option selected value="">Вce...</option>
-                        <option *ngFor="let agr of agregates" value="{{agr.INSTANCE_NUMBER}}">{{agr.INSTANCE_NUMBER}}</option>
-                    </select>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Вид ремонта</label>
-                    </div>
-                    <select class="custom-select" name="wt_filter" [(ngModel)]="filterTotal.wt_filter" (change)="inp()">
-                        <option selected value="">Вce...</option>
-                        <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
-                    </select>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Плановик</label>
-                    </div>
-                    <select class="custom-select" name="planner_filter" [(ngModel)]="filterTotal.planner_filter" (change)="inp()">
-                        <option selected value="">Вce...</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- for medium width devices -->
-    <div class="d-none d-sm-block w-100">
+    <div class="w-100">
         <div class="row">
-            <div class="col-12"><h5>Фильтры</h5></div>
-            <div class="col-6">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="inputGroupSelect01">Цех</label>
-                    </div>
-                    <select class="custom-select" id="inputGroupSelect01" [(ngModel)]="filterTotal.org_filter" (change)="inp('area')">
-                        <option value="" selected>Все цеха..</option>
-                        <option *ngFor="let area of organizations" value="{{area.ORGANIZATION_ID}}">{{area.ORGANIZATION_NAME}}</option>
-                    </select>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Агрегаты</label>
-                    </div>
-                    <select class="custom-select" [(ngModel)]="filterTotal.agr_filter" (change)="inp('agr')">
-                        <option selected value="">Вce...</option>
-                        <option *ngFor="let agr of agregates" value="{{agr.INSTANCE_NUMBER}}">{{agr.INSTANCE_NUMBER}}</option>
-                    </select>
-                </div>
+            <div class="col-12">
+                <span class="h5 float-left">Фильтры</span>
             </div>
             <div class="col-6">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Вид ремонта</label>
-                    </div>
-                    <select class="custom-select" [(ngModel)]="filterTotal.wt_filter" (change)="inp()">
-                        <option selected value="">Вce...</option>
-                        <option *ngFor="let tw of routing_sequences" value="{{tw}}">{{tw}}</option>
-                    </select>
-                </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text">Плановик</label>
-                    </div>
-                    <select class="custom-select" [(ngModel)]="filterTotal.planner_filter" (change)="inp()">
-                        <option selected value="">Вce...</option>
+                <div class="form-group row mb-3">
+                    <label class="col-2">Плановик</label>
+                    <select class="custom-select col-10" [(ngModel)]="filterTotal.planner" (change)="chg($event, 'planner')">
+                        <option selected value="%">Вce...</option>
                         <option value="40">Агрегатный график ОМА</option>
                         <option value="70">Агрегатный график ОЭО</option>
                     </select>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-2">Период</label>
+                    <select class="custom-select col-10" [(ngModel)]="filterTotal.form" (change)="chg($event, 'form')">
+                        <option selected value="week">Неделя</option>
+                        <option value="mon">Месяц</option>
+                        <option value="year">Год</option>
+                    </select>
+                </div>
+                <div class="form-group row mb-3">
+                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.year" (change)="chg($event, 'year')">
+                        <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
+                    </select>
+                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.month" (change)="chg($event, 'mon')">
+                        <option *ngFor="let mon of monthes" value="{{mon.num}}">{{mon.name}}</option>
+                    </select>
+                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.day" (change)="chg($event, 'day')">
+                        <option *ngFor="let day of days" value="{{day.num}}">{{day.name}}</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <span class="badge badge-info">Найдено {{cnt}} строк</span>
+                    <div class="loader loader-mini d-none float-left" #loader></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group row mb-3">
+                    <label class="col-1">Цех</label>
+                    <ngx-select-dropdown class="col-11"
+                                         [config]="conf_org"
+                                         [options]="organizations"
+                                         [multiple]="true"
+                                         (change)="chg($event, 'org')"></ngx-select-dropdown>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-2">Агрегаты</label>
+                    <ngx-select-dropdown class="col-10"
+                                         [config]="conf_agr"
+                                         [options]="agregates"
+                                         [multiple]="true"
+                                         (change)="chg($event, 'agr')"></ngx-select-dropdown>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-3">Вид ремонта</label>
+                    <ngx-select-dropdown class="col-9"
+                                         [config]="conf_wt"
+                                         [options]="wtypes"
+                                         [multiple]="true"
+                                         (change)="chg($event, 'wt')"></ngx-select-dropdown>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-1">Статус</label>
+                    <ngx-select-dropdown class="col-11"
+                                         [config]="conf_stat"
+                                         [options]="stats"
+                                         [multiple]="true"
+                                         (change)="chg($event, 'stat')"></ngx-select-dropdown>
                 </div>
             </div>
         </div>

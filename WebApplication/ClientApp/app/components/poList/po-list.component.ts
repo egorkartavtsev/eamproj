@@ -146,6 +146,7 @@ export class PoListComponent {
     }
 
     private save() {
+        //console.log(this.currentPO);
         this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(
             (data: any) => {
                 this.onSaved.emit(true);

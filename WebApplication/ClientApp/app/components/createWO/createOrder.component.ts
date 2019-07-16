@@ -75,6 +75,8 @@ export class CreateOrderComponent {
         this.http.getAgrs(this.order.org_id.toString()).subscribe(
             (data: any[]) => {
                 this.agregates = Object.keys(data).map(i => data[i]);
+                console.log(this.agregates);
+                this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
             }
         );
 
@@ -155,7 +157,8 @@ export class CreateOrderComponent {
                 window.location.reload();
             },
             error => {
-                alert("Ошибка!!!");
+                console.log(error);
+                alert(error.error.text);
             }
         );
     }

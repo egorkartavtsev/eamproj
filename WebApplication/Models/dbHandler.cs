@@ -23,12 +23,18 @@ namespace EAMlvl1System.Models
         *   1 - dev
         *   2 - psi
         *   3 - CHECK
-        *   4 - PROD
+        *   4 - UAT
+        *   5 - CHECK - WEBUSER
+        *   6 - PROD
+        *   7 - TEST 
         */
-        private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
+        //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
         //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=APPS;Password=qw1234;";
-        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=APPS;Password=Ctrhtn321;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-uat-db.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=UAT)(INSTANCE_NAME=UAT)));User Id=APPS;Password=Bcgsnfybz180;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
+        private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=APPS;Password=Ctrhtn321;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-test.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=TEST)(INSTANCE_NAME=TEST)));User Id=APPS;Password=qw1234;";
 
         //=========================================PUBLIC FUNCTIONAL=====================================================
         public List<Dictionary<string, object>> GetDataFromDB(string query, Dictionary<string, string> cond) {
@@ -400,7 +406,8 @@ namespace EAMlvl1System.Models
 
             foreach (DataRow curDec in rows.Tables[0].Rows)
             {
-                string date = DateTime.ParseExact(curDec["TEMPDATE"].ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                //string date = DateTime.ParseExact(curDec["TEMPDATE"].ToString(), "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                string date = Convert.ToDateTime(curDec["TEMPDATE"].ToString()).ToString("yyyy-MM-dd");
                 if (!tmpRow.ContainsKey(curDec["INSTANCE_NUMBER"].ToString()))
                 {
                     tmpRow.Add(

@@ -1,6 +1,8 @@
 ﻿import { Component, ViewChild, Renderer2, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpService } from '../../services/http.service';
+import { FilterService } from '../../services/filter.service';
+import { FilterModel } from '../../library/filter-model';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { forEach } from '@angular/router/src/utils/collection';
 import { Subscription } from 'rxjs';
@@ -14,116 +16,112 @@ import { setTimeout } from 'timers';
     styleUrls: ['../assets.css']
 })
 export class AppComponent implements OnInit {
-    private year: string;
-    private month: string;
-    private date: string;
+
+    private filter: FilterModel;
+
+    //private year: string;
+    //private month: string;
+    //private date: string;
     private logged: boolean = false;
-    private querySubscription: Subscription;
+    //private querySubscription: Subscription;
 
     private password: string;
     private login: string;
 
-    @ViewChild('mimiLoader') mimiLoader: any;
-    @ViewChild('btnSingIn') btnSingIn: any;
+    //@ViewChild('mimiLoader') mimiLoader: any;
+    //@ViewChild('btnSingIn') btnSingIn: any;
 
-    private currentDate = {
-        year: "",
-        month: {
-            name: "",
-            number: ""
-        },
-        day: ""
-    };
-    model: NgbDateStruct;
-    startCalDay: NgbDateStruct;
-    private dateArray: any = {
-        years: ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"],
-        monthes: [
-            { name: "Январь", number: "01" },
-            { name: "Февраль", number: "02" },
-            { name: "Март", number: "03" },
-            { name: "Апрель", number: "04" },
-            { name: "Май", number: "05" },
-            { name: "Июнь", number: "06" },
-            { name: "Июль", number: "07" },
-            { name: "Август", number: "08" },
-            { name: "Сентябрь", number: "09" },
-            { name: "Октябрь", number: "10" },
-            { name: "Ноябрь", number: "11" },
-            { name: "Декабрь", number: "12" },
-        ],
-        days: []
-    };
+    //private currentDate = {
+    //    year: "",
+    //    month: {
+    //        name: "",
+    //        number: ""
+    //    },
+    //    day: ""
+    //};
+    //model: NgbDateStruct;
+    //startCalDay: NgbDateStruct;
+    //private dateArray: any = {
+    //    years: ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"],
+    //    monthes: [
+    //        { name: "Январь", number: "01" },
+    //        { name: "Февраль", number: "02" },
+    //        { name: "Март", number: "03" },
+    //        { name: "Апрель", number: "04" },
+    //        { name: "Май", number: "05" },
+    //        { name: "Июнь", number: "06" },
+    //        { name: "Июль", number: "07" },
+    //        { name: "Август", number: "08" },
+    //        { name: "Сентябрь", number: "09" },
+    //        { name: "Октябрь", number: "10" },
+    //        { name: "Ноябрь", number: "11" },
+    //        { name: "Декабрь", number: "12" },
+    //    ],
+    //    days: []
+    //};
 
     constructor(
-        private router: Router,
-        private route: ActivatedRoute,
         private renderer: Renderer2,
         private cookie: CookieService,
-        private http: HttpService
+        private http: HttpService,
+        private filterService: FilterService,
+        //private router: Router,
+        //private route: ActivatedRoute
     ) {
+        this.filterService.filter.subscribe(
+            (filt: FilterModel) => {
+                this.filter = filt;
+                switch (filt.form) {
+                    case 'year':
+                        console.log(filt.form);
+                        break;
+                    case 'mon':
+                        console.log(filt.form);
+                        break;
+                    case 'day':
+                        console.log(filt.form);
+                        break;
+                }
+            }
+        );
         let token;
         let flag: boolean = false;
-        if (!this.logged) {
-            let cookt:string = this.cookie.get('eam_kp_t');
-            this.querySubscription = this.route.queryParams.subscribe(
-                (queryParam: any) => {
-                    token = queryParam['secret'];
-                    if (token !== undefined) {
-                        this.cookie.put('eam_kp_t', token);
-                        flag = true;
-                    } else {
-                        if (!this.logged && cookt !== undefined) {
-                            this.http.trySession(cookt).subscribe(
-                                (data: any[]) => {
-                                    if (data["result"] !== null) {
-                                        flag = true;
-                                    } else {
-                                        flag = false;
-                                    }
-                                }
-                            );
-                        }
-                    }
-                    
-                }
-            );
-        }
+        //if (!this.logged) {
+        //    let cookt: string = this.cookie.get('eam_kp_t');
+        //    this.querySubscription = this.route.queryParams.subscribe(
+        //        (queryParam: any) => {
+        //            token = queryParam['secret'];
+        //            if (token !== undefined) {
+        //                this.cookie.put('eam_kp_t', token);
+        //                flag = true;
+        //            } else {
+        //                if (!this.logged && cookt !== undefined) {
+        //                    this.http.trySession(cookt).subscribe(
+        //                        (data: any[]) => {
+        //                            if (data["result"] !== null) {
+        //                                flag = true;
+        //                            } else {
+        //                                flag = false;
+        //                            }
+        //                        }
+        //                    );
+        //                }
+        //            }
+
+        //        }
+        //    );
+        //}
         setTimeout(() => {
             this.logged = flag;
         }, 3000);
     }
 
     ngOnInit() {
-        let date = new Date();
-        this.year = date.getFullYear().toString();
-        this.month = (+date.getMonth().toString() + 1).toString();
-        this.date = date.getDate().toString();
-        this.model = this.startCalDay = { year: date.getFullYear(), month: (+date.getMonth() + 1), day: date.getDate() };
-        // заполнить структуру dateArray значениями для годов, месяцев и дней. Дни зависят от месяца
-        this.currentDate = {
-            year: date.getFullYear().toString(),
-            month: {
-                name: "",
-                number: ((+date.getMonth() + 1).toString().length < 2) ? "0" + (+date.getMonth() + 1).toString() : (+date.getMonth() + 1).toString()
-            },
-            day: date.getDate().toString()
-        }
-        for (let mon of this.dateArray.monthes) {
-            if (mon.number === this.currentDate.month.number) {
-                this.currentDate.month.name = mon.name;
-            }
-        }
-        for (let i = 1; i <= (32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate()); i++) {
-            this.dateArray.days.push((i.toString().length < 2) ? "0" + i : i.toString());
-        }
     }
-
 
     signIn() {
         let flag: boolean;
         let valid: boolean;
-        this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
         //res = this.user.userSignIn(this.login, this.password);
         this.http.singInUser(this.login, this.password).subscribe(
             (data: any[]) => {
@@ -131,24 +129,18 @@ export class AppComponent implements OnInit {
                     this.cookie.put('eam_kp_t', data["token"]);
                     flag = true;
                     valid = true;
-                    this.renderer.addClass(this.btnSingIn.nativeElement, 'btn-success');
-                    this.renderer.removeClass(this.btnSingIn.nativeElement, 'btn-danger');
                 } else {
                     flag = false;
                     valid = false;
-                    this.renderer.addClass(this.btnSingIn.nativeElement, 'btn-danger');
-                    this.renderer.removeClass(this.btnSingIn.nativeElement, 'btn-success');
                 }
             }
         );
         setTimeout(() => {
             this.logged = flag;
         }, 5000);
-        if (this.logged) {
-            this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
-        }
     }
 
+    /*
     updateDate(target: string, value: string) {
         let dCount: number;
         switch (target) {
@@ -207,6 +199,6 @@ export class AppComponent implements OnInit {
                 queryParams:queryparam
             }
         );
-    }
+    }*/
 
 }

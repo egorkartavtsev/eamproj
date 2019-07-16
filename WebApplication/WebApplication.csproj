@@ -13,6 +13,7 @@
     <None Remove="ClientApp\app.component.ts" />
     <None Remove="ClientApp\app\components\app\app.component.ts" />
     <None Remove="ClientApp\app\components\createWO\createOrder.component.ts" />
+    <None Remove="ClientApp\app\components\filter\filter.component.ts" />
     <None Remove="ClientApp\app\components\poList\po-list.component.ts" />
     <None Remove="ClientApp\app\components\month\month.component.ts" />
     <None Remove="ClientApp\app\components\test\test.component.ts" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\app\components\app\app.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\createWO\createOrder.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\filter\filter.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\poList\po-list.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\month\month.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\test\test.component.ts" />

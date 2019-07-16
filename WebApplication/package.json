@@ -16,13 +16,18 @@
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
     "angular2-cookie": "^1.2.6",
+    "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.0",
     "img-loader": "^3.0.1",
     "ng-pick-datetime": "^7.0.0",
     "ng-pick-datetime-moment": "^1.0.8",
+    "ng-select2": "^1.1.1",
     "ngx-bootstrap": "2.0.0-rc.0",
+    "ngx-select-dropdown": "^1.0.1",
     "rxjs": "^6.3.0",
+    "rxjs-compat": "^6.5.2",
     "style-loader": "^0.23.1",
+    "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

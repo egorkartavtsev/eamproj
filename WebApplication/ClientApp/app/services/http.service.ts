@@ -159,6 +159,13 @@ export class HttpService{
         return this.http.get("api/getDatas", { params: body });
     }
 
+    getStats() {
+        let body = {
+            query: "317"
+        };
+        return this.http.get("api/getDatas", { params: body });
+    }
+
     createWO(org_id: string, instance_number: string, start: string, complete: string, duration: string, work_type: string, entity_name: string, idle_categ: string, idle_type: string, idle_code: string, planner_type: string) {
         let body = {
             query: "301",
@@ -178,12 +185,11 @@ export class HttpService{
         return this.http.get("api/updatesWO/", { params: body });
     }
 
-    getCountOfRows(per: string, mon: string) {
-        let body = {
-            query: "315",
-            "cond[mon]": mon,
-            "cond[per]": per
-        };
+    getCountOfRows(filt: any) {
+        let body = { query: "315" };
+        for (let i of Object.keys(filt)) {
+                body["cond[" + i + "]"] = filt[i];
+        }
         return this.http.get("api/getDatas", { params: body });
     }
 }
