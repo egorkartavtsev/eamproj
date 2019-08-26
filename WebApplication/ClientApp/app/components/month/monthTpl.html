@@ -1,6 +1,6 @@
 ﻿<div class="row justify-content-center">
     <div class="col-12">
-        <p class="display3 text-center"><b>График</b><br> капитальных и продолжительных ремонтов основных металлургических агрегатов ОАО ММК на {{title}}</p>
+        <p class="display3 text-center"><b>График</b><br> капитальных и продолжительных ремонтов основных металлургических агрегатов ПАО ММК на {{title}}</p>
     </div>
     <div class="col-12 bigTable">
         <table class="table table-bordered table-sm">
@@ -29,9 +29,9 @@
         </table>
     </div>
     <div class="w-100 row justify-content-center">
-        <div class="col-12">Получено {{currentCount}} строк из {{totalCount}}</div>
+        <div class="col-12 text-center">Получено {{currentCount}} строк из {{totalCount}}</div>
         <button class="btn btn-sm btn-info mb-3 mt-3 col-2" #fetchBtn (click)="fetchData()"><i class="fab fa-rev"></i> загрузить ещё</button>
-        <div class="form-group col-2">
+        <div class="form-group col-2" #fetchSel>
             <label>Количество строк</label>
             <select class="form-control" [(ngModel)]="needCount">
                 <option value="10">10</option>
@@ -45,7 +45,6 @@
             </select>
         </div>
         <div class="loader loader-mini d-none" #mimiLoader></div>
-        <ng-template [ngIf]="warn"><div class="col-12 text-center"><span class="badge badge-warning">Активирован фильтр. Данные могут быть выведены не в полном объёме</span></div></ng-template>
     </div>
 </div>
 <!-- Modal -->

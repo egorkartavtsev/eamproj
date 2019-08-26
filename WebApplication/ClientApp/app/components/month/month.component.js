@@ -14,90 +14,60 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 var MonthComponent = /** @class */ (function () {
     /********************************************************/
+    //private filter: FilterModel;
+    //private routeSubscription: Subscription;
+    //private querySubscription: Subscription;
+    //private tmpDT: object = {};
+    //private TotalData: any[] = [];
+    //private warn: boolean = false;
+    //private tmpQuery: string;
+    //private targetChanged: object = {
+    //    "hours": false,
+    //    "startDate": false
+    //};
+    //model: NgbDateStruct;
+    //startCalDay: NgbDateStruct;
+    //private curPage: number = 0;
     function MonthComponent(renderer, filterService, route, http, calendar) {
-        var _this = this;
         this.renderer = renderer;
         this.filterService = filterService;
         this.route = route;
         this.http = http;
         this.calendar = calendar;
-        this.tmpDT = {};
-        this.TotalData = [];
-        this.CurrentData = [];
         this.emptyData = true;
         this.emptyModal = true;
-        this.warn = false;
         this.modalData = [];
+        this.CurrentData = [];
         this.tHeadDays = [];
-        this.targetChanged = {
-            "hours": false,
-            "startDate": false
-        };
-        this.curPage = 0;
         /********************************************************/
         this.currentCount = 0;
         this.needCount = '20';
-        this.querySubscription = route.queryParams.subscribe(function (queryParam) {
-            if (queryParam['query'] !== undefined) {
-                _this.tmpQuery = queryParam['query'];
-            }
-            else {
-                var date = new Date();
-                _this.tmpQuery = date.getFullYear().toString();
-                _this.tmpQuery += "-" + (((+date.getMonth().toString() + 1).toString().length < 2) ? "0" + (+date.getMonth().toString() + 1).toString() : (+date.getMonth().toString() + 1).toString());
-            }
-            var sup = new Date(_this.tmpQuery + "-01").toLocaleString('ru', { month: 'long' });
-            sup = sup + " " + new Date(_this.tmpQuery + "-01").getFullYear().toString();
-            _this.title = sup[0].toUpperCase() + sup.substring(1);
-            _this.getData();
-            //this.http.getCountOfRows(this.tmpQuery, '1').subscribe(
-            //    data => {
-            //        this.totalCount = data[0]['CNT'];
-            //    }
-            //);
-        });
-        this.modalData['title'] = "";
-        this.modalData['porders'] = [];
     }
     MonthComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.filterService.filter.subscribe(function (filt) {
-            _this.filter = filt;
-            _this.CurrentData = [];
-            for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
-                var order = _a[_i];
-                if (_this.filterService.applyFilter(filt, order)) {
-                    _this.CurrentData.push(order);
-                }
+            if (filt.ready) {
+                _this.tHeadDays = [];
+                _this.filter = filt;
+                var sup = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
+                sup = sup + " " + _this.filter.period.year;
+                _this.title = sup[0].toUpperCase() + sup.substring(1);
+                _this.modalData['title'] = "";
+                _this.modalData['porders'] = [];
+                _this.totalCount = _this.filter.conut.toString();
+                _this.getData();
             }
-            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-            //    this.warn = false;
-            //} else {
-            //    this.warn = true;
-            //}
         });
     };
     MonthComponent.prototype.getData = function () {
         var _this = this;
-        this.emptyData = true;
-        var query = this.tmpQuery;
-        if (typeof (this.modalData['title']) !== "undefined") {
-            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        }
-        this.TotalData = [];
-        this.tHeadDays = [];
         this.CurrentData = [];
+        this.emptyData = true;
         this.currentCount = 0;
-        this.http.getMonthData(query, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
+        this.http.getMonthData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(function (data) {
             var tmp = _this.getRows(data);
-            _this.TotalData = tmp;
-            for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
-                var order = _a[_i];
-                if (_this.filterService.applyFilter(_this.filter, order)) {
-                    _this.CurrentData.push(order);
-                }
-            }
-            _this.currentCount = _this.TotalData.length;
+            _this.CurrentData = tmp;
+            _this.currentCount = _this.CurrentData.length;
             _this.emptyData = false;
             _this.tryBtn(tmp.length);
         });
@@ -110,14 +80,14 @@ var MonthComponent = /** @class */ (function () {
         var cond = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '" + instance + "'";
             this.modalData['instance'] = instance;
             this.modalData['title'] += " для агрегата № " + instance;
         }
         else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
-        this.http.getDataList('month', cond).subscribe(function (data) {
+        this.http.getDataList('month', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(function (data) {
             _this.modalData['porders'] = Object.keys(data).map(function (i) { return data[i]; });
             _this.emptyModal = false;
         });
@@ -126,19 +96,12 @@ var MonthComponent = /** @class */ (function () {
         var _this = this;
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
-        ++this.curPage;
-        this.http.getMonthData(this.tmpQuery, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
+        this.http.getMonthData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(function (data) {
             var tmp = _this.getRows(data);
-            Array.prototype.push.apply(_this.TotalData, tmp);
-            for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
-                var order = tmp_1[_i];
-                if (_this.filterService.applyFilter(_this.filter, order)) {
-                    _this.CurrentData.push(order);
-                }
-            }
-            _this.currentCount = _this.TotalData.length;
+            Array.prototype.push.apply(_this.CurrentData, tmp);
+            _this.currentCount = _this.CurrentData.length;
             _this.emptyData = false;
-            _this.tryBtn(tmp.length);
+            _this.tryBtn(_this.currentCount);
             _this.renderer.addClass(_this.mimiLoader.nativeElement, 'd-none');
         });
     };
@@ -159,21 +122,21 @@ var MonthComponent = /** @class */ (function () {
                     sum += +cell['res'];
                 }
                 totalRows[i]['days'][j]['title'] = cell['weekDD'] + ' ' + cell['monDD'] + ' ' + this_1.title;
-                totalRows[i]['days'][j]['target'] = this_1.tmpQuery + '-' + cell['monDD'];
+                totalRows[i]['days'][j]['target'] = this_1.filter.period.year + '-' + this_1.filter.period.month + '-' + cell['monDD'];
                 ++j;
                 this_1.tHeadDays.push({
                     "monDD": cell['monDD'],
                     "weekDD": cell['weekDD'].toLowerCase(),
-                    "target": this_1.tmpQuery + '-' + cell['monDD'],
-                    "title": cell['weekDD'] + ' ' + cell['monDD'] + ' ' + this_1.title
+                    "target": this_1.filter.period.year + '-' + this_1.filter.period.month + '-' + cell['monDD'],
+                    "title": cell['weekDD'] + ' ' + this_1.title
                 });
             }
             totalRows[i]['sum'] = sum;
             ++i;
         };
         var this_1 = this;
-        for (var _i = 0, tmp_2 = tmp; _i < tmp_2.length; _i++) {
-            var row = tmp_2[_i];
+        for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
+            var row = tmp_1[_i];
             _loop_1(row);
         }
         return totalRows;
@@ -182,15 +145,21 @@ var MonthComponent = /** @class */ (function () {
         if (length >= +this.needCount) {
             this.renderer.removeAttribute(this.fetchBtn.nativeElement, 'disabled');
             this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.removeClass(this.fetchSel.nativeElement, 'd-none');
         }
         else {
             this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.addClass(this.fetchSel.nativeElement, 'd-none');
         }
     };
     __decorate([
         ViewChild('fetchBtn'),
         __metadata("design:type", Object)
     ], MonthComponent.prototype, "fetchBtn", void 0);
+    __decorate([
+        ViewChild('fetchSel'),
+        __metadata("design:type", Object)
+    ], MonthComponent.prototype, "fetchSel", void 0);
     __decorate([
         ViewChild('mimiLoader'),
         __metadata("design:type", Object)
@@ -200,7 +169,11 @@ var MonthComponent = /** @class */ (function () {
             selector: 'month-app',
             templateUrl: './monthTpl.html'
         }),
-        __metadata("design:paramtypes", [Renderer2, FilterService, ActivatedRoute, HttpService, NgbCalendar])
+        __metadata("design:paramtypes", [Renderer2,
+            FilterService,
+            ActivatedRoute,
+            HttpService,
+            NgbCalendar])
     ], MonthComponent);
     return MonthComponent;
 }());

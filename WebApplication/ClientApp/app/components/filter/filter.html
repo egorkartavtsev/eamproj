@@ -23,54 +23,123 @@
                     </select>
                 </div>
                 <div class="form-group row mb-3">
-                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.year" (change)="chg($event, 'year')">
+                    <select #yrSel class="custom-select col-4" [(ngModel)]="filterTotal.period.year" (change)="chg($event, 'year')">
                         <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                     </select>
-                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.month" (change)="chg($event, 'mon')">
+                    <select #monSel class="custom-select col-4" [(ngModel)]="filterTotal.period.month" (change)="chg($event, 'mon')">
                         <option *ngFor="let mon of monthes" value="{{mon.num}}">{{mon.name}}</option>
                     </select>
-                    <select class="custom-select col-4" [(ngModel)]="filterTotal.period.day" (change)="chg($event, 'day')">
+                    <select #daySel class="custom-select col-4" [(ngModel)]="filterTotal.period.day" (change)="chg($event, 'day')">
                         <option *ngFor="let day of days" value="{{day.num}}">{{day.name}}</option>
                     </select>
                 </div>
                 <div class="col-12">
-                    <span class="badge badge-info">Найдено {{cnt}} строк</span>
+                    <span class="badge badge-info">Найдены ЗВР для {{cnt}} активов</span>
+                    <ng-template [ngIf]="!filterTotal.ready"><span class="badge badge-warning">Фильтр обновлён. Обновите график.</span></ng-template>
                     <div class="loader loader-mini d-none float-left" #loader></div>
                 </div>
             </div>
-            <div class="col-6">
-                <div class="form-group row mb-3">
-                    <label class="col-1">Цех</label>
-                    <ngx-select-dropdown class="col-11"
-                                         [config]="conf_org"
-                                         [options]="organizations"
-                                         [multiple]="true"
-                                         (change)="chg($event, 'org')"></ngx-select-dropdown>
+            <ng-template [ngIf]="filterTotal['filterType']!=='loaded'">
+                <div class="col-6" >
+                    <div class="form-group row mb-3">
+                        <label class="col-1">Цех</label>
+                        <ngx-select-dropdown class="col-11"
+                                             [config]="conf_org"
+                                             [options]="organizations"
+                                             [multiple]="true"
+                                             (change)="chg($event, 'org')"></ngx-select-dropdown>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-2">Агрегаты</label>
+                        <ngx-select-dropdown class="col-10"
+                                             [config]="conf_agr"
+                                             [options]="agregates"
+                                             [multiple]="true"
+                                             (change)="chg($event, 'agr')"></ngx-select-dropdown>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-3">Вид ремонта</label>
+                        <ngx-select-dropdown class="col-9"
+                                             [config]="conf_wt"
+                                             [options]="wtypes"
+                                             [multiple]="true"
+                                             (change)="chg($event, 'wt')"></ngx-select-dropdown>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-1">Статус</label>
+                        <ngx-select-dropdown class="col-11"
+                                             [config]="conf_stat"
+                                             [options]="stats"
+                                             [multiple]="true"
+                                             (change)="chg($event, 'stat')"></ngx-select-dropdown>
+                    </div>
                 </div>
-                <div class="form-group row mb-3">
-                    <label class="col-2">Агрегаты</label>
-                    <ngx-select-dropdown class="col-10"
-                                         [config]="conf_agr"
-                                         [options]="agregates"
-                                         [multiple]="true"
-                                         (change)="chg($event, 'agr')"></ngx-select-dropdown>
+            </ng-template>
+            <ng-template [ngIf]="filterTotal['filterType']==='loaded'">
+                <div class="col-6">
+                    <ul class="list-unstyled">
+                        <li *ngFor="let att of filterTotal.filterLoaded"><b>{{att.FIELD_NAME_TEXT}}</b>{{att.FIELD_VAL_DESCR}}</li>
+                        <li><button class="btn btn-primary btn-sm" (click)="returnCustomForm()">Изменить условия</button></li>
+                    </ul>
                 </div>
-                <div class="form-group row mb-3">
-                    <label class="col-3">Вид ремонта</label>
-                    <ngx-select-dropdown class="col-9"
-                                         [config]="conf_wt"
-                                         [options]="wtypes"
-                                         [multiple]="true"
-                                         (change)="chg($event, 'wt')"></ngx-select-dropdown>
+            </ng-template>
+        </div>
+        <div class="row justify-content-center">
+            <div class="btn-group float-right">
+                <button class="btn btn-sm btn-primary" (click)="showTable()">Показать график</button>
+                <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#filtListModal" (click)="getFilterList()"><i class="fas fa-cloud-download-alt"></i> Cохранить/загрузить фильтр</button>
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="far fa-compass"></i> действия
+                </button>
+                <div class="dropdown-menu func-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#createModal"><i class="fas fa-calendar-plus"></i> создать ЗВР</a>
+                    <a class="dropdown-item"><i class="fas fa-print"></i> печать</a>
+                    <a class="dropdown-item" (click)="exportXLS()"><i class="fa fa-file-excel"></i> экспорт в Excel</a>
+                    <a class="dropdown-item"><i class="fas fa-comments"></i> согласование</a>
+                    <a class="dropdown-item"><i class="fas fa-envelope"></i> отправить</a>
                 </div>
-                <div class="form-group row mb-3">
-                    <label class="col-1">Статус</label>
-                    <ngx-select-dropdown class="col-11"
-                                         [config]="conf_stat"
-                                         [options]="stats"
-                                         [multiple]="true"
-                                         (change)="chg($event, 'stat')"></ngx-select-dropdown>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="filtListModal" tabindex="-1" role="dialog" aria-labelledby="filtListModalLabel" aria-hidden="true" #modal>
+    <div class="modal-dialog custom_modal_size" role="document">
+        <div class="modal-content" style="overflow-x: auto;">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title text-center w-100" id="filtListModalLabel">Диспетчер фильтров</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <table class="table table-stripped w-100">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Фильтр</th>
+                                <th>Дата создания</th>
+                                <th>Автор</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of filterList">
+                                <td><button data-dismiss="modal" class="btn btn-success btn-sm" (click)="loadFilter(row.FILTER_ID)"><i class="fa fa-upload"></i> загрузить</button></td>
+                                <td>{{row.DESCRIPTION}}</td>
+                                <td>{{row.DATE_CREATE}}</td>
+                                <td>{{row.OWNER}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <div class="form-group form-group-sm d-none" #newFiltNameBox>
+                    <label for="newFname">Введите название сохраняемого фильтра:</label><br>
+                    <input type="text" class="form-control" id="newFName" [(ngModel)]="newFilterName"/>
+                </div>
+                <button #firstSaveBtn class="btn btn-sm btn-primary" (click)="prepareSave()"><i class="fa fa-floppy-o"></i> Сохранить текущее состояние фильтра</button>
+                <button #lastSaveBtn data-dismiss="modal" class="btn btn-sm btn-success d-none" (click)="saveCurrent()"><i class="fa fa-download"></i> Сохранить</button>
             </div>
         </div>
     </div>

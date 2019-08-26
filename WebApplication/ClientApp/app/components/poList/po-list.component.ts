@@ -75,23 +75,26 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
             <div class="form-group" id="chngStart" #target>
                 <input type="text" style="min-width: 180px;" [(ngModel)]="currentPO.start" on-input="updateComplete($event)" id="curStart" class="form-control" (click)="toogleCalendar()">
                 <div #startCal class="calendBlock d-none">
-                        <div class="card-body">
-                            <div class="w-100">
-                                <button type="button" class="close pull-right mb-3" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
-                                    <span class="closeBtn" aria-hidden="true" (click)="toogleCalendar()">&times; </span>
-                                </button>
-                            </div>
-                            <ngb-datepicker #d
-                                            [footerTemplate]="t"
-                                            [navigation]="arrows"
-                                            [(ngModel)]="model"
-                                            [startDate]="startCalDay"
-                                            (navigate)="startCalDay = $event.next"></ngb-datepicker>
+                    <div class="card-body">
+                        <div class="w-100">
+                            <button type="button" class="close pull-right mb-3" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                                <span class="closeBtn" aria-hidden="true" (click)="toogleCalendar()">&times; </span>
+                            </button>
+                        </div>
+                        <ngb-datepicker #d
+                                        [footerTemplate]="t"
+                                        [navigation]="arrows"
+                                        [(ngModel)]="model"
+                                        [startDate]="startCalDay"
+                                        (navigate)="startCalDay = $event.next"></ngb-datepicker>
                     </div>
                 </div>
             </div>
         </td>
-        <td> {{ currentPO.complete }}</td>
+        <td> 
+            {{ currentPO.complete }}
+            <div class="loader loader-mini d-none float-left" #loader></div>
+        </td>
         <td>
             <div class="form-group">
                 <input type="number" [(ngModel)]="currentPO.hours" on-input="updateComplete($event)" id="curHours" class="form-control" />
@@ -140,6 +143,7 @@ export class PoListComponent {
     @Output() onSaved = new EventEmitter<boolean>();
     @ViewChild('target') targetRow: any;
     @ViewChild('startCal') calendar: any;
+    @ViewChild('loader') loader: any;
 
     constructor(private http: HttpService, private updater: Renderer, private renderer: Renderer2) {
         this.currentPO = new ProdOrder();
@@ -147,6 +151,7 @@ export class PoListComponent {
 
     private save() {
         //console.log(this.currentPO);
+        this.renderer.removeClass(this.loader.nativeElement, 'd-none');        
         this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(
             (data: any) => {
                 this.onSaved.emit(true);
@@ -207,7 +212,10 @@ export class PoListComponent {
     }
 
     private updateComplete(e?: object) {
-        var sup = new Date(this.makeTrueDate(this.currentPO.start));
+        var sup = new Date(this.makeTrueDate(this.currentPO.start).replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        console.log("CPO STR: "+this.currentPO.start);
+        console.log("Make true: " + this.makeTrueDate(this.currentPO.start));
+        console.log(sup);
         //var sup1 = new Date(this.currentPO.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$1/$2/$3 $4:$5:$6'));
         let tmp = {
             "days": Math.floor(+this.currentPO.hours / 24),

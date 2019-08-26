@@ -4,10 +4,13 @@
     margin-bottom: 1rem;
     border-bottom: 1px solid transparent;
     color: #004085;
-    background-color: #d1e3ff;
-    border-color: #8a7cff;
+    background-color: #e2e8f3;
+    border-color: #c0b9fb;
 }
 
+.dropdown-item {
+    cursor: pointer;
+}
 
 .bigTable {
     overflow-x: auto;

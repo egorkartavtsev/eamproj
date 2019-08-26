@@ -41,32 +41,38 @@ export class FilterService{
         SQLFilt['perEnd'] = tmpD.getFullYear().toString() + '-' + monE + '-' + dayE;
 
         //Multiselect
-        if (filt.org.length === 0 || filt.org === '%') {
-            SQLFilt['org'] = "LIKE '%'"
-        } else {
-            sup = filt.org.map((a: any) => a.ORGANIZATION_ID).join(', ');
-            SQLFilt['orgs'] = "IN ("+sup+")";
-        }
+        if (filt.filterType === 'custom') {
+            if (filt.org.length === 0 || filt.org === '%') {
+                SQLFilt['org'] = "LIKE '%'"
+            } else {
+                sup = filt.org.map((a: any) => a.ORGANIZATION_ID).join(', ');
+                SQLFilt['org'] = "IN (" + sup + ")";
+            }
 
-        if (filt.agr.length === 0 || filt.agr === '%') {
-            SQLFilt['agr'] = "LIKE '%'";
-        } else {
-            sup = filt.agr.map((a: any) => a.INSTANCE_NUMBER).join("', '");
-            SQLFilt['agr'] = "IN ('"+sup+"')";
-        }
+            if (filt.agr.length === 0 || filt.agr === '%') {
+                SQLFilt['agr'] = "LIKE '%'";
+            } else {
+                sup = filt.agr.map((a: any) => a.INSTANCE_NUMBER).join("', '");
+                SQLFilt['agr'] = "IN ('" + sup + "')";
+            }
 
-        if (filt.wtype.length === 0 || filt.wtype === '%') {
-            SQLFilt['wtype'] = "LIKE '%'";
-        } else {
-            sup = filt.wtype.map((a: any) => a.ROUTING_COMMENT).join("', '");
-            SQLFilt['wtype'] = "IN ('"+sup+"')";
-        }
+            if (filt.wtype.length === 0 || filt.wtype === '%') {
+                SQLFilt['wtype'] = "LIKE '%'";
+            } else {
+                sup = filt.wtype.map((a: any) => a.ROUTING_COMMENT).join("', '");
+                SQLFilt['wtype'] = "IN ('" + sup + "')";
+            }
 
-        if (filt.status.length === 0 || filt.status === '%') {
-            SQLFilt['status'] = "LIKE '%'";
+            if (filt.status.length === 0 || filt.status === '%') {
+                SQLFilt['status'] = "LIKE '%'";
+            } else {
+                sup = filt.status.map((a: any) => a.LOOKUP_CODE).join("', '");
+                SQLFilt['status'] = "IN ('" + sup + "')";
+            }
         } else {
-            sup = filt.status.map((a: any) => a.LOOKUP_CODE).join("', '");
-            SQLFilt['status'] = "IN ('" + sup + "')";
+            for (let field of filt.filterLoaded) {
+                SQLFilt[field.FIELD_NAME] = field.FIELD_VAL;
+            }
         }
 
         //other
@@ -75,7 +81,6 @@ export class FilterService{
         } else {
             SQLFilt['planner'] = '= '+filt.planner;
         }
-
         return SQLFilt;
     }
 

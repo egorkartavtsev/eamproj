@@ -45,35 +45,38 @@ var HttpService = /** @class */ (function () {
         };
         return this.http.get("/api/getDatas/", { params: body });
     };
-    HttpService.prototype.getYearData = function (year, page, count, current) {
+    HttpService.prototype.getYearData = function (filter, count, current) {
         var body = {
             query: "300",
-            "cond[year]": year,
             "cond[count]": count,
-            "cond[current]": current,
-            "cond[page]": page
+            "cond[current]": current
         };
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/yearTable/", { params: body });
     };
-    HttpService.prototype.getMonthData = function (cond, page, count, current) {
+    HttpService.prototype.getMonthData = function (filter, count, current) {
         var body = {
             query: "301",
-            "cond[month]": cond,
             "cond[count]": count,
-            "cond[current]": current,
-            "cond[page]": page
+            "cond[current]": current
         };
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/monthTable/", { params: body });
     };
-    HttpService.prototype.getWeekData = function (start, end) {
+    HttpService.prototype.getWeekData = function (filter) {
         var body = {
-            query: "302",
-            "cond[weekstart]": start,
-            "cond[weekend]": end
+            query: "302"
         };
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/weekTable/", { params: body });
     };
-    HttpService.prototype.getDataList = function (target, cond) {
+    HttpService.prototype.getDataList = function (target, cond, filter) {
         var body = {};
         switch (target) {
             case 'month':
@@ -91,6 +94,9 @@ var HttpService = /** @class */ (function () {
                     "cond[instance]": cond['instance']
                 };
                 break;
+        }
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
         }
         return this.http.get("api/porderLists/", { params: body });
     };
@@ -180,6 +186,27 @@ var HttpService = /** @class */ (function () {
             body["cond[" + i + "]"] = filt[i];
         }
         return this.http.get("api/getDatas", { params: body });
+    };
+    HttpService.prototype.getFilterList = function () {
+        var body = { query: "318" };
+        return this.http.get("api/getDatas", { params: body });
+    };
+    HttpService.prototype.saveCurFilter = function (info) {
+        var body = {};
+        for (var attr in info) {
+            body["cond[" + attr + "]"] = info[attr];
+        }
+        return this.http.get("api/saveFilter", { params: body });
+    };
+    HttpService.prototype.loadFilterFields = function (filt_id) {
+        var body = {
+            query: "319",
+            "cond[filt_id]": filt_id,
+        };
+        return this.http.get("api/getDatas", { params: body });
+    };
+    HttpService.prototype.ExportExcel = function () {
+        return this.http.get("api/exportXLS");
     };
     HttpService = __decorate([
         Injectable(),

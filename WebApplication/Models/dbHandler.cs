@@ -558,5 +558,56 @@ namespace EAMlvl1System.Models
 
             return tmpRow;
         }
+
+        public Dictionary<string, object> CreateNewFilter(Dictionary<string, object> cond) {
+            Dictionary<string, object> res = new Dictionary<string, object>();
+            using (OracleConnection conn = new OracleConnection(this.conString))
+            {
+                conn.Open();
+                using (OracleCommand cm = new OracleCommand())
+                {
+                    cm.Connection = conn;
+                    using (DataSet DS = new DataSet())
+                    {
+                        using (OracleDataAdapter dataAdapter = new OracleDataAdapter())
+                        {
+                            dataAdapter.SelectCommand = cm;
+
+                            cm.CommandText = "INSERT INTO xxeam.xxeam_graph_cust_filt (OWNER,DESCRIPTION,DATE_CREATE) VALUES (" + cond["user"] + ", '" + cond["name"] + "', sysdate)";
+                            int rown = cm.ExecuteNonQuery();
+                            if (rown > 0)
+                            {
+                                cm.CommandText = "select max(filter_id) from xxeam.xxeam_graph_cust_filt";
+                                string fid = cm.ExecuteScalar().ToString();
+                                Dictionary<string, Dictionary<string, object>> attrs = (Dictionary<string, Dictionary<string, object>>)cond["attrs"];
+                                int i = 0;
+                                foreach(KeyValuePair<string, Dictionary<string, object>> att in attrs) {
+                                    Dictionary<string, object> cur = (Dictionary<string, object>)att.Value;
+                                    cm.CommandText = "insert into xxeam.xxeam_graph_cust_filt_flds (FILTER_ID, FIELD_NAME,FIELD_VAL,FIELD_VAL_DESCR,FIELD_NAME_TEXT) values "
+                                                        + "(" + fid + ", q'[" + cur["field_name"] + "]', q'[" + cur["field_val"] + "]', q'[" + cur["field_val_desc"] + "]', q'[" + cur["field_name_desc"] + "]')";
+                                    
+                                    i+= cm.ExecuteNonQuery();
+                                }
+                                if (attrs.Count == i)
+                                {
+                                    res["response"] = "S";
+                                }
+                                else {
+                                    res["response"] = "E";
+                                }
+                            }
+                            else
+                            {
+                                res["response"] = "E";
+                            }
+
+                            cm.Dispose();
+                            conn.Close();
+                        }
+                    }
+                }
+            }
+            return res;
+        }
     }
 }

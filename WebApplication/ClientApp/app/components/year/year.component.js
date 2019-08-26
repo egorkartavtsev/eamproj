@@ -14,28 +14,30 @@ import { HttpService } from '../../services/http.service';
 import { ActivatedRoute } from '@angular/router';
 var YearComponent = /** @class */ (function () {
     function YearComponent(renderer, filterService, http, route) {
-        var _this = this;
         this.renderer = renderer;
         this.filterService = filterService;
         this.http = http;
         this.route = route;
-        this.TotalData = [];
         this.CurrentData = [];
         this.modalData = [];
         this.currentPO = new ProdOrder;
         this.emptyData = true;
         this.emptyModal = true;
-        this.warn = false;
-        this.tmpDT = {};
-        this.targetChanged = {
-            "hours": false,
-            "startDate": false
-        };
-        this.curPage = 0;
         /********************************************************/
         this.currentCount = 0;
         this.needCount = '15';
         /********************************************************/
+        //private TotalData: any[] = [];
+        //private warn: boolean = false;
+        //private routeSubscription: Subscription;
+        //private querySubscription: Subscription;
+        //private tmpDT: object = {};
+        //private targetChanged: object = {
+        //    "hours": false,
+        //    "startDate": false
+        //};
+        //model: NgbDateStruct;
+        //startCalDay: NgbDateStruct;
         this.monthes = [
             { "mon": "01", "num": "Январь" },
             { "mon": "02", "num": "Февраль" },
@@ -50,39 +52,20 @@ var YearComponent = /** @class */ (function () {
             { "mon": "11", "num": "Ноябрь" },
             { "mon": "12", "num": "Декабрь" }
         ];
-        this.emptyData = true;
-        this.querySubscription = route.queryParams.subscribe(function (queryParam) {
-            if (queryParam['query'] !== undefined) {
-                _this.title = queryParam['query'];
-            }
-            else {
-                _this.title = new Date().getFullYear().toString();
-            }
-            _this.getData();
-            //this.http.getCountOfRows(this.title+'-01', '12').subscribe(
-            //    (data: string) => {
-            //        this.totalCount = data[0]['CNT'];
-            //    }
-            //);
-        });
     }
     YearComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.emptyData = true;
         this.filterService.filter.subscribe(function (filt) {
-            _this.filter = filt;
-            _this.CurrentData = [];
-            for (var _i = 0, _a = _this.TotalData; _i < _a.length; _i++) {
-                var order = _a[_i];
-                if (_this.filterService.applyFilter(filt, order)) {
-                    _this.CurrentData.push(order);
-                }
+            if (filt.ready) {
+                _this.filter = filt;
+                _this.title = filt.period.year;
+                _this.modalData['title'] = "";
+                _this.modalData['porders'] = [];
+                _this.totalCount = _this.filter.conut.toString();
+                _this.CurrentData = [];
+                _this.getData();
             }
-            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-            //    this.warn = false;
-            //} else {
-            //    this.warn = true;
-            //}
         });
     };
     YearComponent.prototype.getData = function () {
@@ -91,42 +74,24 @@ var YearComponent = /** @class */ (function () {
         if (typeof (this.modalData['mon']) !== "undefined") {
             this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
         }
-        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
+        this.http.getYearData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(function (data) {
+            console.log(data);
             var tmp = _this.getRows(data);
-            _this.TotalData = tmp;
-            for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
-                var order = tmp_1[_i];
-                if (_this.filterService.applyFilter(_this.filter, order)) {
-                    _this.CurrentData.push(order);
-                }
-            }
+            _this.CurrentData = tmp;
             _this.emptyData = false;
             _this.tryBtn(tmp.length);
-            _this.currentCount = _this.TotalData.length;
-            _this.renderer.addClass(_this.mimiLoader.nativeElement, 'd-none');
-            _this.renderer.removeClass(_this.fetchBtn.nativeElement, 'd-none');
+            _this.currentCount = _this.CurrentData.length;
         }, function (error) { console.log(error); });
     };
     YearComponent.prototype.fetchData = function () {
         var _this = this;
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
-        ++this.curPage;
-        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(function (data) {
+        this.http.getYearData(this.filter, this.needCount, this.currentCount.toString()).subscribe(function (data) {
             var tmp = _this.getRows(data);
-            Array.prototype.push.apply(_this.TotalData, tmp);
-            for (var _i = 0, tmp_2 = tmp; _i < tmp_2.length; _i++) {
-                var order = tmp_2[_i];
-                if (_this.filterService.applyFilter(_this.filter, order)) {
-                    _this.CurrentData.push(order);
-                }
-            }
-            _this.currentCount = _this.TotalData.length;
+            Array.prototype.push.apply(_this.CurrentData, tmp);
+            _this.currentCount = _this.CurrentData.length;
             _this.tryBtn(tmp.length);
-            _this.renderer.addClass(_this.mimiLoader.nativeElement, 'd-none');
-            console.log(_this.totalCount);
-            console.log(_this.needCount);
-            console.log(_this.currentCount);
         });
     };
     YearComponent.prototype.showPOList = function (mon, dec, instance) {
@@ -167,14 +132,14 @@ var YearComponent = /** @class */ (function () {
         cond['weekend'] = range['end'];
         cond['weekstart'] = range['start'];
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '" + instance + "'";
             this.modalData['title'] += " для агрегата №" + instance;
             this.modalData['instance'] = instance;
         }
         else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
-        this.http.getDataList('year', cond).subscribe(function (data) {
+        this.http.getDataList('year', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(function (data) {
             _this.modalData['porders'] = Object.keys(data).map(function (i) { return data[i]; });
             _this.emptyModal = false;
         });
@@ -209,8 +174,8 @@ var YearComponent = /** @class */ (function () {
             totalRows[i]['sum'] = ((sum * 100) % 100) ? sum.toFixed(2) : sum;
             ++i;
         };
-        for (var _i = 0, tmp_3 = tmp; _i < tmp_3.length; _i++) {
-            var row = tmp_3[_i];
+        for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
+            var row = tmp_1[_i];
             _loop_1(row);
         }
         return totalRows;
@@ -219,15 +184,21 @@ var YearComponent = /** @class */ (function () {
         if (length >= +this.needCount) {
             this.renderer.removeAttribute(this.fetchBtn.nativeElement, 'disabled');
             this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.removeClass(this.fetchSel.nativeElement, 'd-none');
         }
         else {
             this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.addClass(this.fetchSel.nativeElement, 'd-none');
         }
     };
     __decorate([
         ViewChild('fetchBtn'),
         __metadata("design:type", Object)
     ], YearComponent.prototype, "fetchBtn", void 0);
+    __decorate([
+        ViewChild('fetchSel'),
+        __metadata("design:type", Object)
+    ], YearComponent.prototype, "fetchSel", void 0);
     __decorate([
         ViewChild('mimiLoader'),
         __metadata("design:type", Object)

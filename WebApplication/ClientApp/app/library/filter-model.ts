@@ -6,7 +6,10 @@ export class FilterModel{
     public status: any;
     public form: string;
     public period: any;
-    
+    public ready: boolean;
+    public conut: number;
+    public filterType: string;
+    public filterLoaded: any;
 
 
     constructor() {
@@ -20,10 +23,14 @@ export class FilterModel{
         this.planner = 40;
         this.form = 'week';
         this.status = '%';
+        this.conut = 0;
         this.period = {
             year: date.getFullYear().toString(),
             month: mon,
             day: day
         };
+        this.ready = false;
+        this.filterType = 'custom';
+        this.filterLoaded = {};
     }
 }

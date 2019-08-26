@@ -7,118 +7,109 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, Renderer2 } from '@angular/core';
+import { Component, ViewChild, Renderer2 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { FilterService } from '../../services/filter.service';
+import { FilterModel } from '../../library/filter-model';
 import { CookieService } from "angular2-cookie/core";
 import { setTimeout } from 'timers';
 var AppComponent = /** @class */ (function () {
-    //@ViewChild('mimiLoader') mimiLoader: any;
-    //@ViewChild('btnSingIn') btnSingIn: any;
-    //private currentDate = {
-    //    year: "",
-    //    month: {
-    //        name: "",
-    //        number: ""
-    //    },
-    //    day: ""
-    //};
-    //model: NgbDateStruct;
-    //startCalDay: NgbDateStruct;
-    //private dateArray: any = {
-    //    years: ["2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"],
-    //    monthes: [
-    //        { name: "Январь", number: "01" },
-    //        { name: "Февраль", number: "02" },
-    //        { name: "Март", number: "03" },
-    //        { name: "Апрель", number: "04" },
-    //        { name: "Май", number: "05" },
-    //        { name: "Июнь", number: "06" },
-    //        { name: "Июль", number: "07" },
-    //        { name: "Август", number: "08" },
-    //        { name: "Сентябрь", number: "09" },
-    //        { name: "Октябрь", number: "10" },
-    //        { name: "Ноябрь", number: "11" },
-    //        { name: "Декабрь", number: "12" },
-    //    ],
-    //    days: []
-    //};
-    function AppComponent(renderer, cookie, http, filterService) {
+    function AppComponent(renderer, cookie, http, filterService, route) {
         var _this = this;
         this.renderer = renderer;
         this.cookie = cookie;
         this.http = http;
         this.filterService = filterService;
-        //private year: string;
-        //private month: string;
-        //private date: string;
+        this.route = route;
+        this.filter = new FilterModel();
         this.logged = false;
-        this.filterService.filter.subscribe(function (filt) {
-            _this.filter = filt;
-            switch (filt.form) {
-                case 'year':
-                    console.log(filt.form);
-                    break;
-                case 'mon':
-                    console.log(filt.form);
-                    break;
-                case 'day':
-                    console.log(filt.form);
-                    break;
-            }
-        });
+        this.c_year = false;
+        this.c_mon = false;
+        this.c_day = false;
+        this.filter.form = '';
         var token;
         var flag = false;
-        //if (!this.logged) {
-        //    let cookt: string = this.cookie.get('eam_kp_t');
-        //    this.querySubscription = this.route.queryParams.subscribe(
-        //        (queryParam: any) => {
-        //            token = queryParam['secret'];
-        //            if (token !== undefined) {
-        //                this.cookie.put('eam_kp_t', token);
-        //                flag = true;
-        //            } else {
-        //                if (!this.logged && cookt !== undefined) {
-        //                    this.http.trySession(cookt).subscribe(
-        //                        (data: any[]) => {
-        //                            if (data["result"] !== null) {
-        //                                flag = true;
-        //                            } else {
-        //                                flag = false;
-        //                            }
-        //                        }
-        //                    );
-        //                }
-        //            }
-        //        }
-        //    );
-        //}
+        if (!this.logged) {
+            var cookt_1 = this.cookie.get('eam_kp_t');
+            this.route.queryParams.subscribe(function (queryParam) {
+                token = queryParam['secret'];
+                if (token !== undefined) {
+                    _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
+                    _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
+                    _this.cookie.put('eam_kp_t', token);
+                    flag = true;
+                }
+                else {
+                    if (!_this.logged && cookt_1 !== 'undefined') {
+                        _this.http.trySession(cookt_1).subscribe(function (data) {
+                            if (data["result"] !== null) {
+                                _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
+                                _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
+                                flag = true;
+                            }
+                            else {
+                                flag = false;
+                                _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
+                            }
+                        });
+                    }
+                }
+            });
+        }
         setTimeout(function () {
             _this.logged = flag;
-        }, 3000);
+            _this.renderer.addClass(_this.succ.nativeElement, 'd-none');
+            _this.filterService.filter.subscribe(function (filt) {
+                if (filt.ready) {
+                    _this.filter = filt;
+                }
+            });
+        }, 4000);
     }
     AppComponent.prototype.ngOnInit = function () {
     };
     AppComponent.prototype.signIn = function () {
         var _this = this;
         var flag;
-        var valid;
         //res = this.user.userSignIn(this.login, this.password);
+        this.renderer.removeClass(this.warn.nativeElement, 'd-none');
+        this.renderer.addClass(this.dang.nativeElement, 'd-none');
         this.http.singInUser(this.login, this.password).subscribe(function (data) {
+            //                console.log(data);
+            _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
             if (data["result"] === "Y") {
+                _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
                 _this.cookie.put('eam_kp_t', data["token"]);
+                _this.cookie.put('eam_kp_uid', data["userId"]);
                 flag = true;
-                valid = true;
             }
             else {
+                _this.renderer.removeClass(_this.dang.nativeElement, 'd-none');
                 flag = false;
-                valid = false;
             }
         });
         setTimeout(function () {
             _this.logged = flag;
-        }, 5000);
+            _this.renderer.addClass(_this.succ.nativeElement, 'd-none');
+        }, 5500);
     };
+    __decorate([
+        ViewChild('succ'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "succ", void 0);
+    __decorate([
+        ViewChild('dang'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "dang", void 0);
+    __decorate([
+        ViewChild('info'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "info", void 0);
+    __decorate([
+        ViewChild('warn'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "warn", void 0);
     AppComponent = __decorate([
         Component({
             selector: 'root-app',
@@ -128,7 +119,8 @@ var AppComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [Renderer2,
             CookieService,
             HttpService,
-            FilterService])
+            FilterService,
+            ActivatedRoute])
     ], AppComponent);
     return AppComponent;
 }());

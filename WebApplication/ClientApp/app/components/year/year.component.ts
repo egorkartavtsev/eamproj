@@ -1,4 +1,4 @@
-﻿import { Renderer2, ViewChild, Component, OnInit } from '@angular/core';
+﻿import { Input, Renderer2, ViewChild, Component, OnInit } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { FilterModel } from '../../library/filter-model';
 import { ProdOrder } from '../../library/prod-order.lib';
@@ -15,28 +15,15 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 export class YearComponent implements OnInit {
 
     private filter: FilterModel;
-    private routeSubscription: Subscription;
-    private querySubscription: Subscription;
-
-    private TotalData: any[] = [];
     private CurrentData: any[] = [];
     private title: string;
-
     private modalData: any[] = [];
+
     private currentPO: ProdOrder = new ProdOrder;
     private emptyData: boolean = true;
     private emptyModal: boolean = true;
-    private warn: boolean = false;
-    private tmpDT: object = {};
-    private targetChanged: object = {
-        "hours": false,
-        "startDate": false
-    };
-    model: NgbDateStruct;
-    startCalDay: NgbDateStruct;
-
-    private curPage: number = 0;
     @ViewChild('fetchBtn') fetchBtn: any;
+    @ViewChild('fetchSel') fetchSel: any;
     @ViewChild('mimiLoader') mimiLoader: any;
 
     /********************************************************/
@@ -48,6 +35,19 @@ export class YearComponent implements OnInit {
     /********************************************************/
 
 
+
+
+    //private TotalData: any[] = [];
+    //private warn: boolean = false;
+    //private routeSubscription: Subscription;
+    //private querySubscription: Subscription;
+    //private tmpDT: object = {};
+    //private targetChanged: object = {
+    //    "hours": false,
+    //    "startDate": false
+    //};
+    //model: NgbDateStruct;
+    //startCalDay: NgbDateStruct;
     private monthes: any[] = [
         { "mon": "01", "num": "Январь" },
         { "mon": "02", "num": "Февраль" },
@@ -63,47 +63,29 @@ export class YearComponent implements OnInit {
         { "mon": "12", "num": "Декабрь" }
     ];
 
+
+
+
+
     constructor(
         private renderer: Renderer2, 
         private filterService: FilterService,
         private http: HttpService,
         private route: ActivatedRoute
-    ) {
-        this.emptyData = true;
-        this.querySubscription = route.queryParams.subscribe(
-            (queryParam: any) => {
-                if (queryParam['query'] !== undefined) {
-                    this.title = queryParam['query'];
-                } else {
-                    this.title = new Date().getFullYear().toString();
-                }
-                this.getData();
-                //this.http.getCountOfRows(this.title+'-01', '12').subscribe(
-                //    (data: string) => {
-                //        this.totalCount = data[0]['CNT'];
-                //    }
-                //);
-            }
-        );
-    }
+    ) {}
 
     ngOnInit() {
         this.emptyData = true;
         this.filterService.filter.subscribe(filt => {
-            this.filter = filt;
-            this.CurrentData = [];
-
-            for (let order of this.TotalData) {
-                if (this.filterService.applyFilter(filt, order)) {
-                    this.CurrentData.push(order);
-                }
+            if (filt.ready) {
+                this.filter = filt;
+                this.title = filt.period.year;
+                this.modalData['title'] = "";
+                this.modalData['porders'] = [];
+                this.totalCount = this.filter.conut.toString();
+                this.CurrentData = [];
+                this.getData();
             }
-
-            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-            //    this.warn = false;
-            //} else {
-            //    this.warn = true;
-            //}
         });
 
     }
@@ -113,47 +95,28 @@ export class YearComponent implements OnInit {
         if (typeof (this.modalData['mon']) !== "undefined") {
             this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
         }
-        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
+        this.http.getYearData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
+                console.log(data);
                 let tmp = this.getRows(data);
-
-                this.TotalData = tmp;
-                for (let order of tmp) {
-                    if (this.filterService.applyFilter(this.filter, order)) {
-                        this.CurrentData.push(order);
-                    }
-                }
-
+                this.CurrentData = tmp;
                 this.emptyData = false;
                 this.tryBtn(tmp.length);
-                this.currentCount = this.TotalData.length;
-                this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
-                this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+                this.currentCount = this.CurrentData.length;
             },
             error => { console.log(error) }
         );
     }
-
+    
     private fetchData() {
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
-        ++this.curPage;
-        this.http.getYearData(this.title, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
+        this.http.getYearData(this.filter, this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
                 let tmp = this.getRows(data);
-
-                Array.prototype.push.apply(this.TotalData, tmp);
-                for (let order of tmp) {
-                    if (this.filterService.applyFilter(this.filter, order)) {
-                        this.CurrentData.push(order);
-                    }
-                }
-                this.currentCount = this.TotalData.length;
+                Array.prototype.push.apply(this.CurrentData, tmp);
+                this.currentCount = this.CurrentData.length;
                 this.tryBtn(tmp.length);
-                this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
-                console.log(this.totalCount);
-                console.log(this.needCount);
-                console.log(this.currentCount);
             }
         );
     }
@@ -196,14 +159,14 @@ export class YearComponent implements OnInit {
         cond['weekstart'] = range['start'];
 
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '" + instance + "'";
             this.modalData['title'] += " для агрегата №" + instance;
             this.modalData['instance'] = instance;
         } else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
 
-        this.http.getDataList('year', cond).subscribe(
+        this.http.getDataList('year', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(
             (data: any[]) => {
                 this.modalData['porders'] = Object.keys(data).map(i => data[i]);
                 this.emptyModal = false;
@@ -252,8 +215,10 @@ export class YearComponent implements OnInit {
         if (length >= +this.needCount) {
             this.renderer.removeAttribute(this.fetchBtn.nativeElement, 'disabled');
             this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.removeClass(this.fetchSel.nativeElement, 'd-none');
         } else {
             this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.addClass(this.fetchSel.nativeElement, 'd-none');
         }
     }
 

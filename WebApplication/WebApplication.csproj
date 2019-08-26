@@ -21,6 +21,7 @@
     <None Remove="ClientApp\app\components\year\loader.gif" />
     <None Remove="ClientApp\app\components\year\year.component.ts" />
     <None Remove="ClientApp\app\directives\empty-cell.directive.ts" />
+    <None Remove="ClientApp\app\library\sel-conf.ts" />
     <None Remove="ClientApp\main.ts" />
     <None Remove="ClientApp\polyfills.ts" />
   </ItemGroup>
@@ -28,8 +29,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1000" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.18.3" />
+    <PackageReference Include="NPOI" Version="2.4.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +45,7 @@
     <TypeScriptCompile Include="ClientApp\app\components\week\week.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\year\year.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\directives\empty-cell.directive.ts" />
+    <TypeScriptCompile Include="ClientApp\app\library\sel-conf.ts" />
     <TypeScriptCompile Include="ClientApp\main.ts" />
     <TypeScriptCompile Include="ClientApp\polyfills.ts" />
   </ItemGroup>

@@ -13,7 +13,6 @@ import { HttpService } from '../../services/http.service';
 import { ActivatedRoute } from '@angular/router';
 var WeekComponent = /** @class */ (function () {
     function WeekComponent(filterService, http, route) {
-        var _this = this;
         this.filterService = filterService;
         this.http = http;
         this.route = route;
@@ -22,48 +21,58 @@ var WeekComponent = /** @class */ (function () {
         this.emptyData = true;
         this.modalData = [];
         this.emptyModal = true;
-        this.querySubscription = route.queryParams.subscribe(function (queryParam) {
-            _this.title = queryParam['query'];
-            var tmp = new Date(queryParam['query']);
-            tmp.setDate(tmp.getDate() + 6);
-            var mon = (+tmp.getMonth() + 1).toString();
-            if (mon.length === 1) {
-                mon = '0' + mon.toString();
-            }
-            _this.titleFor = tmp.getFullYear() + '-' + mon + '-' + tmp.getDate();
-            _this.getData(_this.title, _this.titleFor);
-        });
+        //this.querySubscription = route.queryParams.subscribe(
+        //    (queryParam: any) => {
+        //        this.title = queryParam['query'];
+        //        let tmp = new Date(queryParam['query']);
+        //        tmp.setDate(tmp.getDate() + 6);
+        //        let mon = (+tmp.getMonth() + 1).toString();
+        //        if (mon.length === 1) { mon = '0' + mon.toString(); }
+        //        this.titleFor = tmp.getFullYear() + '-' + mon + '-' + tmp.getDate();
+        //        this.getData(this.title, this.titleFor);
+        //    }
+        //);
     }
     WeekComponent.prototype.ngOnInit = function () {
         var _this = this;
-        console.log(this.data);
         this.filterService.filter.subscribe(function (filt) {
-            _this.filter = filt;
-            _this.data = [];
-            var i = 0;
-            for (var _i = 0, _a = _this.totalData; _i < _a.length; _i++) {
-                var day = _a[_i];
-                var day_data = [];
-                _this.data[i] = {};
-                for (var _b = 0, _c = day.porders; _b < _c.length; _b++) {
-                    var order = _c[_b];
-                    if (_this.filterService.applyFilter(filt, order)) {
-                        day_data.push(order);
-                    }
+            if (filt.ready) {
+                _this.filter = filt;
+                var sup1 = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-' + _this.filter.period.day);
+                var sup = sup1.toLocaleString('ru', { weekday: 'long' });
+                _this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + _this.filter.period.day + '.' + _this.filter.period.month + '.' + _this.filter.period.year;
+                sup1.setDate(sup1.getDate() + 6);
+                var mon = (+sup1.getMonth() + 1).toString();
+                if (mon.length === 1) {
+                    mon = '0' + mon.toString();
                 }
-                _this.data[i].porders = day_data;
-                _this.data[i].dname = day.dname;
-                ++i;
+                _this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
+                _this.getData();
             }
+            //this.data = [];
+            //let i = 0;
+            //for (let day of this.totalData) {
+            //    let day_data: any[] = [];
+            //    this.data[i] = {};
+            //    for (let order of day.porders) {
+            //        if (this.filterService.applyFilter(filt, order)) {
+            //            day_data.push(order);
+            //        }
+            //    }
+            //    this.data[i].porders = day_data;
+            //    this.data[i].dname = day.dname;
+            //    ++i;
+            //}
         });
     };
-    WeekComponent.prototype.getData = function (start, end) {
+    WeekComponent.prototype.getData = function () {
         var _this = this;
         this.emptyData = true;
-        if (typeof (this.modalData['title']) !== "undefined") {
-            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        }
-        this.http.getWeekData(start, end).subscribe(function (data) {
+        //if (typeof (this.modalData['title']) !== "undefined") {
+        //    this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        //}
+        this.http.getWeekData(this.filterService.makeSQLFilter(this.filter)).subscribe(function (data) {
+            console.log(_this.filterService.makeSQLFilter(_this.filter));
             var rows = Object.keys(data).map(function (i) { return data[i]; });
             var ind = 0;
             var _loop_1 = function (row) {
@@ -88,13 +97,13 @@ var WeekComponent = /** @class */ (function () {
         var cond = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '" + instance + "'";
             this.modalData['title'] += " для агрегата № " + instance;
         }
         else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
-        this.http.getDataList('month', cond).subscribe(function (data) {
+        this.http.getDataList('month', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(function (data) {
             _this.modalData['porders'] = Object.keys(data).map(function (i) { return data[i]; });
             _this.emptyModal = false;
         });

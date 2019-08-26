@@ -1,4 +1,4 @@
-﻿import { Renderer2, ViewChild, Component, OnInit } from '@angular/core';
+﻿import { Input, Renderer2, ViewChild, Component, OnInit } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { FilterModel } from '../../library/filter-model';
 import { HttpService } from '../../services/http.service';
@@ -14,33 +14,19 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 })
 export class MonthComponent {
 
-
     private filter: FilterModel;
+
     private title: string;
-    private routeSubscription: Subscription;
-    private querySubscription: Subscription;
-
-    private tmpDT: object = {};
-
-    private TotalData: any[] = [];
-    private CurrentData: any[] = [];
-
     private emptyData: boolean = true;
     private emptyModal: boolean = true;
-    private warn: boolean = false;
     private modalData: any[] = [];
-    private currentPO: any;
+    private CurrentData: any[] = [];
     private tHeadDays: any[] = [];
-    private tmpQuery: string;
-    private targetChanged: object = {
-        "hours": false,
-        "startDate": false
-    };
-    model: NgbDateStruct;
-    startCalDay: NgbDateStruct;
 
-    private curPage: number = 0;
+    private currentPO: any;
+
     @ViewChild('fetchBtn') fetchBtn: any;
+    @ViewChild('fetchSel') fetchSel: any;
     @ViewChild('mimiLoader') mimiLoader: any;
 
     /********************************************************/
@@ -50,73 +36,59 @@ export class MonthComponent {
     private needCount: string = '20';
 
     /********************************************************/
+    //private filter: FilterModel;
+    //private routeSubscription: Subscription;
+    //private querySubscription: Subscription;
 
-    constructor(private renderer: Renderer2, private filterService: FilterService, private route: ActivatedRoute, private http: HttpService, private calendar: NgbCalendar) {
-        this.querySubscription = route.queryParams.subscribe(
-            (queryParam: any) => {
-                if (queryParam['query'] !== undefined) {
-                    this.tmpQuery = queryParam['query'];
-                } else {
-                    let date = new Date();
-                    this.tmpQuery = date.getFullYear().toString();
-                    this.tmpQuery += "-" + (((+date.getMonth().toString() + 1).toString().length < 2) ? "0" + (+date.getMonth().toString() + 1).toString() : (+date.getMonth().toString() + 1).toString());
-                }
+    //private tmpDT: object = {};
 
-                let sup = new Date(this.tmpQuery + "-01").toLocaleString('ru', { month: 'long' });
-                sup = sup + " " + new Date(this.tmpQuery + "-01").getFullYear().toString();
-                this.title = sup[0].toUpperCase() + sup.substring(1);
-                this.getData();
-                //this.http.getCountOfRows(this.tmpQuery, '1').subscribe(
-                //    data => {
-                //        this.totalCount = data[0]['CNT'];
-                //    }
-                //);
-            }
-        );
-        this.modalData['title'] = "";
-        this.modalData['porders'] = [];
+    //private TotalData: any[] = [];
 
-    }
+    //private warn: boolean = false;
+    //private tmpQuery: string;
+    //private targetChanged: object = {
+    //    "hours": false,
+    //    "startDate": false
+    //};
+    //model: NgbDateStruct;
+    //startCalDay: NgbDateStruct;
+    //private curPage: number = 0;
+
+
+    constructor(
+        private renderer: Renderer2,
+        private filterService: FilterService,
+        private route: ActivatedRoute,
+        private http: HttpService,
+        private calendar: NgbCalendar) {}
 
     ngOnInit() {
-        this.filterService.filter.subscribe(filt => {
-            this.filter = filt;
-            this.CurrentData = [];
-            for (let order of this.TotalData) {
-                if (this.filterService.applyFilter(filt, order)) {
-                    this.CurrentData.push(order);
+        this.filterService.filter.subscribe(
+            (filt: any) => {
+                if (filt.ready) {
+                    this.tHeadDays = [];
+                    this.filter = filt;
+                    let sup = new Date(this.filter.period.year + '-' + this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
+                    sup = sup + " " + this.filter.period.year;
+                    this.title = sup[0].toUpperCase() + sup.substring(1);
+                    this.modalData['title'] = "";
+                    this.modalData['porders'] = [];
+                    this.totalCount = this.filter.conut.toString();
+                    this.getData();
                 }
             }
-
-            //if (this.filter.agr_filter == '' && this.filter.org_filter == '' && this.filter.planner_filter == '' && this.filter.wt_filter == '') {
-            //    this.warn = false;
-            //} else {
-            //    this.warn = true;
-            //}
-        });
-
+        );
     }
 
     private getData() {
-        this.emptyData = true;
-        let query = this.tmpQuery;
-        if (typeof (this.modalData['title']) !== "undefined") {
-            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        }
-        this.TotalData = [];
-        this.tHeadDays = [];
         this.CurrentData = [];
+        this.emptyData = true;
         this.currentCount = 0;
-        this.http.getMonthData(query, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
+        this.http.getMonthData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
                 let tmp = this.getRows(data);
-                this.TotalData = tmp;
-                for (let order of this.TotalData) {
-                    if (this.filterService.applyFilter(this.filter, order)) {
-                        this.CurrentData.push(order);
-                    }
-                }
-                this.currentCount = this.TotalData.length;
+                this.CurrentData = tmp;
+                this.currentCount = this.CurrentData.length;
                 this.emptyData = false;
                 this.tryBtn(tmp.length);
             }
@@ -130,13 +102,13 @@ export class MonthComponent {
         let cond: any[] = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '"+instance+"'";
             this.modalData['instance'] = instance;
             this.modalData['title'] += " для агрегата № " + instance;
         } else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
-        this.http.getDataList('month', cond).subscribe(
+        this.http.getDataList('month', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(
             (data: any[]) => {
                 this.modalData['porders'] = Object.keys(data).map(i => data[i]);
                 this.emptyModal = false;
@@ -147,21 +119,13 @@ export class MonthComponent {
     private fetchData() {
         this.renderer.setAttribute(this.fetchBtn.nativeElement, 'disabled', 'disabled');
         this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
-        ++this.curPage;
-        this.http.getMonthData(this.tmpQuery, this.curPage.toString(), this.needCount, this.currentCount.toString()).subscribe(
+        this.http.getMonthData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
                 let tmp = this.getRows(data);
-
-                Array.prototype.push.apply(this.TotalData, tmp);
-                for (let order of tmp) {
-                    if (this.filterService.applyFilter(this.filter, order)) {
-                        this.CurrentData.push(order);
-                    }
-                }
-                this.currentCount = this.TotalData.length;
-
+                Array.prototype.push.apply(this.CurrentData, tmp);
+                this.currentCount = this.CurrentData.length;
                 this.emptyData = false;
-                this.tryBtn(tmp.length);
+                this.tryBtn(this.currentCount);
                 this.renderer.addClass(this.mimiLoader.nativeElement, 'd-none');
             }
         );
@@ -185,18 +149,19 @@ export class MonthComponent {
                     sum += +cell['res'];
                 }
                 totalRows[i]['days'][j]['title'] = cell['weekDD'] + ' ' + cell['monDD'] + ' ' + this.title;
-                totalRows[i]['days'][j]['target'] = this.tmpQuery + '-' + cell['monDD'];
+                totalRows[i]['days'][j]['target'] = this.filter.period.year + '-' + this.filter.period.month + '-' + cell['monDD'];
                 ++j;
                 this.tHeadDays.push({
                     "monDD": cell['monDD'],
                     "weekDD": cell['weekDD'].toLowerCase(),
-                    "target": this.tmpQuery + '-' + cell['monDD'],
-                    "title": cell['weekDD'] + ' ' + cell['monDD'] + ' ' + this.title
+                    "target": this.filter.period.year + '-' + this.filter.period.month + '-' + cell['monDD'],
+                    "title": cell['weekDD'] + ' ' + this.title
                 });
             }
             totalRows[i]['sum'] = sum;
             ++i;
         }
+
         return totalRows;
     }
 
@@ -204,8 +169,10 @@ export class MonthComponent {
         if (length >= +this.needCount) {
             this.renderer.removeAttribute(this.fetchBtn.nativeElement, 'disabled');
             this.renderer.removeClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.removeClass(this.fetchSel.nativeElement, 'd-none');
         } else {
             this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
+            this.renderer.addClass(this.fetchSel.nativeElement, 'd-none');
         }
     }
 

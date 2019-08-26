@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule }          from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown'
-import { CookieService }        from 'angular2-cookie/services/cookies.service';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
 
 // components
 import { AppComponent }         from './components/app/app.component';
@@ -37,9 +37,9 @@ import { EmptyCellDirective } from './directives/empty-cell.directive';
 //];
 
 @NgModule({
-    imports: [NgbModule, SelectDropDownModule, BrowserModule, HttpClientModule, FormsModule, ReactiveFormsModule ],
+    imports: [NgbModule, SelectDropDownModule, BrowserModule, HttpClientModule, FormsModule, ReactiveFormsModule, RouterModule.forRoot([]) ],
     declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent, TestComponent],
-    providers: [FilterService, HttpService, CookieService ],
+    providers: [FilterService, HttpService, CookieService],
     bootstrap:      [ AppComponent ]
 })
 export class AppModule { }

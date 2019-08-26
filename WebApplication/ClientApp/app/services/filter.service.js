@@ -44,33 +44,41 @@ var FilterService = /** @class */ (function () {
         SQLFilt['perStart'] = filt.period.year + '-' + monS + '-' + dayS;
         SQLFilt['perEnd'] = tmpD.getFullYear().toString() + '-' + monE + '-' + dayE;
         //Multiselect
-        if (filt.org.length === 0 || filt.org === '%') {
-            SQLFilt['org'] = "LIKE '%'";
+        if (filt.filterType === 'custom') {
+            if (filt.org.length === 0 || filt.org === '%') {
+                SQLFilt['org'] = "LIKE '%'";
+            }
+            else {
+                sup = filt.org.map(function (a) { return a.ORGANIZATION_ID; }).join(', ');
+                SQLFilt['org'] = "IN (" + sup + ")";
+            }
+            if (filt.agr.length === 0 || filt.agr === '%') {
+                SQLFilt['agr'] = "LIKE '%'";
+            }
+            else {
+                sup = filt.agr.map(function (a) { return a.INSTANCE_NUMBER; }).join("', '");
+                SQLFilt['agr'] = "IN ('" + sup + "')";
+            }
+            if (filt.wtype.length === 0 || filt.wtype === '%') {
+                SQLFilt['wtype'] = "LIKE '%'";
+            }
+            else {
+                sup = filt.wtype.map(function (a) { return a.ROUTING_COMMENT; }).join("', '");
+                SQLFilt['wtype'] = "IN ('" + sup + "')";
+            }
+            if (filt.status.length === 0 || filt.status === '%') {
+                SQLFilt['status'] = "LIKE '%'";
+            }
+            else {
+                sup = filt.status.map(function (a) { return a.LOOKUP_CODE; }).join("', '");
+                SQLFilt['status'] = "IN ('" + sup + "')";
+            }
         }
         else {
-            sup = filt.org.map(function (a) { return a.ORGANIZATION_ID; }).join(', ');
-            SQLFilt['orgs'] = "IN (" + sup + ")";
-        }
-        if (filt.agr.length === 0 || filt.agr === '%') {
-            SQLFilt['agr'] = "LIKE '%'";
-        }
-        else {
-            sup = filt.agr.map(function (a) { return a.INSTANCE_NUMBER; }).join("', '");
-            SQLFilt['agr'] = "IN ('" + sup + "')";
-        }
-        if (filt.wtype.length === 0 || filt.wtype === '%') {
-            SQLFilt['wtype'] = "LIKE '%'";
-        }
-        else {
-            sup = filt.wtype.map(function (a) { return a.ROUTING_COMMENT; }).join("', '");
-            SQLFilt['wtype'] = "IN ('" + sup + "')";
-        }
-        if (filt.status.length === 0 || filt.status === '%') {
-            SQLFilt['status'] = "LIKE '%'";
-        }
-        else {
-            sup = filt.status.map(function (a) { return a.LOOKUP_CODE; }).join("', '");
-            SQLFilt['status'] = "IN ('" + sup + "')";
+            for (var _i = 0, _a = filt.filterLoaded; _i < _a.length; _i++) {
+                var field = _a[_i];
+                SQLFilt[field.FIELD_NAME] = field.FIELD_VAL;
+            }
         }
         //other
         if (filt.planner === '%') {

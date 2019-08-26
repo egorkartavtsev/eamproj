@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Input, Component, OnInit } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { FilterModel } from '../../library/filter-model';
 import { HttpService } from '../../services/http.service';
@@ -13,11 +13,14 @@ import { Subscription } from 'rxjs';
 export class WeekComponent implements OnInit {
 
     private filter: FilterModel;
+
     private totalData: any[] = [];
     private data: any[] = [];
     private title: string;
     private titleFor: string;
     private emptyData: boolean = true;
+
+
     private routeSubscription: Subscription;
     private querySubscription: Subscription;
 
@@ -29,48 +32,58 @@ export class WeekComponent implements OnInit {
         private http: HttpService,
         private route: ActivatedRoute
     ) {
-        this.querySubscription = route.queryParams.subscribe(
-            (queryParam: any) => {
-                this.title = queryParam['query'];
-                let tmp = new Date(queryParam['query']);
-                tmp.setDate(tmp.getDate() + 6);
-                let mon = (+tmp.getMonth() + 1).toString();
-                if (mon.length === 1) { mon = '0' + mon.toString(); }
-                this.titleFor = tmp.getFullYear() + '-' + mon + '-' + tmp.getDate();
-                this.getData(this.title, this.titleFor);
-            }
-        );
+        //this.querySubscription = route.queryParams.subscribe(
+        //    (queryParam: any) => {
+        //        this.title = queryParam['query'];
+        //        let tmp = new Date(queryParam['query']);
+        //        tmp.setDate(tmp.getDate() + 6);
+        //        let mon = (+tmp.getMonth() + 1).toString();
+        //        if (mon.length === 1) { mon = '0' + mon.toString(); }
+        //        this.titleFor = tmp.getFullYear() + '-' + mon + '-' + tmp.getDate();
+        //        this.getData(this.title, this.titleFor);
+        //    }
+        //);
     }
 
     ngOnInit() {
-        console.log(this.data);
         this.filterService.filter.subscribe(filt => {
-            this.filter = filt;
-            this.data = [];
-            let i = 0;
-            for (let day of this.totalData) {
-                let day_data: any[] = [];
-                this.data[i] = {};
-                for (let order of day.porders) {
-                    if (this.filterService.applyFilter(filt, order)) {
-                        day_data.push(order);
-                    }
-                }
-                this.data[i].porders = day_data;
-                this.data[i].dname = day.dname;
-                ++i;
+            if (filt.ready) {
+                this.filter = filt;
+                let sup1 = new Date(this.filter.period.year + '-' + this.filter.period.month + '-' + this.filter.period.day);
+                let sup = sup1.toLocaleString('ru', { weekday: 'long' });
+                this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + this.filter.period.day + '.' + this.filter.period.month + '.' + this.filter.period.year;
+                sup1.setDate(sup1.getDate() + 6);
+                let mon = (+sup1.getMonth() + 1).toString();
+                if (mon.length === 1) { mon = '0' + mon.toString(); }
+                this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
+                this.getData();
             }
+            //this.data = [];
+            //let i = 0;
+            //for (let day of this.totalData) {
+            //    let day_data: any[] = [];
+            //    this.data[i] = {};
+            //    for (let order of day.porders) {
+            //        if (this.filterService.applyFilter(filt, order)) {
+            //            day_data.push(order);
+            //        }
+            //    }
+            //    this.data[i].porders = day_data;
+            //    this.data[i].dname = day.dname;
+            //    ++i;
+            //}
         });
 
     }
-
-    private getData(start: string, end: string) {
+    
+    private getData() {
         this.emptyData = true;
-        if (typeof (this.modalData['title']) !== "undefined") {
-            this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        }
-        this.http.getWeekData(start, end).subscribe(
+        //if (typeof (this.modalData['title']) !== "undefined") {
+        //    this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
+        //}
+        this.http.getWeekData(this.filterService.makeSQLFilter(this.filter)).subscribe(
             (data: any[]) => {
+                console.log(this.filterService.makeSQLFilter(this.filter));
                 let rows = Object.keys(data).map(i => data[i]);
                 let ind = 0;
                 for (let row of rows) {
@@ -92,12 +105,12 @@ export class WeekComponent implements OnInit {
         let cond: any[] = [];
         cond['date'] = target;
         if (typeof (instance) !== "undefined") {
-            cond['instance'] = instance;
+            cond['instance'] = "= '" + instance + "'";
             this.modalData['title'] += " для агрегата № " + instance;
         } else {
-            cond['instance'] = "";
+            cond['instance'] = "LIKE '%'";
         }
-        this.http.getDataList('month', cond).subscribe(
+        this.http.getDataList('month', cond, this.filterService.makeSQLFilter(this.filter)).subscribe(
             (data: any[]) => {
                 this.modalData['porders'] = Object.keys(data).map(i => data[i]);
                 this.emptyModal = false;

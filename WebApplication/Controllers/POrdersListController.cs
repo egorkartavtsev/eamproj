@@ -17,6 +17,7 @@ namespace EAMlvl1System.Controllers
         {
             List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
             Dictionary<string, object> tmpRow = new Dictionary<string, object>();
+            Dictionary<string, object> tmpRow1 = new Dictionary<string, object>();
             DBHandler db = new DBHandler { };
             if (string.IsNullOrEmpty(query))
             {
@@ -25,8 +26,8 @@ namespace EAMlvl1System.Controllers
             rows = db.GetDataFromDB(query, cond);
 
             foreach (var row in rows) {
-                if (cond["instance"] != null) {
-                    if (cond["instance"].ToString() == row["INSTANCE_NUMBER"].ToString()) {
+                if (cond["instance"] != "LIKE '%'") {
+                    if (cond["instance"].ToString() == "= '"+row["INSTANCE_NUMBER"].ToString()+"'") {
                         tmpRow.TryAdd(row["WIP_ENTITY_ID"].ToString(), new Dictionary<string, string> {
                             { "entity_id", row["WIP_ENTITY_ID"].ToString() },
                             { "entity_name", row["WIP_ENTITY_NAME"].ToString() },
@@ -58,6 +59,8 @@ namespace EAMlvl1System.Controllers
                 }
             }
             
+            tmpRow1 = tmpRow;
+
             return Ok(tmpRow);
         }
     }

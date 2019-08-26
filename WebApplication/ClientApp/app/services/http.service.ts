@@ -45,38 +45,41 @@ export class HttpService{
         return this.http.get("/api/getDatas/", { params: body });
     }
 
-    getYearData(year: string, page: string, count: string, current: string) {
-        const body = {
+    getYearData(filter: any, count: string, current: string) {
+        let body = {
             query: "300",
-            "cond[year]": year,
             "cond[count]": count,
-            "cond[current]": current,
-            "cond[page]": page
+            "cond[current]": current
         };
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/yearTable/", { params: body });
     }
 
-    getMonthData(cond: string, page: string, count: string, current: string) {
-        const body = {
+    getMonthData(filter: any, count: string, current: string) {
+        let body = {
             query: "301",
-            "cond[month]": cond,
             "cond[count]": count,
-            "cond[current]": current,
-            "cond[page]": page
+            "cond[current]": current
         };
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/monthTable/", { params: body });
     }
 
-    getWeekData(start: string, end: string) {
-        const body = {
-            query: "302",
-            "cond[weekstart]": start,
-            "cond[weekend]": end
+    getWeekData(filter: any) {
+        let body = {
+            query: "302"
         };
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
         return this.http.get("/api/weekTable/", { params: body });
     }
 
-    getDataList(target: string, cond: any[]) {
+    getDataList(target: string, cond: any[], filter: any) {
         let body = {};
         switch (target) {
             case 'month':
@@ -94,6 +97,9 @@ export class HttpService{
                     "cond[instance]": cond['instance']
                 };
                 break;
+        }
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
         }
         return this.http.get("api/porderLists/", { params: body });
     }
@@ -115,7 +121,7 @@ export class HttpService{
         };
         return this.http.get("api/getDatas", { params: body });
     }
-
+    
     getAgrs(org_id: string) {
         let body = {
             query: "305",
@@ -191,5 +197,30 @@ export class HttpService{
                 body["cond[" + i + "]"] = filt[i];
         }
         return this.http.get("api/getDatas", { params: body });
+    }
+
+    getFilterList() {
+        let body = { query: "318" };
+        return this.http.get("api/getDatas", { params: body });
+    }
+
+    saveCurFilter(info: any) {
+        let body = {};
+        for (let attr in info) {
+            body["cond["+attr+"]"] = info[attr];
+        }
+        return this.http.get("api/saveFilter", { params: body });
+    }
+
+    loadFilterFields(filt_id: string) {
+        let body = {
+            query: "319",
+            "cond[filt_id]": filt_id,
+        };
+        return this.http.get("api/getDatas", { params: body });
+    }
+
+    ExportExcel() {
+        return this.http.get("api/exportXLS");
     }
 }
