@@ -31,6 +31,8 @@ export class AppComponent implements OnInit {
     @ViewChild('dang') dang: any;
     @ViewChild('info') info: any;
     @ViewChild('warn') warn: any;
+    @ViewChild('showflt') showflt: any;
+    @ViewChild('hideflt') hideflt: any;
 
 
     constructor(
@@ -88,6 +90,21 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
         
+    }
+
+    tootgleFlt() {
+        $('#flt-box').slideToggle('slow');
+        if (this.hideflt.nativeElement.className.indexOf('d-none') > 0) {
+            this.renderer.addClass(this.showflt.nativeElement, 'd-none');
+            this.renderer.removeClass(this.hideflt.nativeElement, 'd-none');
+        } else {
+            this.renderer.addClass(this.hideflt.nativeElement, 'd-none');
+            this.renderer.removeClass(this.showflt.nativeElement, 'd-none');
+        }
+    }
+
+    updateFilter() {
+        this.filterService.filter.next(this.filter);
     }
 
     signIn() {

@@ -69,6 +69,20 @@ var AppComponent = /** @class */ (function () {
     }
     AppComponent.prototype.ngOnInit = function () {
     };
+    AppComponent.prototype.tootgleFlt = function () {
+        $('#flt-box').slideToggle('slow');
+        if (this.hideflt.nativeElement.className.indexOf('d-none') > 0) {
+            this.renderer.addClass(this.showflt.nativeElement, 'd-none');
+            this.renderer.removeClass(this.hideflt.nativeElement, 'd-none');
+        }
+        else {
+            this.renderer.addClass(this.hideflt.nativeElement, 'd-none');
+            this.renderer.removeClass(this.showflt.nativeElement, 'd-none');
+        }
+    };
+    AppComponent.prototype.updateFilter = function () {
+        this.filterService.filter.next(this.filter);
+    };
     AppComponent.prototype.signIn = function () {
         var _this = this;
         var flag;
@@ -110,6 +124,14 @@ var AppComponent = /** @class */ (function () {
         ViewChild('warn'),
         __metadata("design:type", Object)
     ], AppComponent.prototype, "warn", void 0);
+    __decorate([
+        ViewChild('showflt'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "showflt", void 0);
+    __decorate([
+        ViewChild('hideflt'),
+        __metadata("design:type", Object)
+    ], AppComponent.prototype, "hideflt", void 0);
     AppComponent = __decorate([
         Component({
             selector: 'root-app',

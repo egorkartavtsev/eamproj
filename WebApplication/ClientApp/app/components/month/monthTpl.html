@@ -1,4 +1,4 @@
-﻿<div class="row justify-content-center">
+﻿<div class="w-100">
     <div class="col-12">
         <p class="display3 text-center"><b>График</b><br> капитальных и продолжительных ремонтов основных металлургических агрегатов ПАО ММК на {{title}}</p>
     </div>
@@ -7,7 +7,7 @@
             <thead class="thead-dark text-center">
                 <tr>
                     <th>Цех</th>
-                    <th>Агрегат</th>
+                    <th colspan="2">Агрегат</th>
                     <th *ngFor="let thc of tHeadDays" style="cursor: pointer;" (click)="showPOrders(thc.target, thc.title)" data-toggle="modal" data-target="#exampleModal">{{thc.weekDD}}<br>{{thc.monDD}}</th>
                     <th>Итого, ч.</th>
                 </tr>
@@ -16,8 +16,9 @@
             <tbody>
                 <tr></tr>
                 <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
-                    <tr *ngFor="let row of CurrentData">
+                    <tr *ngFor="let row of CurrentData" id="row_{{row.rownum}}" inst-showed="false">
                         <td>{{row.organization_name}}</td>
+                        <td class="text-center no-rb"><button class="btn btn-sm btn-info btn-show-inst" (click)="showClones($event, row.rownum)"><i class="fas fa-eye"> </i></button></td>
                         <td>{{row.instance_description}}</td>
                         <td *ngFor="let cell of row.days" class="{{cell.class}} align-middle text-center" title="{{cell.title}}" (click)="showPOrders(cell.target, cell.title, row.instance_number)" data-toggle="modal" data-target="#exampleModal">
                             {{cell.res}}

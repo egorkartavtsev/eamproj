@@ -21,7 +21,7 @@ export class FilterModel{
         this.agr = '%';
         this.wtype = '%';
         this.planner = 40;
-        this.form = 'week';
+        this.form = 'mon';
         this.status = '%';
         this.conut = 0;
         this.period = {

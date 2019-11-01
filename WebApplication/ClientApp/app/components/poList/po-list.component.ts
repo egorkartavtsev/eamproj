@@ -2,6 +2,7 @@
 import { ProdOrder } from '../../library/prod-order.lib';
 import { HttpService } from '../../services/http.service';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
+import { CookieService } from "angular2-cookie/core";
 
 
 @Component({
@@ -145,14 +146,14 @@ export class PoListComponent {
     @ViewChild('startCal') calendar: any;
     @ViewChild('loader') loader: any;
 
-    constructor(private http: HttpService, private updater: Renderer, private renderer: Renderer2) {
+    constructor(private cookie: CookieService,  private http: HttpService, private updater: Renderer, private renderer: Renderer2) {
         this.currentPO = new ProdOrder();
     }
 
     private save() {
         //console.log(this.currentPO);
-        this.renderer.removeClass(this.loader.nativeElement, 'd-none');        
-        this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type).subscribe(
+        this.renderer.removeClass(this.loader.nativeElement, 'd-none');
+        this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type, this.cookie.get('eam_kp_t')).subscribe(
             (data: any) => {
                 this.onSaved.emit(true);
                 this.cancel();
@@ -227,7 +228,7 @@ export class PoListComponent {
     }
 
     private makeTrueDate(date: string) {
-        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         let day: string;
         let month: string;
         let year: string = sup.getFullYear().toString();
@@ -239,7 +240,7 @@ export class PoListComponent {
         } else {
             day = sup.getDate().toString();
         }
-        if (sup.getMonth().toString().length < 2) {
+        if ((sup.getMonth() + 1).toString().length < 2) {
             month = "0" + (sup.getMonth() + 1).toString();
         } else {
             month = (sup.getMonth() + 1).toString();
@@ -255,7 +256,6 @@ export class PoListComponent {
             minutes = sup.getMinutes().toString();
         }
         return day + "." + month + "." + year + " " + hours + ":" + minutes + ":00";
-
     }
 
     private toogleCalendar() {

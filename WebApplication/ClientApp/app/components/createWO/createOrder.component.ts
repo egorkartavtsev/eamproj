@@ -24,6 +24,7 @@ export class CreateOrderComponent {
 
     private allow: boolean = false;
 
+    @Output() onSaved = new EventEmitter<boolean>();
     @ViewChild('startCal') calendar: any;
     @ViewChild('miniLoader') minLoad: any;
     @ViewChild('modal') mWin: any;
@@ -35,7 +36,6 @@ export class CreateOrderComponent {
                 this.organizations = Object.keys(data).map(i => data[i]);
             }
         );
-
     }
 
     ngOnInit() {
@@ -58,6 +58,9 @@ export class CreateOrderComponent {
     }
 
     private setOrg() {
+        let agrs_ready = false;
+        let idles_ready = false;
+
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.agregates = [];
         this.routing_sequences = [];
@@ -75,18 +78,20 @@ export class CreateOrderComponent {
         this.http.getAgrs(this.order.org_id.toString()).subscribe(
             (data: any[]) => {
                 this.agregates = Object.keys(data).map(i => data[i]);
-                console.log(this.agregates);
-                this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
+                if (idles_ready) { this.renderer.addClass(this.minLoad.nativeElement, 'd-none'); }
+                agrs_ready = true;
+                this.validateForm();
             }
         );
 
         this.http.getIdleCats(this.order.org_id).subscribe(
             (data: any[]) => {
                 this.idle_categs = Object.keys(data).map(i => data[i]);
-                this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
+                if (agrs_ready) { this.renderer.addClass(this.minLoad.nativeElement, 'd-none'); }
+                idles_ready = true;
+                this.validateForm();
             }
         );
-        this.validateForm();
     }
 
     private setIdleCat() {
@@ -153,8 +158,10 @@ export class CreateOrderComponent {
             this.order.planner_type
         ).subscribe(
             (data: any) => {
+                this.order = new NewOrder;
+                this.allow = false;
                 this.renderer.addClass(this.minLoad.nativeElement, 'd-none');
-                window.location.reload();
+                this.onSaved.emit(true);
             },
             error => {
                 console.log(error);
@@ -195,13 +202,7 @@ export class CreateOrderComponent {
         } else {
             this.allow = false;
         }
-
-        if (this.allow && this.order.planner_type !== '') {
-            this.allow = true;
-        } else {
-            this.allow = false;
-        }
-
+        
         if (this.allow && this.order.instance_number !== '') {
             this.allow = true;
         } else {
@@ -238,14 +239,14 @@ export class CreateOrderComponent {
     }
 
     private cancelDate() {
-        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.tmpDT = { hour: sup.getHours(), minute: sup.getMinutes() };
         this.toogleCalendar();
     }
 
     private updateComplete() {
-        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         let tmp = {
             "days": Math.floor(+this.order.hours / 24),
             "hours": +this.order.hours % 24
@@ -257,7 +258,7 @@ export class CreateOrderComponent {
     }
 
     private makeTrueDate(date: string) {
-        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         let day: string;
         let month: string;
         let year: string = sup.getFullYear().toString();
@@ -269,7 +270,7 @@ export class CreateOrderComponent {
         } else {
             day = sup.getDate().toString();
         }
-        if (sup.getMonth().toString().length < 2) {
+        if ((sup.getMonth() + 1).toString().length < 2) {
             month = "0" + (sup.getMonth() + 1).toString();
         } else {
             month = (sup.getMonth() + 1).toString();

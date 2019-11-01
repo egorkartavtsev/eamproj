@@ -15,7 +15,7 @@
     constructor(private key: string) {
         this.displayKey = key;
         this.search = true;
-        this.height = '200px';
+        this.height = '400px';
         this.placeholder = 'Все...';
         this.customComparator = () => { };
         this.limitTo = 10000;

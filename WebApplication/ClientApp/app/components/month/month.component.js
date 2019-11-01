@@ -59,6 +59,41 @@ var MonthComponent = /** @class */ (function () {
             }
         });
     };
+    MonthComponent.prototype.showClones = function (e, row_id) {
+        // определить есть ли открытые строки
+        var row_status = $('#row_' + row_id).attr('inst-showed');
+        $('#row_' + row_id).find('.btn-show-inst').find('i').remove();
+        if (row_status === 'true') {
+            $('#row_' + row_id).attr('inst-showed', 'false');
+            $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye"></i>');
+            $('.inst-row-' + row_id).each(function () {
+                $(this).slideToggle('slow', function () {
+                    $(this).remove();
+                });
+            });
+        }
+        else {
+            $('#row_' + row_id).attr('inst-showed', 'true');
+            $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye-slash"></i>');
+            var newrow = this.renderer.createElement('tr');
+            this.renderer.addClass(newrow, 'inst-row');
+            this.renderer.addClass(newrow, 'inst-row-' + row_id);
+            var newcol = this.renderer.createElement('td');
+            this.renderer.setAttribute(newcol, 'colspan', '3');
+            this.renderer.addClass(newcol, 'text-right');
+            this.renderer.appendChild(newcol, this.renderer.createText('Полномочие'));
+            this.renderer.appendChild(newrow, newcol);
+            console.log('needly: ', this.CurrentData[row_id - 1]);
+            for (var _i = 0, _a = this.tHeadDays; _i < _a.length; _i++) {
+                var i = _a[_i];
+                newcol = this.renderer.createElement('td');
+                this.renderer.appendChild(newcol, this.renderer.createText(i.weekDD.toString()));
+                this.renderer.appendChild(newrow, newcol);
+            }
+            $('#row_' + row_id).after($(newrow));
+        } // сгенерировать строку. Вставить после текущей строки
+        //console.log('row ' + row_id+': ', newrow);
+    };
     MonthComponent.prototype.getData = function () {
         var _this = this;
         this.CurrentData = [];
@@ -114,6 +149,7 @@ var MonthComponent = /** @class */ (function () {
             var sum = 0;
             totalRows.push(row);
             var cells = Object.keys(row['days']).map(function (i) { return row['days'][i]; });
+            totalRows[i]['rownum'] = i + 1;
             totalRows[i]['days'] = cells;
             this_1.tHeadDays = [];
             for (var _i = 0, cells_1 = cells; _i < cells_1.length; _i++) {

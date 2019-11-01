@@ -25,15 +25,17 @@ namespace EAMlvl1System.Models
         *   3 - CHECK
         *   4 - UAT
         *   5 - CHECK - WEBUSER
-        *   6 - PROD
-        *   7 - TEST 
+        *   6 - UAT - WEBUSER
+        *   7 - PROD
+        *   8 - TEST 
         */
         //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
         //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
-        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=APPS;Password=qw1234;";
+        private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=APPS;Password=qw1234;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-uat-db.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=UAT)(INSTANCE_NAME=UAT)));User Id=APPS;Password=Bcgsnfybz180;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
-        private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=APPS;Password=Ctrhtn321;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-uat-db.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=UAT)(INSTANCE_NAME=UAT)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=APPS;Password=Ctrhtn321;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-test.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=TEST)(INSTANCE_NAME=TEST)));User Id=APPS;Password=qw1234;";
 
         //=========================================PUBLIC FUNCTIONAL=====================================================
@@ -476,19 +478,18 @@ namespace EAMlvl1System.Models
         public Dictionary<string, object> MakeYearTable(string query, Dictionary<string, string> cond) {
             DataSet rows = (DataSet)this.GetData(this.GetQueryById(query, cond));
             Dictionary<string, object> tmpRow = new Dictionary<string, object>();
+            Dictionary<string, object> decadas = new Dictionary<string, object>();
 
             foreach (DataRow curDec in rows.Tables[0].Rows)
             {
-                if (!tmpRow.ContainsKey(curDec["INSTANCE_NUMBER"].ToString()))
+                if (!string.IsNullOrEmpty(curDec["INSTANCE_NUMBER"].ToString()))
                 {
-                    tmpRow.Add(
-                       curDec["INSTANCE_NUMBER"].ToString(), new Dictionary<string, object> {
+                    if (!tmpRow.ContainsKey(curDec["INSTANCE_NUMBER"].ToString()))
+                    {
+                        tmpRow.Add(
+                           curDec["INSTANCE_NUMBER"].ToString(), new Dictionary<string, object> {
                             { "organization_name", curDec["ORGANIZATION_NAME"].ToString() },
-                            { "organization_id", curDec["ORGANIZATION_ID"].ToString() },
-                            { "status_type", curDec["STATUS_TYPE"].ToString() },
-                            { "work_type", curDec["WORK_TYPE"].ToString() },
                             { "instance_number", curDec["INSTANCE_NUMBER"].ToString() },
-                            { "planner_maintenance", curDec["PLANNER_MAINTENANCE"].ToString() },
                             { "instance_description", curDec["INSTANCE_DESCRIPTION"].ToString() },
                             { "decadas", new Dictionary<string, Dictionary<string, string>> {
                                     {
@@ -501,59 +502,82 @@ namespace EAMlvl1System.Models
                                     }
                                 }
                             }
-                       }
-                   );
-                }
-                else
-                {
-                    Dictionary<string, object> sup = (Dictionary<string, object>)tmpRow[curDec["INSTANCE_NUMBER"].ToString()];
-                    Dictionary<string, Dictionary<string, string>> tmp = (Dictionary<string, Dictionary<string, string>>)sup["decadas"];
-                    if (tmp.TryAdd(curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString(), new Dictionary<string, string> {
+                           }
+                       );
+                    }
+                    else
+                    {
+                        Dictionary<string, object> sup = (Dictionary<string, object>)tmpRow[curDec["INSTANCE_NUMBER"].ToString()];
+                        Dictionary<string, Dictionary<string, string>> tmp = (Dictionary<string, Dictionary<string, string>>)sup["decadas"];
+                        if (tmp.TryAdd(curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString(), new Dictionary<string, string> {
                                             { "tarD", curDec["DECADA"].ToString() },
                                             { "tarM", curDec["MY"].ToString() },
                                             { "val", curDec["RES"].ToString() },
                                             { "class", (curDec["RES"].ToString()=="")?"":"info-cell" }
                                         }))
-                    {
-                        sup["decadas"] = tmp;
-                        tmpRow[curDec["INSTANCE_NUMBER"].ToString()] = sup;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]))
                         {
-                            tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = curDec["RES"].ToString();
-                            tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["class"] = (curDec["RES"].ToString() == "") ? "" : "info-cell";
-                        }
-                        else
-                        {
-                            string currDec = (curDec["RES"].ToString() == "") ? "0" : curDec["RES"].ToString();
-                            tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) + Convert.ToInt32(currDec)).ToString();
-                            switch (curDec["DECADA"].ToString())
-                            {
-                                case "03":
-                                    if (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) > 264)
-                                    {
-                                        tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = "264";
-                                    }
-                                    break;
-                                default:
-                                    if (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) > 240)
-                                    {
-                                        tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = "240";
-                                    }
-                                    break;
-                            }
                             sup["decadas"] = tmp;
                             tmpRow[curDec["INSTANCE_NUMBER"].ToString()] = sup;
                         }
-                    };
-
-                    var sortedDict = new SortedDictionary<string, Dictionary<string, string>>(tmp);
-                    sup["decadas"] = new Dictionary<string, Dictionary<string, string>>(sortedDict);
-                    tmpRow[curDec["INSTANCE_NUMBER"].ToString()] = sup;
+                        else
+                        {
+                            if (string.IsNullOrEmpty(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]))
+                            {
+                                tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = curDec["RES"].ToString();
+                                tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["class"] = (curDec["RES"].ToString() == "") ? "" : "info-cell";
+                            }
+                            else
+                            {
+                                string currDec = (curDec["RES"].ToString() == "") ? "0" : curDec["RES"].ToString();
+                                tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) + Convert.ToInt32(currDec)).ToString();
+                                switch (curDec["DECADA"].ToString())
+                                {
+                                    case "03":
+                                        if (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) > 264)
+                                        {
+                                            tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = "264";
+                                        }
+                                        break;
+                                    default:
+                                        if (Convert.ToInt32(tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"]) > 240)
+                                        {
+                                            tmp[curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString()]["val"] = "240";
+                                        }
+                                        break;
+                                }
+                                sup["decadas"] = tmp;
+                                tmpRow[curDec["INSTANCE_NUMBER"].ToString()] = sup;
+                            }
+                        }
+                    }
+                } else {
+                    decadas.Add(curDec["MY"].ToString() + "_" + curDec["DECADA"].ToString(), 
+                                new Dictionary<string, string> {
+                                    { "tarD", curDec["DECADA"].ToString() },
+                                    { "tarM", curDec["MY"].ToString() },
+                                    { "val", curDec["RES"].ToString() },
+                                    { "class", (curDec["RES"].ToString()=="")?"":"info-cell" }
+                                }
+                    );
                 }
             }
+
+            Dictionary<string, object> tmpRow2 = new Dictionary<string, object>();
+
+            foreach (KeyValuePair<string, object> inst in tmpRow) {
+                Dictionary<string, object> sup = (Dictionary<string, object>)inst.Value;
+                Dictionary<string, Dictionary<string, string>> tmp = (Dictionary<string, Dictionary<string, string>>)sup["decadas"];
+                foreach (KeyValuePair<string, object> dec in decadas) {
+                    if (!tmp.ContainsKey(dec.Key.ToString())) {
+                        tmp.Add(dec.Key.ToString(), (Dictionary<string, string>)dec.Value);
+                    }
+                }
+                var sortedDict = new SortedDictionary<string, Dictionary<string, string>>(tmp);
+                sup["decadas"] = new Dictionary<string, Dictionary<string, string>>(sortedDict);
+                tmpRow2.Add(inst.Key.ToString(), sup);
+            }
+
+            tmpRow = tmpRow2;
 
 
             return tmpRow;

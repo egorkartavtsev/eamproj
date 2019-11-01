@@ -37,17 +37,7 @@ export class YearComponent implements OnInit {
 
 
 
-    //private TotalData: any[] = [];
-    //private warn: boolean = false;
-    //private routeSubscription: Subscription;
-    //private querySubscription: Subscription;
-    //private tmpDT: object = {};
-    //private targetChanged: object = {
-    //    "hours": false,
-    //    "startDate": false
-    //};
-    //model: NgbDateStruct;
-    //startCalDay: NgbDateStruct;
+    
     private monthes: any[] = [
         { "mon": "01", "num": "Январь" },
         { "mon": "02", "num": "Февраль" },

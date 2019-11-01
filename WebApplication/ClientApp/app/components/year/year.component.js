@@ -27,17 +27,6 @@ var YearComponent = /** @class */ (function () {
         this.currentCount = 0;
         this.needCount = '15';
         /********************************************************/
-        //private TotalData: any[] = [];
-        //private warn: boolean = false;
-        //private routeSubscription: Subscription;
-        //private querySubscription: Subscription;
-        //private tmpDT: object = {};
-        //private targetChanged: object = {
-        //    "hours": false,
-        //    "startDate": false
-        //};
-        //model: NgbDateStruct;
-        //startCalDay: NgbDateStruct;
         this.monthes = [
             { "mon": "01", "num": "Январь" },
             { "mon": "02", "num": "Февраль" },

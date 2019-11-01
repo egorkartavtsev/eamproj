@@ -1,4 +1,4 @@
-﻿import { Input, Renderer2, ViewChild, Component, OnInit } from '@angular/core';
+﻿import { Input, Renderer2, ViewChild, Component } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { FilterModel } from '../../library/filter-model';
 import { HttpService } from '../../services/http.service';
@@ -80,6 +80,49 @@ export class MonthComponent {
         );
     }
 
+    private showClones(e: any, row_id: any) {
+        // определить есть ли открытые строки
+        let row_status = $('#row_' + row_id).attr('inst-showed');
+        $('#row_' + row_id).find('.btn-show-inst').find('i').remove();
+
+        if (row_status === 'true') {
+            $('#row_' + row_id).attr('inst-showed', 'false');
+            $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye"></i>');
+            $('.inst-row-' + row_id).each(function () {
+                $(this).slideToggle('slow', function () {
+                    $(this).remove();
+                })
+            });
+        } else {
+            $('#row_' + row_id).attr('inst-showed', 'true');
+            $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye-slash"></i>');
+
+            let newrow = this.renderer.createElement('tr');
+            this.renderer.addClass(newrow, 'inst-row');
+            this.renderer.addClass(newrow, 'inst-row-' + row_id);
+
+            let newcol: any = this.renderer.createElement('td');
+            this.renderer.setAttribute(newcol, 'colspan', '3');
+            this.renderer.addClass(newcol, 'text-right');
+            this.renderer.appendChild(newcol, this.renderer.createText('Полномочие'));
+            this.renderer.appendChild(newrow, newcol);
+
+            console.log('needly: ', this.CurrentData[row_id-1]);
+
+            for (let i of this.tHeadDays) {
+                newcol = this.renderer.createElement('td');
+                this.renderer.appendChild(newcol, this.renderer.createText(i.weekDD.toString()));
+                this.renderer.appendChild(newrow, newcol);
+            }
+
+            $('#row_' + row_id).after($(newrow));
+        } // сгенерировать строку. Вставить после текущей строки
+
+
+
+        //console.log('row ' + row_id+': ', newrow);
+    }
+
     private getData() {
         this.CurrentData = [];
         this.emptyData = true;
@@ -142,6 +185,7 @@ export class MonthComponent {
             let sum = 0;
             totalRows.push(row);
             let cells = Object.keys(row['days']).map(i => row['days'][i]);
+            totalRows[i]['rownum'] = i+1;
             totalRows[i]['days'] = cells;
             this.tHeadDays = [];
             for (let cell of cells) {

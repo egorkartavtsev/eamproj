@@ -1,19 +1,38 @@
 .filter-box {
     position: relative;
     padding: .75rem 1.25rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid transparent;
+    /*margin-bottom: 1rem;*/
     color: #004085;
-    background-color: #e2e8f3;
-    border-color: #c0b9fb;
+    background-color: #9eccfd;
+}
+
+.workspace {
+    padding: 0px!important;
+}
+
+.toggler-flt {
+    border-radius: 0px 0px 50% 50%;
+    padding: 5px 15px;
+    cursor: pointer;
+    border: none;
+    background-color: #9eccfd;
 }
 
 .dropdown-item {
     cursor: pointer;
 }
 
+.inst-row {
+    background-color: #f0f4fd;
+}
+
 .bigTable {
     overflow-x: auto;
+    padding: 0px !important;
+}
+
+.no-rb {
+    border-right: none!important;
 }
 
 .info-cell {

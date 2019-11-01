@@ -1,9 +1,13 @@
 ﻿<ng-template [ngIf]="logged">
-    <div class="w-100 filter-box">
+    <div class="w-100 filter-box" id="flt-box">
         <div class="col-12"><filter-box></filter-box></div>
     </div>
-    <div class="container-fluid" *ngIf="filter.ready">
-        <div class="mt-3" [ngSwitch]="filter.form">
+    <div class="w-100">
+        <button class="toggler-flt float-left d-none" #showflt (click)="tootgleFlt()"><i class="fas fa-eye"></i></button>
+        <button class="toggler-flt float-left" #hideflt (click)="tootgleFlt()"><i class="fas fa-eye-slash"></i></button>
+    </div>
+    <div class="container-fluid workspace" *ngIf="filter.ready">
+        <div class="pt-3" [ngSwitch]="filter.form">
             <ng-template ngSwitchCase="mon"><month-app></month-app></ng-template>
             <ng-template ngSwitchCase="week"><week-app></week-app></ng-template>
             <ng-template ngSwitchCase="year"><year-app></year-app></ng-template>
@@ -38,7 +42,9 @@
                     <div class="loader loader-mini"></div>
                     <div class="col-12 h6 text-center">Авторизация успешна. Идёт загрузка приложения</div>
                 </div>
-                <div class="alert alert-danger row justify-content-center d-none" #dang><div class="col-12 h6 text-center">Неверные имя пользователя и/или пароль!</div></div>
+                <div class="alert alert-danger row justify-content-center d-none" #dang>
+                    <div class="col-12 h6 text-center">Неверные имя пользователя и/или пароль!</div>
+                </div>
                 <div class="alert alert-info row justify-content-center d-none" #info>
                     <div class="loader loader-mini"></div>
                     <div class="col-12 h6 text-center">Ожидайте. Идёт загрузка приложения.</div>
@@ -52,4 +58,4 @@
     </div>
 </ng-template>
 <!------------------>
-<createwo-comp></createwo-comp>
+<createwo-comp (onSaved)="updateFilter()"></createwo-comp>

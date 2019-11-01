@@ -78,34 +78,31 @@ var HttpService = /** @class */ (function () {
     };
     HttpService.prototype.getDataList = function (target, cond, filter) {
         var body = {};
-        switch (target) {
-            case 'month':
-                body = {
-                    query: "303",
-                    "cond[day]": cond['date'],
-                    "cond[instance]": cond['instance']
-                };
-                break;
-            case 'year':
-                body = {
-                    query: "302",
-                    "cond[weekstart]": cond['weekstart'],
-                    "cond[weekend]": cond['weekend'],
-                    "cond[instance]": cond['instance']
-                };
-                break;
-        }
         for (var i in filter) {
             body["cond[" + i + "]"] = filter[i];
         }
+        switch (target) {
+            case 'month':
+                body["query"] = "303";
+                body["cond[day]"] = cond['date'];
+                body["cond[instance]"] = cond['instance'];
+                break;
+            case 'year':
+                body["cond[perStart]"] = cond['weekstart'];
+                body["cond[perEnd]"] = cond['weekend'];
+                body["cond[instance]"] = cond['instance'];
+                body["query"] = "302";
+                break;
+        }
         return this.http.get("api/porderLists/", { params: body });
     };
-    HttpService.prototype.updateWODates = function (entity, start, duration, status) {
+    HttpService.prototype.updateWODates = function (entity, start, duration, status, token) {
         var body = {
             query: "300",
             "cond[date_start]": start,
             "cond[entity_id]": entity,
             "cond[duration]": duration,
+            "cond[l_token]": token,
             "cond[status_type]": status
         };
         return this.http.get("api/updatesWO/", { params: body });

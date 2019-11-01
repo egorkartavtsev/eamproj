@@ -15,6 +15,7 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
+    "@types/jquery": "^3.3.31",
     "angular2-cookie": "^1.2.6",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.6.0",

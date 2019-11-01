@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, ViewChild, Renderer2 } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, Renderer2 } from '@angular/core';
 import { NewOrder } from '../../library/new-order.lib';
 import { HttpService } from '../../services/http.service';
 var CreateOrderComponent = /** @class */ (function () {
@@ -24,6 +24,7 @@ var CreateOrderComponent = /** @class */ (function () {
         this.idle_categs = [];
         this.routing_sequences = [];
         this.allow = false;
+        this.onSaved = new EventEmitter();
         this.http.getOrganizations().subscribe(function (data) {
             _this.organizations = Object.keys(data).map(function (i) { return data[i]; });
         });
@@ -48,6 +49,8 @@ var CreateOrderComponent = /** @class */ (function () {
     };
     CreateOrderComponent.prototype.setOrg = function () {
         var _this = this;
+        var agrs_ready = false;
+        var idles_ready = false;
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.agregates = [];
         this.routing_sequences = [];
@@ -61,14 +64,20 @@ var CreateOrderComponent = /** @class */ (function () {
         this.order.entity_name = sup[0];
         this.http.getAgrs(this.order.org_id.toString()).subscribe(function (data) {
             _this.agregates = Object.keys(data).map(function (i) { return data[i]; });
-            console.log(_this.agregates);
-            _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+            if (idles_ready) {
+                _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+            }
+            agrs_ready = true;
+            _this.validateForm();
         });
         this.http.getIdleCats(this.order.org_id).subscribe(function (data) {
             _this.idle_categs = Object.keys(data).map(function (i) { return data[i]; });
-            _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+            if (agrs_ready) {
+                _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
+            }
+            idles_ready = true;
+            _this.validateForm();
         });
-        this.validateForm();
     };
     CreateOrderComponent.prototype.setIdleCat = function () {
         var _this = this;
@@ -113,8 +122,10 @@ var CreateOrderComponent = /** @class */ (function () {
         var _this = this;
         this.renderer.removeClass(this.minLoad.nativeElement, 'd-none');
         this.http.createWO(this.order.org_id, this.order.instance_number, this.order.start, this.order.complete, this.order.hours, this.order.work_type, this.order.entity_name, this.order.idle_categ, this.order.idle_type, this.order.idle_code, this.order.planner_type).subscribe(function (data) {
+            _this.order = new NewOrder;
+            _this.allow = false;
             _this.renderer.addClass(_this.minLoad.nativeElement, 'd-none');
-            window.location.reload();
+            _this.onSaved.emit(true);
         }, function (error) {
             console.log(error);
             alert(error.error.text);
@@ -147,12 +158,6 @@ var CreateOrderComponent = /** @class */ (function () {
             this.allow = false;
         }
         if (this.allow && this.order.org_name !== '') {
-            this.allow = true;
-        }
-        else {
-            this.allow = false;
-        }
-        if (this.allow && this.order.planner_type !== '') {
             this.allow = true;
         }
         else {
@@ -193,13 +198,13 @@ var CreateOrderComponent = /** @class */ (function () {
         this.toogleCalendar();
     };
     CreateOrderComponent.prototype.cancelDate = function () {
-        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         this.model = { year: sup.getFullYear(), month: (+sup.getMonth() + 1), day: sup.getDate() };
         this.tmpDT = { hour: sup.getHours(), minute: sup.getMinutes() };
         this.toogleCalendar();
     };
     CreateOrderComponent.prototype.updateComplete = function () {
-        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(this.order.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         var tmp = {
             "days": Math.floor(+this.order.hours / 24),
             "hours": +this.order.hours % 24
@@ -210,7 +215,7 @@ var CreateOrderComponent = /** @class */ (function () {
         this.validateForm();
     };
     CreateOrderComponent.prototype.makeTrueDate = function (date) {
-        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
+        var sup = new Date(date.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$3/$2/$1 $4:$5:$6'));
         var day;
         var month;
         var year = sup.getFullYear().toString();
@@ -222,7 +227,7 @@ var CreateOrderComponent = /** @class */ (function () {
         else {
             day = sup.getDate().toString();
         }
-        if (sup.getMonth().toString().length < 2) {
+        if ((sup.getMonth() + 1).toString().length < 2) {
             month = "0" + (sup.getMonth() + 1).toString();
         }
         else {
@@ -242,6 +247,10 @@ var CreateOrderComponent = /** @class */ (function () {
         }
         return day + "." + month + "." + year + " " + hours + ":" + minutes + ":00";
     };
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], CreateOrderComponent.prototype, "onSaved", void 0);
     __decorate([
         ViewChild('startCal'),
         __metadata("design:type", Object)
