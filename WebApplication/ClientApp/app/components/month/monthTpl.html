@@ -18,7 +18,9 @@
                 <ng-template [ngIf]="!emptyData" [ngIfElse]="loader">
                     <tr *ngFor="let row of CurrentData" id="row_{{row.rownum}}" inst-showed="false">
                         <td>{{row.organization_name}}</td>
-                        <td class="text-center no-rb"><button class="btn btn-sm btn-info btn-show-inst" (click)="showClones($event, row.rownum)"><i class="fas fa-eye"> </i></button></td>
+                        <td class="text-center no-rb">
+                            <button class="btn btn-sm btn-info btn-show-inst" (click)="showClones(row.rownum, row.instance_number)"><i class="fas fa-eye"> </i></button>
+                        </td>
                         <td>{{row.instance_description}}</td>
                         <td *ngFor="let cell of row.days" class="{{cell.class}} align-middle text-center" title="{{cell.title}}" (click)="showPOrders(cell.target, cell.title, row.instance_number)" data-toggle="modal" data-target="#exampleModal">
                             {{cell.res}}

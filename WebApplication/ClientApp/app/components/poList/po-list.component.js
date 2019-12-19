@@ -33,7 +33,6 @@ var PoListComponent = /** @class */ (function () {
     });
     PoListComponent.prototype.save = function () {
         var _this = this;
-        //console.log(this.currentPO);
         this.renderer.removeClass(this.loader.nativeElement, 'd-none');
         this.http.updateWODates(this.currentPO.entity_id, this.makeTrueDate(this.currentPO.start), this.currentPO.hours, this.currentPO.status_type, this.cookie.get('eam_kp_t')).subscribe(function (data) {
             _this.onSaved.emit(true);
@@ -83,10 +82,6 @@ var PoListComponent = /** @class */ (function () {
     };
     PoListComponent.prototype.updateComplete = function (e) {
         var sup = new Date(this.makeTrueDate(this.currentPO.start).replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$2/$1/$3 $4:$5:$6'));
-        console.log("CPO STR: " + this.currentPO.start);
-        console.log("Make true: " + this.makeTrueDate(this.currentPO.start));
-        console.log(sup);
-        //var sup1 = new Date(this.currentPO.start.replace(/(\d+).(\d+).(\d+) (\d+):(\d+):(\d+)/, '$1/$2/$3 $4:$5:$6'));
         var tmp = {
             "days": Math.floor(+this.currentPO.hours / 24),
             "hours": +this.currentPO.hours % 24

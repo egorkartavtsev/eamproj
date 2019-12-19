@@ -2,7 +2,9 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { FilterService } from '../../services/filter.service';
+import { UserService } from '../../services/user.service';
 import { FilterModel } from '../../library/filter-model';
+import { UserModel } from '../../library/user-model';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { forEach } from '@angular/router/src/utils/collection';
 import { Subscription } from 'rxjs';
@@ -17,6 +19,7 @@ import { setTimeout } from 'timers';
 export class AppComponent implements OnInit {
 
     private filter: FilterModel = new FilterModel();
+    private user: UserModel = new UserModel();
 
     private logged: boolean = false;
     private password: string;
@@ -25,6 +28,7 @@ export class AppComponent implements OnInit {
     private c_year: boolean = false;
     private c_mon: boolean = false;
     private c_day: boolean = false;
+    private routeParams: any;
 
 
     @ViewChild('succ') succ: any;
@@ -39,57 +43,60 @@ export class AppComponent implements OnInit {
         private renderer: Renderer2,
         private cookie: CookieService,
         private http: HttpService,
+        private usrService: UserService,
         private filterService: FilterService,
         private route: ActivatedRoute
     ) {
         this.filter.form = '';
-        let token;
-        let flag: boolean = false;
-        if (!this.logged) {
-            let cookt: string = this.cookie.get('eam_kp_t');
-            this.route.queryParams.subscribe(
-                (queryParam: any) => {
-                    token = queryParam['secret'];
-                    if (token !== undefined) {
-                        this.renderer.addClass(this.warn.nativeElement, 'd-none');
-                        this.renderer.removeClass(this.succ.nativeElement, 'd-none');
-                        this.cookie.put('eam_kp_t', token);
-                        flag = true;
-                    } else {
-                        if (!this.logged && cookt !== 'undefined') {
-                            this.http.trySession(cookt).subscribe(
-                                (data: any[]) => {
-                                    if (data["result"] !== null) {
-                                        this.renderer.addClass(this.warn.nativeElement, 'd-none');
-                                        this.renderer.removeClass(this.succ.nativeElement, 'd-none');
-                                        flag = true;
-                                    } else {
-                                        flag = false;
-                                        this.renderer.addClass(this.warn.nativeElement, 'd-none');
-                                    }
-                                }
-                            );
-                        }
-                    }
+        let token = '';
+        let target = '';
 
+        this.routeParams = window.location.search.replace('?', '').split('&').reduce(
+            function (p, e) {
+                var a = e.split('=');
+                p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+                return p;
+            },
+            {}
+        );
+
+        if (Object.keys(this.routeParams).indexOf('secret') > -1) {
+            token = this.routeParams['secret'];
+            target = 'url';
+        } else {
+            if (this.cookie.get('eam_kp_t') !== undefined) {
+                token = this.cookie.get('eam_kp_t');
+            }
+        }
+
+        if (token !== '') {
+            this.http.trySession(token).subscribe(
+                (data: any) => {
+                    if (data['result'] === 'Y') {
+                        this.user = {
+                            id: data["id"],
+                            resps: data["resps"],
+                            token: token
+                        };
+                        this.usrService.user.next(this.user);
+
+                        this.cookie.put('eam_kp_t', token);
+                        this.logged = true;
+                        this.filterService.filter.subscribe(
+                            (filt: FilterModel) => {
+                                if (filt.ready) {
+                                    this.filter = filt;
+                                }
+                            }
+                        );
+                    }
                 }
             );
         }
-        setTimeout(() => {
-            this.logged = flag;
-            this.renderer.addClass(this.succ.nativeElement, 'd-none');
-            this.filterService.filter.subscribe(
-                (filt: FilterModel) => {
-                    if (filt.ready) {
-                        this.filter = filt;
-                    }
-                }
-            );
-        }, 4000);
     }
 
     ngOnInit() {
-        
+
     }
 
     tootgleFlt() {
@@ -108,29 +115,28 @@ export class AppComponent implements OnInit {
     }
 
     signIn() {
-        let flag: boolean;
-        //res = this.user.userSignIn(this.login, this.password);
         this.renderer.removeClass(this.warn.nativeElement, 'd-none');
         this.renderer.addClass(this.dang.nativeElement, 'd-none');
         this.http.singInUser(this.login, this.password).subscribe(
             (data: any[]) => {
-//                console.log(data);
                 this.renderer.addClass(this.warn.nativeElement, 'd-none');
                 if (data["result"] === "Y") {
                     this.renderer.removeClass(this.succ.nativeElement, 'd-none');
                     this.cookie.put('eam_kp_t', data["token"]);
-                    this.cookie.put('eam_kp_uid', data["userId"]);
-                    flag = true;
+                    this.user = {
+                        id: data["id"],
+                        resps: data["resps"],
+                        token: data["token"]
+                    };
+                    this.usrService.user.next(this.user);
+                    this.renderer.addClass(this.succ.nativeElement, 'd-none');
+                    this.logged = true;
                 } else {
                     this.renderer.removeClass(this.dang.nativeElement, 'd-none');
-                    flag = false;
+                    this.logged = false;
                 }
             }
         );
-        setTimeout(() => {
-            this.logged = flag;
-            this.renderer.addClass(this.succ.nativeElement, 'd-none');
-        }, 5500);
     }
 
 }

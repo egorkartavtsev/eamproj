@@ -67,6 +67,16 @@ var HttpService = /** @class */ (function () {
         }
         return this.http.get("/api/monthTable/", { params: body });
     };
+    HttpService.prototype.getClones = function (filter, instance) {
+        var body = {
+            query: "320",
+            "cond[instance]": instance
+        };
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
+        return this.http.get("/api/ClonesMonthTable/", { params: body });
+    };
     HttpService.prototype.getWeekData = function (filter) {
         var body = {
             query: "302"
@@ -106,6 +116,27 @@ var HttpService = /** @class */ (function () {
             "cond[status_type]": status
         };
         return this.http.get("api/updatesWO/", { params: body });
+    };
+    HttpService.prototype.updateClone = function (clone) {
+        var body = {};
+        var ks = Object.keys(clone);
+        for (var _i = 0, ks_1 = ks; _i < ks_1.length; _i++) {
+            var key = ks_1[_i];
+            body["cond[" + key + "]"] = clone[key];
+        }
+        return this.http.get("api/updateClone/", { params: body });
+    };
+    HttpService.prototype.getCloneDetails = function (instance_number, filter, resp_key, date) {
+        var body = {
+            query: '321'
+        };
+        for (var i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
+        body["cond[instance_number]"] = instance_number;
+        body["cond[resp_key]"] = resp_key;
+        body["cond[date]"] = date;
+        return this.http.get("api/getDatas", { params: body });
     };
     HttpService.prototype.getOrganizations = function () {
         var body = {

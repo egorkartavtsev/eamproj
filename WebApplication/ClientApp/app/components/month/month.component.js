@@ -7,32 +7,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Renderer2, ViewChild, Component } from '@angular/core';
+import { Renderer2, ViewChild, Component, Injector, ApplicationRef, ComponentFactoryResolver } from '@angular/core';
 import { FilterService } from '../../services/filter.service';
 import { HttpService } from '../../services/http.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
+import { EditcloneComponent } from '../editclone/editclone.component';
 var MonthComponent = /** @class */ (function () {
     /********************************************************/
-    //private filter: FilterModel;
-    //private routeSubscription: Subscription;
-    //private querySubscription: Subscription;
-    //private tmpDT: object = {};
-    //private TotalData: any[] = [];
-    //private warn: boolean = false;
-    //private tmpQuery: string;
-    //private targetChanged: object = {
-    //    "hours": false,
-    //    "startDate": false
-    //};
-    //model: NgbDateStruct;
-    //startCalDay: NgbDateStruct;
-    //private curPage: number = 0;
-    function MonthComponent(renderer, filterService, route, http, calendar) {
+    function MonthComponent(renderer, filterService, componentFactoryResolver, injector, route, http, appRef, calendar) {
         this.renderer = renderer;
         this.filterService = filterService;
+        this.componentFactoryResolver = componentFactoryResolver;
+        this.injector = injector;
         this.route = route;
         this.http = http;
+        this.appRef = appRef;
         this.calendar = calendar;
         this.emptyData = true;
         this.emptyModal = true;
@@ -42,6 +32,7 @@ var MonthComponent = /** @class */ (function () {
         /********************************************************/
         this.currentCount = 0;
         this.needCount = '20';
+        this.listeners = {};
     }
     MonthComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -59,40 +50,78 @@ var MonthComponent = /** @class */ (function () {
             }
         });
     };
-    MonthComponent.prototype.showClones = function (e, row_id) {
+    MonthComponent.prototype.showClones = function (row_id, inst) {
+        var _this = this;
         // определить есть ли открытые строки
         var row_status = $('#row_' + row_id).attr('inst-showed');
         $('#row_' + row_id).find('.btn-show-inst').find('i').remove();
         if (row_status === 'true') {
+            //если открыты, у данного родителя удаляем
             $('#row_' + row_id).attr('inst-showed', 'false');
             $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye"></i>');
+            for (var _i = 0, _a = this.listeners[row_id]; _i < _a.length; _i++) {
+                var cb = _a[_i];
+                cb();
+            }
             $('.inst-row-' + row_id).each(function () {
-                $(this).slideToggle('slow', function () {
-                    $(this).remove();
-                });
+                $(this).remove();
             });
         }
         else {
+            //если не открыты, то показываем
             $('#row_' + row_id).attr('inst-showed', 'true');
             $('#row_' + row_id).find('.btn-show-inst').append('<i class="fas fa-eye-slash"></i>');
-            var newrow = this.renderer.createElement('tr');
-            this.renderer.addClass(newrow, 'inst-row');
-            this.renderer.addClass(newrow, 'inst-row-' + row_id);
-            var newcol = this.renderer.createElement('td');
-            this.renderer.setAttribute(newcol, 'colspan', '3');
-            this.renderer.addClass(newcol, 'text-right');
-            this.renderer.appendChild(newcol, this.renderer.createText('Полномочие'));
-            this.renderer.appendChild(newrow, newcol);
-            console.log('needly: ', this.CurrentData[row_id - 1]);
-            for (var _i = 0, _a = this.tHeadDays; _i < _a.length; _i++) {
-                var i = _a[_i];
-                newcol = this.renderer.createElement('td');
-                this.renderer.appendChild(newcol, this.renderer.createText(i.weekDD.toString()));
-                this.renderer.appendChild(newrow, newcol);
-            }
-            $('#row_' + row_id).after($(newrow));
-        } // сгенерировать строку. Вставить после текущей строки
-        //console.log('row ' + row_id+': ', newrow);
+            //берём из базы клоны
+            this.renderer.removeClass(this.mimiLoader.nativeElement, 'd-none');
+            var summ_1 = 0;
+            this.listeners[row_id] = [];
+            this.http.getClones(this.filterService.makeSQLFilter(this.filter), inst).subscribe(function (data) {
+                if (JSON.stringify(data) !== "{}") {
+                    var tmp = Object.keys(data).map(function (i) { return data[i]; });
+                    var _loop_1 = function (row) {
+                        summ_1 = 0;
+                        var newrow = _this.renderer.createElement('tr');
+                        _this.renderer.addClass(newrow, 'inst-row');
+                        _this.renderer.addClass(newrow, 'inst-row-' + row_id);
+                        var newcol = _this.renderer.createElement('td');
+                        _this.renderer.setAttribute(newcol, 'colspan', '3');
+                        _this.renderer.addClass(newcol, 'text-right');
+                        _this.renderer.appendChild(newcol, _this.renderer.createText(row.resp_name.toString()));
+                        _this.renderer.appendChild(newrow, newcol);
+                        var sup = Object.keys(row.days).map(function (i) { return row.days[i]; });
+                        var _loop_2 = function (cell) {
+                            newcol = _this.renderer.createElement('td');
+                            _this.renderer.addClass(newcol, 'text-center');
+                            if (cell.res.toString() !== '') {
+                                summ_1 += parseInt(cell.res, 10);
+                                _this.renderer.appendChild(newcol, _this.renderer.createText(cell.res.toString()));
+                                _this.renderer.addClass(newcol, cell.class.toString());
+                                _this.renderer.setAttribute(newcol, 'data-toggle', 'modal');
+                                _this.renderer.setAttribute(newcol, 'data-target', '#mainModal');
+                                _this.listeners[row_id].push(_this.renderer.listen(newcol, 'click', function (evt) {
+                                    _this.showCloneDetails(inst, row.resp_key.toString(), cell.date.toString(), row_id);
+                                }));
+                            }
+                            _this.renderer.appendChild(newrow, newcol);
+                        };
+                        for (var _i = 0, sup_1 = sup; _i < sup_1.length; _i++) {
+                            var cell = sup_1[_i];
+                            _loop_2(cell);
+                        }
+                        newcol = _this.renderer.createElement('td');
+                        _this.renderer.addClass(newcol, 'text-center');
+                        _this.renderer.appendChild(newcol, _this.renderer.createText(summ_1.toString()));
+                        _this.renderer.appendChild(newrow, newcol);
+                        $('#row_' + row_id).after($(newrow));
+                    };
+                    for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
+                        var row = tmp_1[_i];
+                        _loop_1(row);
+                    }
+                }
+                _this.renderer.addClass(_this.mimiLoader.nativeElement, 'd-none');
+            });
+        }
     };
     MonthComponent.prototype.getData = function () {
         var _this = this;
@@ -144,7 +173,7 @@ var MonthComponent = /** @class */ (function () {
         var totalRows = [];
         var tmp = Object.keys(data).map(function (i) { return data[i]; });
         var i = 0;
-        var _loop_1 = function (row) {
+        var _loop_3 = function (row) {
             var j = 0;
             var sum = 0;
             totalRows.push(row);
@@ -171,9 +200,9 @@ var MonthComponent = /** @class */ (function () {
             ++i;
         };
         var this_1 = this;
-        for (var _i = 0, tmp_1 = tmp; _i < tmp_1.length; _i++) {
-            var row = tmp_1[_i];
-            _loop_1(row);
+        for (var _i = 0, tmp_2 = tmp; _i < tmp_2.length; _i++) {
+            var row = tmp_2[_i];
+            _loop_3(row);
         }
         return totalRows;
     };
@@ -187,6 +216,25 @@ var MonthComponent = /** @class */ (function () {
             this.renderer.addClass(this.fetchBtn.nativeElement, 'd-none');
             this.renderer.addClass(this.fetchSel.nativeElement, 'd-none');
         }
+    };
+    MonthComponent.prototype.showCloneDetails = function (instance_number, resp_key, date, row_id) {
+        var _this = this;
+        if (typeof (this.compR) !== 'undefined') {
+            this.compR.destroy();
+        }
+        this.compR = this.componentFactoryResolver
+            .resolveComponentFactory(EditcloneComponent)
+            .create(this.injector);
+        this.compR.instance.instance_number = instance_number;
+        this.compR.instance.resp_key = resp_key;
+        this.compR.instance.date = date;
+        this.compR.instance.onSaved.subscribe(function (v) {
+            _this.showClones(row_id, instance_number);
+            _this.showClones(row_id, instance_number);
+        });
+        this.appRef.attachView(this.compR.hostView);
+        var domElem = this.compR.hostView.rootNodes[0];
+        document.getElementById('mainModalBody').appendChild(domElem);
     };
     __decorate([
         ViewChild('fetchBtn'),
@@ -207,8 +255,11 @@ var MonthComponent = /** @class */ (function () {
         }),
         __metadata("design:paramtypes", [Renderer2,
             FilterService,
+            ComponentFactoryResolver,
+            Injector,
             ActivatedRoute,
             HttpService,
+            ApplicationRef,
             NgbCalendar])
     ], MonthComponent);
     return MonthComponent;

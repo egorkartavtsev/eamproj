@@ -18,7 +18,7 @@ namespace EAMlvl1System.Models
     public class DBHandler
     {
         // zaglushka potom budet zamenena na obrabotchik sessii
-        private readonly string token = "6e580e17-a2e6-4594-af3c-fb6e8623f026";
+        // private readonly string token = "6e580e17-a2e6-4594-af3c-fb6e8623f026";
         /*  servera 
         *   1 - dev
         *   2 - psi
@@ -27,15 +27,17 @@ namespace EAMlvl1System.Models
         *   5 - CHECK - WEBUSER
         *   6 - UAT - WEBUSER
         *   7 - PROD
-        *   8 - TEST 
+        *   8 - PROD - webuser
+        *   9 - TEST 
         */
         //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-dev.eco.mmk.chel.su)(PORT=1521)) (CONNECT_DATA= (SERVICE_NAME=DEV) (INSTANCE_NAME=DEV)));User Id=APPS;Password=qw1234;";
         //private readonly string conString = "Data Source=(DESCRIPTION= (ADDRESS=(PROTOCOL=tcp)(HOST=cis-psi-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PSI)(INSTANCE_NAME=PSI)));User Id=APPS;Password=Bcgsnfybz380;";
-        private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=APPS;Password=qw1234;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=APPS;Password=qw1234;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-uat-db.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=UAT)(INSTANCE_NAME=UAT)));User Id=APPS;Password=Bcgsnfybz180;";
-        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
+        private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-check.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=CHECK)(INSTANCE_NAME=CHECK)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-uat-db.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=UAT)(INSTANCE_NAME=UAT)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=APPS;Password=Ctrhtn321;";
+        //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=titan-db.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=PROD)(INSTANCE_NAME=PROD)));User Id=XXEAM_WEB_INTERFACE;Password=Bynthatqc2019$;";
         //private readonly string conString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=cis-test.eco.mmk.chel.su)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=TEST)(INSTANCE_NAME=TEST)));User Id=APPS;Password=qw1234;";
 
         //=========================================PUBLIC FUNCTIONAL=====================================================
@@ -85,91 +87,33 @@ namespace EAMlvl1System.Models
             //string message = cm.Parameters["x_message"].Value.ToString();
 
             
-            if (result == "Y" || password == "mk2345")
+            if (result == "Y")
             {
-                string party_name = "";
-                string account_number = "";
-                string providerUserKey = "";
+
                 OracleCommand cmu = new OracleCommand();
                 cmu.Connection = conn;
-                OracleDataAdapter da = new OracleDataAdapter();
-                da.SelectCommand = cmu;
-                cmu.CommandText = "select user_id from applsys.fnd_user where user_name = upper('" + username.ToUpper() + "')";
-                user_id = cmu.ExecuteScalar().ToString();
-                OracleCommand cm2 = new OracleCommand();
-                cm2.Connection = conn;
-                /*
-                 *   select   us.user_name, party2.party_name, CA.ACCOUNT_NUMBER
-                 *   from     apps.fnd_user         us   
-                 *   ,apps.hz_parties       PARTY2 --party
-                 *   ,apps.HZ_CUST_ACCOUNTS CA
-                 *   ,ak.AK_WEB_USER_SEC_ATTR_VALUES a
-                 *   where a.WEB_USER_ID = us.USER_ID
-                 *   and a.ATTRIBUTE_CODE = 'CUSTOMER_ID' -- ICX_SUPPLIER_ORG_ID - iinoaaueee
-                 *   and ca.ACCOUNT_NUMBER = a.NUMBER_VALUE
-                 *   and CA.PARTY_ID=PARTY2.PARTY_ID
-                 *   and us.user_name=upper('BABINA_AS10927')
-                */
+                cmu.CommandText = "apps.eam_workwith_wo_pub.user_signin";
+                cmu.CommandType = CommandType.StoredProcedure;
 
-                DataSet DS = new DataSet();
-                OracleDataAdapter dataAdapter = new OracleDataAdapter();
-                dataAdapter.SelectCommand = cm2;
-                string result1 = "";
+                cmu.Parameters.Add("l_usern", OracleDbType.Varchar2).Value = username;
 
-                try
-                {
-                    providerUserKey = Guid.NewGuid().ToString();
-                    party_name = "KP";
-                    account_number = "-1";
-                    string sqlQuery = "INSERT INTO xxeam.xxeam_is_token (" +
-                        "sessionid, " +
-                        "created_by, " +
-                        "ip, " +
-                        "party_name, " +
-                        "account_number, " +
-                        "token, " +
-                        "user_id) VALUES (";
-                    sqlQuery += "'-1',";
-                    sqlQuery += "'" + username.ToUpper() + "',";
-                    sqlQuery += "'-1',";
-                    sqlQuery += "'" + party_name + "',";
-                    sqlQuery += "'" + account_number + "',";
-                    sqlQuery += "'" + providerUserKey + "',";
-                    sqlQuery += "'" + user_id + "')";
+                OracleParameter x_key = new OracleParameter();
+                x_key.ParameterName = "x_key";
+                x_key.OracleDbType = OracleDbType.Varchar2;
+                x_key.Direction = ParameterDirection.Output;
+                x_key.Size = 1000;
+                cmu.Parameters.Add(x_key);
 
+                cmu.ExecuteNonQuery();
+                string token = cmu.Parameters["x_key"].Value.ToString();
 
-                    cm2.CommandText = sqlQuery;
+                user = this.TrySession(token);
+                user.Add("token", token);
 
-                    cm2.ExecuteNonQuery();
-                    cm2.Dispose();
-                    user = new Dictionary<string, object> {
-                        {"user", username},
-                        { "token", providerUserKey},
-                        { "client", party_name},
-                        { "clientID", account_number },
-                        { "result", result },
-                        { "userId", user_id }
-                    };
-                    
-                }
-                catch
-                {
-                    user.Add("user", username);
-                    user.Add("token", "null");
-                    user.Add("client", "null");
-                    user.Add("clientID", "-2");
-                    user.Add("result", result);
-                    user.Add("userId", user_id);
-                }
             }
             else
             {
-                user.Add("user", username);
-                user.Add("token", "null");
-                user.Add("client", "null");
-                user.Add("clientID", "-2");
                 user.Add("result", result);
-                user.Add("userId", user_id);
             }
 
 
@@ -183,12 +127,44 @@ namespace EAMlvl1System.Models
         public Dictionary<string, object> TrySession(string token)
         {
             Dictionary<string, object> user = new Dictionary<string, object>();
+            List<string> resps = new List<string>();
+            string result;
+
             OracleConnection conn = new OracleConnection(this.conString);
             conn.Open();
             OracleCommand cm = new OracleCommand();
             cm.Connection = conn;
-            cm.CommandText = "SELECT  a.user_id  FROM xxeam.xxeam_is_token a where token='" + token + "' and sysdate < end_date";
-            user.Add("result", cm.ExecuteScalar());
+            DataSet DS = new DataSet();
+            OracleDataAdapter dataAdapter = new OracleDataAdapter();
+            dataAdapter.SelectCommand = cm;
+
+            cm.CommandText = "SELECT  a.user_id  FROM xxeam.xxeam_is_token a where sessionid = UTL_RAW.cast_to_varchar2('" + token + "') and sysdate < end_date";
+            string tmp = cm.ExecuteScalar()?.ToString() ?? "";
+
+            if (!string.IsNullOrEmpty(tmp)) {
+                cm.CommandText = "SELECT e.responsibility_key resp "
+                                    + "FROM apps.fnd_user_resp_groups_direct w, "
+                                        + "apps.fnd_responsibility_vl e, "
+                                        + "XXEAM.XXEAM_RESP_FOR_CLONES rfc "
+                                    + "WHERE     1 = 1 "
+                                        + "AND e.responsibility_id = w.responsibility_id "
+                                        + "AND e.responsibility_key = rfc.responsibility_key "
+                                        + "AND(w.end_date IS NULL OR w.end_date > SYSDATE) "
+                                        + "AND w.user_id = "+tmp;
+                dataAdapter.Fill(DS);
+
+                foreach (DataRow curResp in DS.Tables[0].Rows) {
+                    resps.Add(curResp["RESP"].ToString());
+                }
+                result = "Y";
+            } else {
+                result = "N";
+            }
+
+            user.Add("result", result);
+            user.Add("resps", resps);
+            user.Add("id", tmp);
+
             cm.Dispose();
             conn.Close();
             return user;
@@ -400,6 +376,93 @@ namespace EAMlvl1System.Models
 
 
         // TOOLS FOR TABLES-----------------------------------------------------------------------------------------------------
+
+        public string UpdateClone(Dictionary<string, string> cond) {
+            string result = "Y";
+
+            OracleConnection conn = new OracleConnection(this.conString);
+            conn.Open();
+            OracleCommand cm = new OracleCommand();
+            cm.Connection = conn;
+            result = "UPDATE xxeam.xxeam_wo_clones wc " +
+                                   "SET WC.SCHEDULED_START_DATE = to_date('" + cond["SCHEDULED_START_DATE"] + "', 'dd.mm.yyyy HH24:mi:ss'), " +
+                                       "WC.SCHEDULED_COMPLETION_DATE = to_date('" + cond["SCHEDULED_COMPLETION_DATE"] + "', 'dd.mm.yyyy HH24:mi:ss'), " +
+                                       "WC.DATE_UPDATE = sysdate, " +
+                                       "WC.USER_COMMENT = '" + cond["USER_COMMENT"] + "' " +
+                                 "WHERE WC.CLONE_ID = "+cond["CLONE_ID"];
+
+            cm.CommandText = result;
+
+            result = cm.ExecuteNonQuery().ToString();
+
+            cm.Dispose();
+            conn.Close();
+
+
+            return result;
+        }
+
+        public Dictionary<string, object> MakeMonthTableClones(string query, Dictionary<string, string> cond) {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            DataSet rows = (DataSet)this.GetData(this.GetQueryById(query, cond));
+            Dictionary<string, object> tmpRow = new Dictionary<string, object>();
+
+            foreach (DataRow curDate in rows.Tables[0].Rows)
+            {
+                string date = Convert.ToDateTime(curDate["TEMPDATE"].ToString()).ToString("yyyy-MM-dd");
+                if (!tmpRow.ContainsKey(curDate["RESPONSIBILITY_KEY"].ToString()))
+                {
+                    tmpRow.Add(
+                        curDate["RESPONSIBILITY_KEY"].ToString(), new Dictionary<string, object> {
+                            {"resp_name",  curDate["RESPONSIBILITY_NAME"].ToString()},
+                            {"resp_key",  curDate["RESPONSIBILITY_KEY"].ToString()},
+                            {"days", new Dictionary<string, Dictionary<string, string>> {
+                                    {
+                                        date, new Dictionary<string, string> {
+                                            {   "res", curDate["RES"].ToString() },
+                                            {   "class", (curDate["RES"].ToString()=="")?"":"info-cell-clone" },
+                                            {   "date", date }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+                else {
+                    Dictionary<string, object> sup = (Dictionary<string, object>)tmpRow[curDate["RESPONSIBILITY_KEY"].ToString()];
+                    Dictionary<string, Dictionary<string, string>> tmp = (Dictionary<string, Dictionary<string, string>>)sup["days"];
+
+                    if (!tmp.TryAdd(date, new Dictionary<string, string> {
+                                    {   "res", curDate["RES"].ToString() },
+                                    {   "class", (curDate["RES"].ToString()=="")?"":"info-cell-clone" },
+                                    {   "date", date }
+                                }))
+                    {
+                        if (string.IsNullOrEmpty(tmp[date]["res"]))
+                        {
+                            tmp[date]["res"] = curDate["RES"].ToString();
+                            tmp[date]["class"] = (curDate["RES"].ToString() == "") ? "" : "info-cell-clone";
+                        }
+                        else
+                        {
+                            string currDay = (curDate["RES"].ToString() == "") ? "0" : curDate["RES"].ToString();
+                            tmp[date]["res"] = (Convert.ToInt32(tmp[date]["res"]) + Convert.ToInt32(currDay)).ToString();
+                            if (Convert.ToInt32(tmp[date]["res"]) > 24)
+                            {
+                                tmp[date]["res"] = "24";
+                            }
+                        }
+                    }
+                    var sortedDict = new SortedDictionary<string, Dictionary<string, string>>(tmp);
+                    sup["days"] = new Dictionary<string, Dictionary<string, string>>(sortedDict);
+                    tmpRow[curDate["RESPONSIBILITY_KEY"].ToString()] = sup;
+                }
+            }
+
+
+            return tmpRow;
+        }
 
         public Dictionary<string, object> MakeMonthTable(string query, Dictionary<string, string> cond) {
             Dictionary<string, object> result = new Dictionary<string, object>();

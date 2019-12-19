@@ -69,6 +69,18 @@ export class HttpService{
         return this.http.get("/api/monthTable/", { params: body });
     }
 
+    getClones(filter: any, instance: string) {
+        let body = {
+            query: "320",
+            "cond[instance]": instance
+        }
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
+
+        return this.http.get("/api/ClonesMonthTable/", { params: body });
+    }
+
     getWeekData(filter: any) {
         let body = {
             query: "302"
@@ -113,6 +125,36 @@ export class HttpService{
             "cond[status_type]": status
         };
         return this.http.get("api/updatesWO/", { params: body });
+    }
+
+    updateClone(clone: any) {
+        let body = {};
+
+        let ks = Object.keys(clone);
+        for (let key of ks) {
+            body["cond[" + key + "]"] = clone[key];
+        }
+
+        return this.http.get("api/updateClone/", {params: body});
+    }
+
+    getCloneDetails(instance_number: string,
+                    filter: any,
+                    resp_key: string,
+                    date: string) {
+        let body = {
+            query: '321'
+        };
+
+        for (let i in filter) {
+            body["cond[" + i + "]"] = filter[i];
+        }
+
+        body["cond[instance_number]"] = instance_number;
+        body["cond[resp_key]"] = resp_key;
+        body["cond[date]"] = date;
+
+        return this.http.get("api/getDatas", { params: body });
     }
 
     getOrganizations() {

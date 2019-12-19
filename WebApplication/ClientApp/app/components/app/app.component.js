@@ -11,61 +11,61 @@ import { Component, ViewChild, Renderer2 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { FilterService } from '../../services/filter.service';
+import { UserService } from '../../services/user.service';
 import { FilterModel } from '../../library/filter-model';
+import { UserModel } from '../../library/user-model';
 import { CookieService } from "angular2-cookie/core";
-import { setTimeout } from 'timers';
 var AppComponent = /** @class */ (function () {
-    function AppComponent(renderer, cookie, http, filterService, route) {
+    function AppComponent(renderer, cookie, http, usrService, filterService, route) {
         var _this = this;
         this.renderer = renderer;
         this.cookie = cookie;
         this.http = http;
+        this.usrService = usrService;
         this.filterService = filterService;
         this.route = route;
         this.filter = new FilterModel();
+        this.user = new UserModel();
         this.logged = false;
         this.c_year = false;
         this.c_mon = false;
         this.c_day = false;
         this.filter.form = '';
-        var token;
-        var flag = false;
-        if (!this.logged) {
-            var cookt_1 = this.cookie.get('eam_kp_t');
-            this.route.queryParams.subscribe(function (queryParam) {
-                token = queryParam['secret'];
-                if (token !== undefined) {
-                    _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
-                    _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
+        var token = '';
+        var target = '';
+        this.routeParams = window.location.search.replace('?', '').split('&').reduce(function (p, e) {
+            var a = e.split('=');
+            p[decodeURIComponent(a[0])] = decodeURIComponent(a[1]);
+            return p;
+        }, {});
+        if (Object.keys(this.routeParams).indexOf('secret') > -1) {
+            token = this.routeParams['secret'];
+            target = 'url';
+        }
+        else {
+            if (this.cookie.get('eam_kp_t') !== undefined) {
+                token = this.cookie.get('eam_kp_t');
+            }
+        }
+        if (token !== '') {
+            this.http.trySession(token).subscribe(function (data) {
+                if (data['result'] === 'Y') {
+                    _this.user = {
+                        id: data["id"],
+                        resps: data["resps"],
+                        token: token
+                    };
+                    _this.usrService.user.next(_this.user);
                     _this.cookie.put('eam_kp_t', token);
-                    flag = true;
-                }
-                else {
-                    if (!_this.logged && cookt_1 !== 'undefined') {
-                        _this.http.trySession(cookt_1).subscribe(function (data) {
-                            if (data["result"] !== null) {
-                                _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
-                                _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
-                                flag = true;
-                            }
-                            else {
-                                flag = false;
-                                _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
-                            }
-                        });
-                    }
+                    _this.logged = true;
+                    _this.filterService.filter.subscribe(function (filt) {
+                        if (filt.ready) {
+                            _this.filter = filt;
+                        }
+                    });
                 }
             });
         }
-        setTimeout(function () {
-            _this.logged = flag;
-            _this.renderer.addClass(_this.succ.nativeElement, 'd-none');
-            _this.filterService.filter.subscribe(function (filt) {
-                if (filt.ready) {
-                    _this.filter = filt;
-                }
-            });
-        }, 4000);
     }
     AppComponent.prototype.ngOnInit = function () {
     };
@@ -85,28 +85,27 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.signIn = function () {
         var _this = this;
-        var flag;
-        //res = this.user.userSignIn(this.login, this.password);
         this.renderer.removeClass(this.warn.nativeElement, 'd-none');
         this.renderer.addClass(this.dang.nativeElement, 'd-none');
         this.http.singInUser(this.login, this.password).subscribe(function (data) {
-            //                console.log(data);
             _this.renderer.addClass(_this.warn.nativeElement, 'd-none');
             if (data["result"] === "Y") {
                 _this.renderer.removeClass(_this.succ.nativeElement, 'd-none');
                 _this.cookie.put('eam_kp_t', data["token"]);
-                _this.cookie.put('eam_kp_uid', data["userId"]);
-                flag = true;
+                _this.user = {
+                    id: data["id"],
+                    resps: data["resps"],
+                    token: data["token"]
+                };
+                _this.usrService.user.next(_this.user);
+                _this.renderer.addClass(_this.succ.nativeElement, 'd-none');
+                _this.logged = true;
             }
             else {
                 _this.renderer.removeClass(_this.dang.nativeElement, 'd-none');
-                flag = false;
+                _this.logged = false;
             }
         });
-        setTimeout(function () {
-            _this.logged = flag;
-            _this.renderer.addClass(_this.succ.nativeElement, 'd-none');
-        }, 5500);
     };
     __decorate([
         ViewChild('succ'),
@@ -141,6 +140,7 @@ var AppComponent = /** @class */ (function () {
         __metadata("design:paramtypes", [Renderer2,
             CookieService,
             HttpService,
+            UserService,
             FilterService,
             ActivatedRoute])
     ], AppComponent);

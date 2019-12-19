@@ -22,9 +22,11 @@ import { YearComponent } from './components/year/year.component';
 import { MonthComponent } from './components/month/month.component';
 import { PoListComponent } from './components/poList/po-list.component';
 import { CreateOrderComponent } from './components/createWO/createOrder.component';
+import { EditcloneComponent } from './components/editclone/editclone.component';
 //services
 import { FilterService } from './services/filter.service';
 import { HttpService } from './services/http.service';
+import { UserService } from './services/user.service';
 //derectives
 import { EmptyCellDirective } from './directives/empty-cell.directive';
 // определение маршрутов
@@ -42,8 +44,9 @@ var AppModule = /** @class */ (function () {
     AppModule = __decorate([
         NgModule({
             imports: [NgbModule, SelectDropDownModule, BrowserModule, HttpClientModule, FormsModule, ReactiveFormsModule, RouterModule.forRoot([])],
-            declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent, TestComponent],
-            providers: [FilterService, HttpService, CookieService],
+            declarations: [AppComponent, FilterComponent, WeekComponent, MonthComponent, YearComponent, EmptyCellDirective, PoListComponent, CreateOrderComponent, TestComponent, EditcloneComponent],
+            entryComponents: [EditcloneComponent],
+            providers: [FilterService, HttpService, CookieService, UserService],
             bootstrap: [AppComponent]
         })
     ], AppModule);

@@ -49,7 +49,7 @@
                     <div class="loader loader-mini"></div>
                     <div class="col-12 h6 text-center">Ожидайте. Идёт загрузка приложения.</div>
                 </div>
-                <div class="alert alert-warning row justify-content-center" #warn>
+                <div class="alert alert-warning row justify-content-center d-none" #warn>
                     <div class="loader loader-mini"></div>
                     <div class="col-12 h6 text-center">Проверка учётных данных.</div>
                 </div>
@@ -59,3 +59,20 @@
 </ng-template>
 <!------------------>
 <createwo-comp (onSaved)="updateFilter()"></createwo-comp>
+<!------------------>
+<div class="modal fade" id="mainModal" tabindex="-1" role="dialog" aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog custom_modal_size" role="document">
+        <div class="modal-content" style="overflow-x: auto;">
+            <div class="modal-header justify-content-center">
+                <div #miniLoader class="loader loader-mini d-none"></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="mainModalBody">
+            </div>
+            <div class="modal-footer justify-content-center">
+            </div>
+        </div>
+    </div>
+</div>

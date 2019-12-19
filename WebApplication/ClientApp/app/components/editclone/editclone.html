@@ -1,0 +1,96 @@
+﻿<table class="table table-sm table-stripped table-hover">
+    <thead class="thead-dark">
+        <tr class="text-center">
+            <th><i class="fab fa-android"></i></th>
+            <th>Ответственный</th>
+            <th>Оригинальный ЗВР</th>
+            <th>Агрегат</th>
+            <th>Начало</th>
+            <th>Завершение</th>
+            <th>Продолж., ч.</th>
+            <th>Коментарий</th>
+        </tr>
+    </thead>
+    <tbody *ngIf="allow">
+        <tr *ngFor="let row of data">
+            <ng-template [ngIf]="current_clone?.CLONE_ID != row.CLONE_ID" [ngIfElse]="edit">
+                <td class="text-center">
+                    <button *ngIf="resp_match" class="btn btn-primary" (click)="editClone(row)"><i class="fas fa-pen"></i></button>
+                </td>
+                <td class="text-center">{{row.RESP_NAME}}</td>
+                <td class="text-center">{{row.ENTITY_NAME}}</td>
+                <td class="text-center">{{row.INSTANCE_DESCRIPTION}}</td>
+                <td class="text-center">{{row.SCHEDULED_START_DATE}}</td>
+                <td class="text-center">{{row.SCHEDULED_COMPLETION_DATE}}</td>
+                <td class="text-center">{{row.DURATION}}</td>
+                <td class="text-center">{{row.USER_COMMENT}}</td>
+            </ng-template>
+        </tr>
+    </tbody>
+    <tbody *ngIf="!allow">
+        <tr>
+            <td colspan="8" class="text-center">
+                <div class="loader"></div><br>
+                Подождите, идёт загрузка данных.
+            </td>
+        </tr>
+    </tbody>
+</table>
+<ng-template #edit>
+    <td>
+        <button class="btn btn-success" (click)="save()"> <i class="fas fa-save"> </i></button>
+        <button class="btn btn-secondary" (click)="cancel()"> <i class="fas fa-ban"> </i></button>
+    </td>
+    <td> {{ current_clone.RESP_NAME }}</td>
+    <td> {{ current_clone.ENTITY_NAME}}</td>
+    <td> {{ current_clone.INSTANCE_DESCRIPTION }}</td>
+    <td>
+        <div class="form-group" id="chngStart" #target>
+            <input type="text" style="min-width: 180px;" [(ngModel)]="current_clone.SCHEDULED_START_DATE" on-input="updateComplete($event)" id="curStart" class="form-control" (click)="toogleCalendar()">
+            <div #startCal class="calendBlock d-none">
+                <div class="card-body">
+                    <div class="w-100">
+                        <button type="button" class="close pull-right mb-3" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                            <span class="closeBtn" aria-hidden="true" (click)="toogleCalendar()">&times; </span>
+                        </button>
+                    </div>
+                    <ngb-datepicker #d
+                                    [footerTemplate]="t"
+                                    [navigation]="arrows"
+                                    [(ngModel)]="model"
+                                    [startDate]="startCalDay"
+                                    (navigate)="startCalDay = $event.next"></ngb-datepicker>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td>
+        {{ current_clone.SCHEDULED_COMPLETION_DATE }}
+        <div class="loader loader-mini d-none float-left" #loader></div>
+    </td>
+    <td>
+        <div class="form-group">
+            <input type="number" [(ngModel)]="current_clone.DURATION" on-input="updateComplete($event)" id="curHours" class="form-control" />
+        </div>
+    </td>
+    <td>
+        <div class="form-group">
+            <input type="text" [(ngModel)]="current_clone.USER_COMMENT" class="form-control" />
+        </div>
+    </td>
+</ng-template>
+<ng-template #t>
+    <div class="w-100 px-5 dpicker-footer"><ngb-timepicker [(ngModel)]="tmpDT" [minuteStep]="10"></ngb-timepicker></div>
+    <div class="w-100 text-center mb-3 dpicker-footer">
+        <div class="btn-group">
+            <button (click)="setDate()" type="button" class="btn btn-success" title="Сохранить" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                <i class="fas fa-calendar-check"></i>
+                <span class="d-none d-sm-inline"> Ok</span>
+            </button>
+            <button (click)="cancelDate()" type="button" class="btn btn-secondary" title="Отмена" data-toggle="collapse" data-target="#startCal" aria-expanded="false" aria-controls="startCal">
+                <i class="fas fa-thumbs-down"></i>
+                <span class="d-none d-sm-inline"> Отмена</span>
+            </button>
+        </div>
+    </div>
+</ng-template>

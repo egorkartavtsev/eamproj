@@ -1,3 +1,8 @@
+input[type="password"]::-ms-reveal {
+    background: none;
+    color: #545b62;
+}
+
 .filter-box {
     position: relative;
     padding: .75rem 1.25rem;
@@ -46,6 +51,19 @@
 .info-cell:hover {
     background-color: #cdccff;
     border-bottom: 1px solid #bbbae6;
+}
+
+.info-cell-clone {
+    background-color: #a8e5ef;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #8ecad4 !important;
+    cursor: pointer;
+}
+
+.info-cell-clone:hover {
+    background-color: #8ecad4;
+    border-bottom: 1px solid #8ecad4;
 }
 
 .calendBlock {
