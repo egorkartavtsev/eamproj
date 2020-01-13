@@ -67,15 +67,13 @@ export class YearComponent implements OnInit {
     ngOnInit() {
         this.emptyData = true;
         this.filterService.filter.subscribe(filt => {
-            if (filt.ready) {
-                this.filter = filt;
-                this.title = filt.period.year;
-                this.modalData['title'] = "";
-                this.modalData['porders'] = [];
-                this.totalCount = this.filter.conut.toString();
-                this.CurrentData = [];
-                this.getData();
-            }
+            this.filter = filt;
+            this.title = filt.period.year;
+            this.modalData['title'] = "";
+            this.modalData['porders'] = [];
+            this.totalCount = this.filter.conut.toString();
+            this.CurrentData = [];
+            this.getData();
         });
 
     }
@@ -87,7 +85,6 @@ export class YearComponent implements OnInit {
         }
         this.http.getYearData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(
             (data: any[]) => {
-                console.log(data);
                 let tmp = this.getRows(data);
                 this.CurrentData = tmp;
                 this.emptyData = false;

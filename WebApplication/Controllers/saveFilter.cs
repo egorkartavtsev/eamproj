@@ -12,7 +12,9 @@ namespace EAMlvl1System.Controllers
     public class SaveFilter: Controller
     {
         // GET: /<controller>/
-        public IActionResult SaveCustomeFilter(Dictionary<string, string> cond) {
+        public IActionResult SaveCustomeFilter([FromBody]Dictionary<string, string> cond) {
+
+            string puppy = "puppy 1";
 
             Dictionary<string, object> trueCondition = new Dictionary<string, object>
             {
@@ -21,6 +23,8 @@ namespace EAMlvl1System.Controllers
                 ["attrs"] = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(cond["attrs"])
 
             };
+
+            puppy = "puppy 2";
 
             DBHandler db = new DBHandler();
 

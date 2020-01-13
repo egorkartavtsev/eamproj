@@ -6,11 +6,9 @@
         <button class="toggler-flt float-left d-none" #showflt (click)="tootgleFlt()"><i class="fas fa-eye"></i></button>
         <button class="toggler-flt float-left" #hideflt (click)="tootgleFlt()"><i class="fas fa-eye-slash"></i></button>
     </div>
-    <div class="container-fluid workspace" *ngIf="filter.ready">
-        <div class="pt-3" [ngSwitch]="filter.form">
-            <ng-template ngSwitchCase="mon"><month-app></month-app></ng-template>
-            <ng-template ngSwitchCase="week"><week-app></week-app></ng-template>
-            <ng-template ngSwitchCase="year"><year-app></year-app></ng-template>
+    <div class="container-fluid workspace">
+        <div class="pt-3">
+            <workplace></workplace>
         </div>
     </div>
 </ng-template>
@@ -21,7 +19,7 @@
                 <div class="alert alert-primary">
                     <h4>Авторизация</h4>
                     <div class="form-group">
-                        <label>Пользователь</label>
+                        <label>Имя пользователя</label>
                         <input type="text" [(ngModel)]="login" class="form-control">
                     </div>
                     <div class="form-group">

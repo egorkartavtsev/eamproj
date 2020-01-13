@@ -249,9 +249,9 @@ export class HttpService{
     saveCurFilter(info: any) {
         let body = {};
         for (let attr in info) {
-            body["cond["+attr+"]"] = info[attr];
+            body[attr] = info[attr];
         }
-        return this.http.get("api/saveFilter", { params: body });
+        return this.http.post("api/saveFilter", body );
     }
 
     loadFilterFields(filt_id: string) {

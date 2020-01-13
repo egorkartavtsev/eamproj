@@ -36,6 +36,7 @@
                 <div class="col-12">
                     <span class="badge badge-info">Найдены ЗВР для {{cnt}} активов</span>
                     <ng-template [ngIf]="!filterTotal.ready"><span class="badge badge-warning">Фильтр обновлён. Обновите график.</span></ng-template>
+                    <ng-template [ngIf]="!existsOrg"><span class="badge badge-danger">Выберите цех!</span></ng-template>
                     <div class="loader loader-mini d-none float-left" #loader></div>
                 </div>
             </div>
@@ -86,7 +87,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="btn-group float-right">
-                <button class="btn btn-sm btn-primary" (click)="showTable()">Показать график</button>
+                <button class="btn btn-sm btn-primary" (click)="showTable()" #applyBtn disabled="disabled">Показать график</button>
                 <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#filtListModal" (click)="getFilterList()"><i class="fas fa-cloud-download-alt"></i> Cохранить/загрузить фильтр</button>
                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="far fa-compass"></i> действия

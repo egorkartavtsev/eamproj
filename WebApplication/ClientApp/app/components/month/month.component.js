@@ -15,14 +15,14 @@ import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { EditcloneComponent } from '../editclone/editclone.component';
 var MonthComponent = /** @class */ (function () {
     /********************************************************/
-    function MonthComponent(renderer, filterService, componentFactoryResolver, injector, route, http, appRef, calendar) {
+    function MonthComponent(renderer, filterService, componentFactoryResolver, injector, route, appRef, http, calendar) {
         this.renderer = renderer;
         this.filterService = filterService;
         this.componentFactoryResolver = componentFactoryResolver;
         this.injector = injector;
         this.route = route;
-        this.http = http;
         this.appRef = appRef;
+        this.http = http;
         this.calendar = calendar;
         this.emptyData = true;
         this.emptyModal = true;
@@ -37,17 +37,15 @@ var MonthComponent = /** @class */ (function () {
     MonthComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.filterService.filter.subscribe(function (filt) {
-            if (filt.ready) {
-                _this.tHeadDays = [];
-                _this.filter = filt;
-                var sup = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
-                sup = sup + " " + _this.filter.period.year;
-                _this.title = sup[0].toUpperCase() + sup.substring(1);
-                _this.modalData['title'] = "";
-                _this.modalData['porders'] = [];
-                _this.totalCount = _this.filter.conut.toString();
-                _this.getData();
-            }
+            _this.tHeadDays = [];
+            _this.filter = filt;
+            var sup = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
+            sup = sup + " " + _this.filter.period.year;
+            _this.title = sup[0].toUpperCase() + sup.substring(1);
+            _this.modalData['title'] = "";
+            _this.modalData['porders'] = [];
+            _this.totalCount = _this.filter.conut.toString();
+            _this.getData();
         });
     };
     MonthComponent.prototype.showClones = function (row_id, inst) {
@@ -258,8 +256,8 @@ var MonthComponent = /** @class */ (function () {
             ComponentFactoryResolver,
             Injector,
             ActivatedRoute,
-            HttpService,
             ApplicationRef,
+            HttpService,
             NgbCalendar])
     ], MonthComponent);
     return MonthComponent;

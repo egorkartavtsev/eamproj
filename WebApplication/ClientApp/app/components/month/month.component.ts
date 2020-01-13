@@ -50,24 +50,22 @@ export class MonthComponent {
         private componentFactoryResolver: ComponentFactoryResolver,
         private injector: Injector,
         private route: ActivatedRoute,
-        private http: HttpService,
         private appRef: ApplicationRef,
+        private http: HttpService,
         private calendar: NgbCalendar) {}
 
     ngOnInit() {
         this.filterService.filter.subscribe(
             (filt: any) => {
-                if (filt.ready) {
-                    this.tHeadDays = [];
-                    this.filter = filt;
-                    let sup = new Date(this.filter.period.year + '-' + this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
-                    sup = sup + " " + this.filter.period.year;
-                    this.title = sup[0].toUpperCase() + sup.substring(1);
-                    this.modalData['title'] = "";
-                    this.modalData['porders'] = [];
-                    this.totalCount = this.filter.conut.toString();
-                    this.getData();
-                }
+                this.tHeadDays = [];
+                this.filter = filt;
+                let sup = new Date(this.filter.period.year + '-' + this.filter.period.month + '-01').toLocaleString('ru', { month: 'long' });
+                sup = sup + " " + this.filter.period.year;
+                this.title = sup[0].toUpperCase() + sup.substring(1);
+                this.modalData['title'] = "";
+                this.modalData['porders'] = [];
+                this.totalCount = this.filter.conut.toString();
+                this.getData();
             }
         );
     }

@@ -1,15 +1,16 @@
-﻿import { Component, ViewChild, Renderer2, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+﻿import { Component, ViewChild, Renderer2, OnInit, Injector, ApplicationRef, ComponentFactoryResolver, EmbeddedViewRef } from '@angular/core';
+
 import { HttpService } from '../../services/http.service';
 import { FilterService } from '../../services/filter.service';
 import { UserService } from '../../services/user.service';
+import { CookieService } from "angular2-cookie/core";
+
 import { FilterModel } from '../../library/filter-model';
 import { UserModel } from '../../library/user-model';
-import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { forEach } from '@angular/router/src/utils/collection';
-import { Subscription } from 'rxjs';
-import { CookieService } from "angular2-cookie/core";
-import { setTimeout } from 'timers';
+
+import { MessageComponent } from '../../components/helpers/helpers.component';
+
+
 
 @Component({
     selector: 'root-app',
@@ -30,6 +31,8 @@ export class AppComponent implements OnInit {
     private c_day: boolean = false;
     private routeParams: any;
 
+    private compR: any;
+
 
     @ViewChild('succ') succ: any;
     @ViewChild('dang') dang: any;
@@ -45,12 +48,14 @@ export class AppComponent implements OnInit {
         private http: HttpService,
         private usrService: UserService,
         private filterService: FilterService,
-        private route: ActivatedRoute
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private injector: Injector,
+        private appRef: ApplicationRef
     ) {
         this.filter.form = '';
         let token = '';
         let target = '';
-
+        
         this.routeParams = window.location.search.replace('?', '').split('&').reduce(
             function (p, e) {
                 var a = e.split('=');
@@ -96,7 +101,6 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit() {
-
     }
 
     tootgleFlt() {
@@ -138,5 +142,4 @@ export class AppComponent implements OnInit {
             }
         );
     }
-
 }

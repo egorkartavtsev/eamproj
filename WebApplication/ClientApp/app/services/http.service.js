@@ -222,9 +222,9 @@ var HttpService = /** @class */ (function () {
     HttpService.prototype.saveCurFilter = function (info) {
         var body = {};
         for (var attr in info) {
-            body["cond[" + attr + "]"] = info[attr];
+            body[attr] = info[attr];
         }
-        return this.http.get("api/saveFilter", { params: body });
+        return this.http.post("api/saveFilter", body);
     };
     HttpService.prototype.loadFilterFields = function (filt_id) {
         var body = {

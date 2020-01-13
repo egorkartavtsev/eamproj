@@ -36,43 +36,23 @@ var WeekComponent = /** @class */ (function () {
     WeekComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.filterService.filter.subscribe(function (filt) {
-            if (filt.ready) {
-                _this.filter = filt;
-                var sup1 = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-' + _this.filter.period.day);
-                var sup = sup1.toLocaleString('ru', { weekday: 'long' });
-                _this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + _this.filter.period.day + '.' + _this.filter.period.month + '.' + _this.filter.period.year;
-                sup1.setDate(sup1.getDate() + 6);
-                var mon = (+sup1.getMonth() + 1).toString();
-                if (mon.length === 1) {
-                    mon = '0' + mon.toString();
-                }
-                _this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
-                _this.getData();
+            _this.filter = filt;
+            var sup1 = new Date(_this.filter.period.year + '-' + _this.filter.period.month + '-' + _this.filter.period.day);
+            var sup = sup1.toLocaleString('ru', { weekday: 'long' });
+            _this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + _this.filter.period.day + '.' + _this.filter.period.month + '.' + _this.filter.period.year;
+            sup1.setDate(sup1.getDate() + 6);
+            var mon = (+sup1.getMonth() + 1).toString();
+            if (mon.length === 1) {
+                mon = '0' + mon.toString();
             }
-            //this.data = [];
-            //let i = 0;
-            //for (let day of this.totalData) {
-            //    let day_data: any[] = [];
-            //    this.data[i] = {};
-            //    for (let order of day.porders) {
-            //        if (this.filterService.applyFilter(filt, order)) {
-            //            day_data.push(order);
-            //        }
-            //    }
-            //    this.data[i].porders = day_data;
-            //    this.data[i].dname = day.dname;
-            //    ++i;
-            //}
+            _this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
+            _this.getData();
         });
     };
     WeekComponent.prototype.getData = function () {
         var _this = this;
         this.emptyData = true;
-        //if (typeof (this.modalData['title']) !== "undefined") {
-        //    this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        //}
         this.http.getWeekData(this.filterService.makeSQLFilter(this.filter)).subscribe(function (data) {
-            console.log(_this.filterService.makeSQLFilter(_this.filter));
             var rows = Object.keys(data).map(function (i) { return data[i]; });
             var ind = 0;
             var _loop_1 = function (row) {
@@ -85,7 +65,6 @@ var WeekComponent = /** @class */ (function () {
                 _loop_1(row);
             }
             _this.totalData = _this.data = rows;
-            console.log(_this.totalData);
             _this.emptyData = false;
         });
     };

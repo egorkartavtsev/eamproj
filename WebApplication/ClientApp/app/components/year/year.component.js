@@ -46,15 +46,13 @@ var YearComponent = /** @class */ (function () {
         var _this = this;
         this.emptyData = true;
         this.filterService.filter.subscribe(function (filt) {
-            if (filt.ready) {
-                _this.filter = filt;
-                _this.title = filt.period.year;
-                _this.modalData['title'] = "";
-                _this.modalData['porders'] = [];
-                _this.totalCount = _this.filter.conut.toString();
-                _this.CurrentData = [];
-                _this.getData();
-            }
+            _this.filter = filt;
+            _this.title = filt.period.year;
+            _this.modalData['title'] = "";
+            _this.modalData['porders'] = [];
+            _this.totalCount = _this.filter.conut.toString();
+            _this.CurrentData = [];
+            _this.getData();
         });
     };
     YearComponent.prototype.getData = function () {
@@ -64,7 +62,6 @@ var YearComponent = /** @class */ (function () {
             this.showPOList(this.modalData['mon'], this.modalData['dec'], this.modalData['instance']);
         }
         this.http.getYearData(this.filterService.makeSQLFilter(this.filter), this.needCount, this.currentCount.toString()).subscribe(function (data) {
-            console.log(data);
             var tmp = _this.getRows(data);
             _this.CurrentData = tmp;
             _this.emptyData = false;

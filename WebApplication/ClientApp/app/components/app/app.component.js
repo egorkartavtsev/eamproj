@@ -7,23 +7,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, ViewChild, Renderer2 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ViewChild, Renderer2, Injector, ApplicationRef, ComponentFactoryResolver } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { FilterService } from '../../services/filter.service';
 import { UserService } from '../../services/user.service';
+import { CookieService } from "angular2-cookie/core";
 import { FilterModel } from '../../library/filter-model';
 import { UserModel } from '../../library/user-model';
-import { CookieService } from "angular2-cookie/core";
 var AppComponent = /** @class */ (function () {
-    function AppComponent(renderer, cookie, http, usrService, filterService, route) {
+    function AppComponent(renderer, cookie, http, usrService, filterService, componentFactoryResolver, injector, appRef) {
         var _this = this;
         this.renderer = renderer;
         this.cookie = cookie;
         this.http = http;
         this.usrService = usrService;
         this.filterService = filterService;
-        this.route = route;
+        this.componentFactoryResolver = componentFactoryResolver;
+        this.injector = injector;
+        this.appRef = appRef;
         this.filter = new FilterModel();
         this.user = new UserModel();
         this.logged = false;
@@ -142,7 +143,9 @@ var AppComponent = /** @class */ (function () {
             HttpService,
             UserService,
             FilterService,
-            ActivatedRoute])
+            ComponentFactoryResolver,
+            Injector,
+            ApplicationRef])
     ], AppComponent);
     return AppComponent;
 }());

@@ -22,9 +22,9 @@ import { CookieService } from "angular2-cookie/core";
                         <thead class="thead-dark">
                             <tr class="text-center">
                                 <th>№ ПЗ</th>
-                                <th>Цех</th>
                                 <th>Агрегат</th>
                                 <th>Статус</th>
+                                <th>Типология</th>
                                 <th>Начало</th>
                                 <th>Завершение</th>
                                 <th>Продолж., ч.</th>
@@ -36,9 +36,9 @@ import { CookieService } from "angular2-cookie/core";
                                 <tr *ngFor="let po of _plist">
                                     <ng-template [ngIf]="currentPO?.entity_id != po.entity_id" [ngIfElse]="edit">
                                         <td class="align-middle">{{po.entity_name}}</td>
-                                        <td class="align-middle">{{po.org_name}}</td>
                                         <td class="align-middle">{{po.inst_desc}}</td>
                                         <td class="align-middle">{{po.work_order_type}}</td>
+                                        <td class="align-middle">{{po.typology}}</td>
                                         <td class="align-middle">{{po.start}}</td>
                                         <td class="align-middle">{{po.complete}}</td>
                                         <td class="align-middle">{{po.hours}}</td>
@@ -59,7 +59,6 @@ import { CookieService } from "angular2-cookie/core";
      </div>
      <ng-template #edit>
         <td> {{ currentPO.entity_name}}</td>
-        <td> {{ currentPO.org_name }}</td>
         <td> {{ currentPO.inst_desc }}</td>
         <td><select class="form-control" [(ngModel)]="currentPO.status_type">
                 <option value="17">проект</option>
@@ -72,6 +71,7 @@ import { CookieService } from "angular2-cookie/core";
                 <option value="12">закрыто</option>
                 <option value="15">сбой при закрытии</option>
             </select></td>
+        <td> {{ currentPO.typology }}</td>
         <td>
             <div class="form-group" id="chngStart" #target>
                 <input type="text" style="min-width: 180px;" [(ngModel)]="currentPO.start" on-input="updateComplete($event)" id="curStart" class="form-control" (click)="toogleCalendar()">

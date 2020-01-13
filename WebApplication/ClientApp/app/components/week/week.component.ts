@@ -47,43 +47,23 @@ export class WeekComponent implements OnInit {
 
     ngOnInit() {
         this.filterService.filter.subscribe(filt => {
-            if (filt.ready) {
-                this.filter = filt;
-                let sup1 = new Date(this.filter.period.year + '-' + this.filter.period.month + '-' + this.filter.period.day);
-                let sup = sup1.toLocaleString('ru', { weekday: 'long' });
-                this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + this.filter.period.day + '.' + this.filter.period.month + '.' + this.filter.period.year;
-                sup1.setDate(sup1.getDate() + 6);
-                let mon = (+sup1.getMonth() + 1).toString();
-                if (mon.length === 1) { mon = '0' + mon.toString(); }
-                this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
-                this.getData();
-            }
-            //this.data = [];
-            //let i = 0;
-            //for (let day of this.totalData) {
-            //    let day_data: any[] = [];
-            //    this.data[i] = {};
-            //    for (let order of day.porders) {
-            //        if (this.filterService.applyFilter(filt, order)) {
-            //            day_data.push(order);
-            //        }
-            //    }
-            //    this.data[i].porders = day_data;
-            //    this.data[i].dname = day.dname;
-            //    ++i;
-            //}
+            this.filter = filt;
+            let sup1 = new Date(this.filter.period.year + '-' + this.filter.period.month + '-' + this.filter.period.day);
+            let sup = sup1.toLocaleString('ru', { weekday: 'long' });
+            this.title = sup[0].toUpperCase() + sup.substring(1) + ' ' + this.filter.period.day + '.' + this.filter.period.month + '.' + this.filter.period.year;
+            sup1.setDate(sup1.getDate() + 6);
+            let mon = (+sup1.getMonth() + 1).toString();
+            if (mon.length === 1) { mon = '0' + mon.toString(); }
+            this.titleFor = sup1.toLocaleString('ru', { weekday: 'long' })[0].toUpperCase() + sup1.toLocaleString('ru', { weekday: 'long' }).substring(1) + ' ' + sup1.getDate() + '.' + mon + '.' + sup1.getFullYear();
+            this.getData();
         });
 
     }
     
     private getData() {
         this.emptyData = true;
-        //if (typeof (this.modalData['title']) !== "undefined") {
-        //    this.showPOrders(this.modalData['target'], this.modalData['title'], this.modalData['instance']);
-        //}
         this.http.getWeekData(this.filterService.makeSQLFilter(this.filter)).subscribe(
             (data: any[]) => {
-                console.log(this.filterService.makeSQLFilter(this.filter));
                 let rows = Object.keys(data).map(i => data[i]);
                 let ind = 0;
                 for (let row of rows) {
@@ -92,7 +72,6 @@ export class WeekComponent implements OnInit {
                     ++ind;
                 }
                 this.totalData = this.data = rows;
-                console.log(this.totalData);
                 this.emptyData = false;
             }
         );
