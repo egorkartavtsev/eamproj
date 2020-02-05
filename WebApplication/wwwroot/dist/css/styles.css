@@ -16,11 +16,20 @@ input[type="password"]::-ms-reveal {
 }
 
 .toggler-flt {
-    border-radius: 0px 0px 50% 50%;
+    border-radius: 0px 0px 50% 0%;
     padding: 5px 15px;
     cursor: pointer;
     border: none;
     background-color: #9eccfd;
+}
+
+.toggler-help {
+    border-radius: 0px 0px 0% 25px;
+    padding: 5px 15px;
+    cursor: pointer;
+    border: none;
+    color: #f0f4fd;
+    background-color: #17a2b8;
 }
 
 .dropdown-item {
@@ -40,18 +49,6 @@ input[type="password"]::-ms-reveal {
     border-right: none!important;
 }
 
-.info-cell {
-    background-color: #cce5ff;
-    border-left: none !important;
-    border-right: none !important;
-    border-bottom: 1px solid #b8daff !important;
-    cursor: pointer;
-}
-
-.info-cell:hover {
-    background-color: #cdccff;
-    border-bottom: 1px solid #bbbae6;
-}
 
 .info-cell-clone {
     background-color: #a8e5ef;
@@ -192,4 +189,53 @@ input[type="password"]::-ms-reveal {
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
+}
+/************************** styles to info-cells **********************************/
+.fill-cell {
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #b8daff !important;
+    cursor: pointer;
+}
+
+.fill-cell:hover {
+    background-color: #d4d16d;
+    border-bottom: 1px solid #bbbae6;
+}
+
+.error-cell {
+    background-color: #b72c2c;
+    color: #f0f4fd;
+}
+
+.unreleased-cell {
+    background-color: #d4ccff
+}
+
+.released-cell {
+    background-color: #ccffd0
+}
+
+.complete-cell {
+    background-color: #ccffd0
+}
+
+.broken-cell {
+    background-color: #ffcccc
+}
+
+.cancel-cell {
+    background-color: #d1d8e0
+}
+
+.closed-cell {
+    background-color: #fffbcc
+}
+
+.delayed-cell {
+    background-color: #b9b5d2
+}
+
+.info-cell {
+    background-color: #cce5ff
 }

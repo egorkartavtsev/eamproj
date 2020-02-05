@@ -470,10 +470,48 @@ namespace EAMlvl1System.Models
             Dictionary<string, object> result = new Dictionary<string, object>();
             DataSet rows = (DataSet)this.GetData(this.GetQueryById(query, cond));
             Dictionary<string, object> tmpRow = new Dictionary<string, object>();
-
+            string cls = "";
             foreach (DataRow curDec in rows.Tables[0].Rows)
             {
-                //string date = DateTime.ParseExact(curDec["TEMPDATE"].ToString(), "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                cls = "";
+
+                if (curDec["RES"].ToString() != "")
+                {
+                    switch (curDec["STATUS_TYPE"].ToString())
+                    {
+                        case "1":
+                            cls = "fill-cell unreleased-cell";
+                            break;
+                        case "3":
+                            cls = "fill-cell released-cell";
+                            break;
+                        case "4":
+                            cls = "fill-cell complete-cell";
+                            break;
+                        case "5":
+                            cls = "fill-cell complete-cell";
+                            break;
+                        case "6":
+                            cls = "fill-cell broken-cell";
+                            break;
+                        case "7":
+                            cls = "fill-cell cancel-cell";
+                            break;
+                        case "12":
+                            cls = "fill-cell closed-cell";
+                            break;
+                        case "14":
+                            cls = "fill-cell delayed-cell";
+                            break;
+                        case "15":
+                            cls = "fill-cell broken-cell";
+                            break;
+                        case "17":
+                            cls = "fill-cell info-cell";
+                            break;
+                    }
+                }
+
                 string date = Convert.ToDateTime(curDec["TEMPDATE"].ToString()).ToString("yyyy-MM-dd");
                 if (!tmpRow.ContainsKey(curDec["INSTANCE_NUMBER"].ToString()))
                 {
@@ -489,7 +527,7 @@ namespace EAMlvl1System.Models
                                         date, new Dictionary<string, string> {
                                             {   "res", curDec["RES"].ToString() },
                                             {   "weekDD", curDec["WEEK_DD"].ToString() },
-                                            {   "class", (curDec["RES"].ToString()=="")?"":"info-cell" },
+                                            {   "class", cls },
                                             {   "monDD", curDec["MONTH_DD"].ToString() }
                                         }
                                     }
@@ -505,7 +543,7 @@ namespace EAMlvl1System.Models
                     if (tmp.TryAdd(date, new Dictionary<string, string> {
                                     {   "res", curDec["RES"].ToString() },
                                     {   "weekDD", curDec["WEEK_DD"].ToString() },
-                                    {   "class", (curDec["RES"].ToString()=="")?"":"info-cell" },
+                                    {   "class", cls},
                                     {   "monDD", curDec["MONTH_DD"].ToString() }
                                 }))
                     {
@@ -514,15 +552,16 @@ namespace EAMlvl1System.Models
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(tmp[date]["res"]))
+                        if (string.IsNullOrEmpty(tmp[date]["res"].ToString()))
                         {
                             tmp[date]["res"] = curDec["RES"].ToString();
-                            tmp[date]["class"] = (curDec["RES"].ToString() == "") ? "" : "info-cell";
+                            tmp[date]["class"] = cls;
                         }
                         else
                         {
                             string currDay = (curDec["RES"].ToString() == "") ? "0" : curDec["RES"].ToString();
-                            tmp[date]["res"] = (Convert.ToInt32(tmp[date]["res"]) + Convert.ToInt32(currDay)).ToString();
+                            tmp[date]["res"] = ((Convert.ToInt32(tmp[date]["res"]) > Convert.ToInt32(currDay))? Convert.ToInt32(tmp[date]["res"]) : Convert.ToInt32(currDay)).ToString();
+                            if (curDec["RES"].ToString() != "") { tmp[date]["class"] = "fill-cell error-cell"; }
                             if (Convert.ToInt32(tmp[date]["res"]) > 24)
                             {
                                 tmp[date]["res"] = "24";

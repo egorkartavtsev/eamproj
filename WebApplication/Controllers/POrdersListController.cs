@@ -40,6 +40,9 @@ namespace EAMlvl1System.Controllers
                             { "inst_desc", row["INSTANCE_DESCRIPTION"].ToString() },
                             { "start", row["SCHEDULED_START_DATE"].ToString() },
                             { "complete", row["SCHEDULED_COMPLETION_DATE"].ToString() },
+                            { "idle_cat", row["IDLE_CAT"].ToString() },
+                            { "idle_type", row["IDLE_TYPE"].ToString() },
+                            { "idle_code", row["IDLE_CODE"].ToString() },
                             { "hours", row["DIFF_HOURS"].ToString() }
                         });
                     }
@@ -56,6 +59,9 @@ namespace EAMlvl1System.Controllers
                         { "inst_desc", row["INSTANCE_DESCRIPTION"].ToString() },
                         { "start", row["SCHEDULED_START_DATE"].ToString() },
                         { "complete", row["SCHEDULED_COMPLETION_DATE"].ToString() },
+                        { "idle_cat", row["IDLE_CAT"].ToString() },
+                        { "idle_type", row["IDLE_TYPE"].ToString() },
+                        { "idle_code", row["IDLE_CODE"].ToString() },
                         { "hours", row["DIFF_HOURS"].ToString() }
                     });
                 }

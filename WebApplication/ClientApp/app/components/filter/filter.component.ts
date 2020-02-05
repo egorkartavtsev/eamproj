@@ -295,6 +295,7 @@ export class FilterComponent implements OnInit {
     returnCustomForm() {
         this.filterTotal.filterType = 'custom';
         this.tryApplyBtn();
+        this.filterTotal.ready = false;
         this.filterService.filter.next(this.filterTotal);
     }
 

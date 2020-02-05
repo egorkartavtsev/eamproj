@@ -262,6 +262,7 @@ var FilterComponent = /** @class */ (function () {
     FilterComponent.prototype.returnCustomForm = function () {
         this.filterTotal.filterType = 'custom';
         this.tryApplyBtn();
+        this.filterTotal.ready = false;
         this.filterService.filter.next(this.filterTotal);
     };
     FilterComponent.prototype.loadFilter = function (filter_id) {
